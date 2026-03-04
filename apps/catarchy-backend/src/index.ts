@@ -1,50 +1,31 @@
 import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 import { createApp } from "./app";
-import { envSchema } from "./env";
+import { envSchema, type CloudflareBindings } from "./lib/env";
+import { initDatabase } from "./infra/db";
+import { initEmail } from "./infra/email/service";
 
 export type { App } from "./app";
 
-interface WorkerEnv {
-  CORS_ORIGIN?: string;
-}
-
-const getApp = (env: WorkerEnv) => {
-  if (!env.CORS_ORIGIN) {
-    throw new Error("❌ CORS_ORIGIN environment variable is required");
-  }
-
-  const result = envSchema.safeParse({
-    CORS_ORIGIN: env.CORS_ORIGIN,
-  });
-
-  if (!result.success) {
-    console.error("❌ Invalid environment variables:");
-    for (const issue of result.error.issues) {
-      console.error(`  ${issue.path.join(".")}: ${issue.message}`);
-    }
-    throw new Error("Invalid environment variables");
-  }
-
-  return createApp({ adapter: CloudflareAdapter, env: result.data });
-};
-
+/**
+ * Cloudflare Worker entry point.
+ */
 export default {
-  async fetch(request: Request, env: WorkerEnv) {
-    try {
-      const app = getApp(env);
-      return app.fetch(request);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      return new Response(
-        JSON.stringify({
-          error: message,
-          env: { CORS_ORIGIN: env.CORS_ORIGIN ? "set" : "missing" },
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+  fetch(
+    request: Request,
+    cloudflareEnv: Record<string, string> & CloudflareBindings,
+  ) {
+    const env = envSchema.safeParse(cloudflareEnv);
+
+    if (!env.success || !env.data) {
+      console.error("❌ Invalid environment variables:", env.error?.message);
+      return new Response("Internal Server Error", { status: 500 });
     }
+
+    initDatabase(cloudflareEnv.DB);
+    initEmail(env.data.RESEND_API_KEY);
+
+    return createApp({ adapter: CloudflareAdapter, env: env.data }).fetch(
+      request,
+    );
   },
 };

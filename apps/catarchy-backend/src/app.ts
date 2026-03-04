@@ -1,22 +1,29 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
-import type { Env } from "./env";
-import { health } from "./infra/health";
+import { type Env } from "./lib/env";
+import { errorHandler } from "./plugin/error-handler";
+import { healthRouter } from "./infra/health";
+import { openapiPlugin } from "./infra/openapi";
+import { authRouter } from "./domain/auth";
+import { emailRouter } from "./infra/email";
 
 // Types
-type CreateAppConfig = ConstructorParameters<typeof Elysia>[0] & {
-  env?: Env;
+type CreateAppConfig = {
+  env: Env;
+  adapter?: NonNullable<ConstructorParameters<typeof Elysia>[0]>["adapter"];
 };
-
-// Route builder
-const addRoutes = <T extends Elysia>(app: T, corsOrigin: string[]) =>
-  app.use(cors({ origin: corsOrigin })).use(health);
-
-// App type export
-export type App = ReturnType<typeof addRoutes>;
 
 // App factory
-export const createApp = (config?: CreateAppConfig) => {
-  const env = config?.env || { CORS_ORIGIN: [] };
-  return addRoutes(new Elysia({ aot: false }), env.CORS_ORIGIN);
+export const createApp = ({ env, adapter }: CreateAppConfig) => {
+  return new Elysia({ adapter, aot: false, normalize: false })
+    .get("/favicon.ico", () => null)
+    .use(errorHandler)
+    .use(openapiPlugin(env))
+    .use(cors({ origin: env.CORS_ORIGIN }))
+    .use(healthRouter(env))
+    .use(authRouter(env))
+    .use(emailRouter(env));
 };
+
+// App type export
+export type App = ReturnType<typeof createApp>;

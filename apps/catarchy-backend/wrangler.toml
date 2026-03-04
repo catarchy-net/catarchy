@@ -1,6 +1,14 @@
 name = "catarchy-backend"
 main = "src/index.ts"
 compatibility_date = "2026-03-02"
+compatibility_flags = ["nodejs_compat"]
+account_id = "9e405c909176b2cab4c5a773ac033506"
 
 [build]
 watch_dir = "src"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "catarchy-db"
+database_id = "4110c1df-32ba-41c0-8f04-731636300825"
+migrations_dir = "src/infra/db/out"
