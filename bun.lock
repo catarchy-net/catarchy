@@ -4,9 +4,6 @@
   "workspaces": {
     "": {
       "name": "catarchy",
-      "dependencies": {
-        "@elysiajs/jwt": "^1.4.1",
-      },
     },
     "apps/catarchy-backend": {
       "name": "catarchy-backend",

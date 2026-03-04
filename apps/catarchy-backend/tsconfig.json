@@ -13,7 +13,8 @@
     "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["bun", "@cloudflare/workers-types"]
+    "types": ["bun", "@cloudflare/workers-types"],
+    "composite": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

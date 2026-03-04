@@ -16,9 +16,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@backend/*": ["../catarchy-backend/src/*"]
+      "@backend/*": ["../catarchy-backend/dist/*"]
     }
   },
+  "references": [
+    { "path": "../catarchy-backend" }
+  ],
   "include": ["src", "vite-env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

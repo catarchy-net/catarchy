@@ -1,4 +1,4 @@
-import Elysia, { StatusMap } from "elysia";
+import Elysia, { status, StatusMap } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import { AuthService } from "./service";
 import { EmailService } from "../../infra/email/service";
@@ -139,24 +139,24 @@ export const authRouter = (env: Env) =>
     )
     .post(
       "/refresh",
-      async ({ body, authService, accessJwt, refreshJwt, error }) => {
+      async ({ body, authService, accessJwt, refreshJwt }) => {
         const { refreshToken: oldRefreshToken } = body;
 
         // 1. JWT 서명 검증
         const payload = await refreshJwt.verify(oldRefreshToken);
         if (!payload || !payload.sub) {
-          return error(401, { message: "Invalid or expired refresh token" });
+          return status(401, { message: "Invalid or expired refresh token" });
         }
 
         // 2. DB에서 세션 존재 여부 + 만료 검증
         const session = await authService.validateSession(oldRefreshToken);
         if (!session) {
-          return error(401, { message: "Invalid or expired refresh token" });
+          return status(401, { message: "Invalid or expired refresh token" });
         }
 
         const user = await authService.findUserById(session.userId);
         if (!user) {
-          return error(401, { message: "Invalid or expired refresh token" });
+          return status(401, { message: "Invalid or expired refresh token" });
         }
 
         // 3. Token rotation

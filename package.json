@@ -4,7 +4,8 @@
   "workspaces": [
     "apps/*"
   ],
-  "dependencies": {
-    "@elysiajs/jwt": "^1.4.1"
-  }
+  "scripts": {
+    "build:types": "tsc -b apps/catarchy-backend"
+  },
+  "dependencies": {}
 }
