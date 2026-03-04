@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@elysiajs/eden": "latest",
@@ -36,6 +37,7 @@
     "tailwindcss": "latest",
     "typescript": "latest",
     "typescript-eslint": "^8.56.1",
-    "vite": "latest"
+    "vite": "latest",
+    "wrangler": "^4.70.0"
   }
 }
