@@ -9,159 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupEmailVerificationRouteImport } from './routes/signup-email-verification'
-import { Route as SignupEmailRouteImport } from './routes/signup-email'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as PlayRouteImport } from './routes/play'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as gateIndexRouteImport } from './routes/(gate)/index'
 
-const SignupEmailVerificationRoute = SignupEmailVerificationRouteImport.update({
-  id: '/signup-email-verification',
-  path: '/signup-email-verification',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupEmailRoute = SignupEmailRouteImport.update({
-  id: '/signup-email',
-  path: '/signup-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlayRoute = PlayRouteImport.update({
-  id: '/play',
-  path: '/play',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const gateIndexRoute = gateIndexRouteImport.update({
+  id: '/(gate)/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/play': typeof PlayRoute
-  '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/signup-email-verification': typeof SignupEmailVerificationRoute
+  '/': typeof gateIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/play': typeof PlayRoute
-  '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/signup-email-verification': typeof SignupEmailVerificationRoute
+  '/': typeof gateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/play': typeof PlayRoute
-  '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/signup-email-verification': typeof SignupEmailVerificationRoute
+  '/(gate)/': typeof gateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/login'
-    | '/play'
-    | '/signup'
-    | '/signup-email'
-    | '/signup-email-verification'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/login'
-    | '/play'
-    | '/signup'
-    | '/signup-email'
-    | '/signup-email-verification'
-  id:
-    | '__root__'
-    | '/'
-    | '/login'
-    | '/play'
-    | '/signup'
-    | '/signup-email'
-    | '/signup-email-verification'
+  to: '/'
+  id: '__root__' | '/(gate)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  LoginRoute: typeof LoginRoute
-  PlayRoute: typeof PlayRoute
-  SignupRoute: typeof SignupRoute
-  SignupEmailRoute: typeof SignupEmailRoute
-  SignupEmailVerificationRoute: typeof SignupEmailVerificationRoute
+  gateIndexRoute: typeof gateIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup-email-verification': {
-      id: '/signup-email-verification'
-      path: '/signup-email-verification'
-      fullPath: '/signup-email-verification'
-      preLoaderRoute: typeof SignupEmailVerificationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup-email': {
-      id: '/signup-email'
-      path: '/signup-email'
-      fullPath: '/signup-email'
-      preLoaderRoute: typeof SignupEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/play': {
-      id: '/play'
-      path: '/play'
-      fullPath: '/play'
-      preLoaderRoute: typeof PlayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/(gate)/': {
+      id: '/(gate)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof gateIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  PlayRoute: PlayRoute,
-  SignupRoute: SignupRoute,
-  SignupEmailRoute: SignupEmailRoute,
-  SignupEmailVerificationRoute: SignupEmailVerificationRoute,
+  gateIndexRoute: gateIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

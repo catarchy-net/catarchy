@@ -1,0 +1,18 @@
+@theme {
+  --background-image-gradient-dither-1: url("/assets/gradient-pattern/mono-1.svg");
+  --background-image-gradient-dither-2: url("/assets/gradient-pattern/mono-2.svg");
+  --background-image-gradient-dither-3: url("/assets/gradient-pattern/mono-3.svg");
+  --background-image-gradient-dither-4: url("/assets/gradient-pattern/mono-4.svg");
+  --background-image-gradient-dither-5: url("/assets/gradient-pattern/mono-5.svg");
+  --background-image-gradient-dither-6: url("/assets/gradient-pattern/mono-6.svg");
+  --background-image-gradient-dither-7: url("/assets/gradient-pattern/mono-7.svg");
+  --background-image-gradient-dither-8: url("/assets/gradient-pattern/mono-8.svg");
+  --background-image-gradient-dither-9: url("/assets/gradient-pattern/mono-9.svg");
+}
+
+@layer components {
+  [class*="bg-gradient-dither-"] {
+    background-size: 3px 3px;
+    background-repeat: repeat;
+  }
+}

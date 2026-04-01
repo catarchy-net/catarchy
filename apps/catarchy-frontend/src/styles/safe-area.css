@@ -1,0 +1,61 @@
+@layer base {
+  :root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  }
+}
+
+@utility pt-safe {
+  padding-top: var(--safe-area-inset-top);
+}
+@utility pr-safe {
+  padding-right: var(--safe-area-inset-right);
+}
+@utility pb-safe {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+@utility pl-safe {
+  padding-left: var(--safe-area-inset-left);
+}
+@utility px-safe {
+  padding-right: var(--safe-area-inset-right);
+  padding-left: var(--safe-area-inset-left);
+}
+@utility py-safe {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+@utility p-safe {
+  padding-top: var(--safe-area-inset-top);
+  padding-right: var(--safe-area-inset-right);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+}
+@utility mt-safe {
+  margin-top: var(--safe-area-inset-top);
+}
+@utility mr-safe {
+  margin-right: var(--safe-area-inset-right);
+}
+@utility mb-safe {
+  margin-bottom: var(--safe-area-inset-bottom);
+}
+@utility ml-safe {
+  margin-left: var(--safe-area-inset-left);
+}
+@utility mx-safe {
+  margin-right: var(--safe-area-inset-right);
+  margin-left: var(--safe-area-inset-left);
+}
+@utility my-safe {
+  margin-top: var(--safe-area-inset-top);
+  margin-bottom: var(--safe-area-inset-bottom);
+}
+@utility m-safe {
+  margin-top: var(--safe-area-inset-top);
+  margin-right: var(--safe-area-inset-right);
+  margin-bottom: var(--safe-area-inset-bottom);
+  margin-left: var(--safe-area-inset-left);
+}

@@ -1,0 +1,3 @@
+@theme {
+  --layout-max-width: min(100vw, 430px);
+}

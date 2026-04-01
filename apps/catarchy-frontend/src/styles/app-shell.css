@@ -1,0 +1,13 @@
+@layer base {
+  #root {
+    @apply fixed inset-0 overflow-hidden;
+  }
+
+  html {
+    @apply fixed inset-0 overflow-hidden overscroll-none text-base;
+  }
+
+  body {
+    @apply fixed inset-0 overflow-hidden overscroll-none touch-pan-x touch-pan-y  text-black antialiased font-sans;
+  }
+}

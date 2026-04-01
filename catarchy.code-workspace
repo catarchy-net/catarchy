@@ -2,24 +2,27 @@
   "folders": [
     {
       "name": "backend",
-      "path": "apps/catarchy-backend"
+      "path": "apps/catarchy-backend",
     },
     {
       "name": "frontend",
-      "path": "apps/catarchy-frontend"
-    }
+      "path": "apps/catarchy-frontend",
+    },
   ],
   "settings": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+      "source.organizeImports": "explicit",
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "tailwindCSS.experimental.classRegex": [],
     "files.associations": {
-      "*.css": "tailwindcss"
-    }
-  }
+      "*.css": "tailwindcss",
+    },
+  },
+  "extensions": {
+    "recommendations": ["fronterior.biome-monorepo"],
+  },
 }

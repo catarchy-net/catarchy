@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@import "./app-shell.css";
+@import "./font-text.css";
+@import "./safe-area.css";
+@import "./scrollbar.css";
+@import "./layout.css";
+@import "./background.css";
+@import "./border.css";
+@import "./reset.css";

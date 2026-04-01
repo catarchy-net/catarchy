@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "UnifontExMono";
+  src:
+    url("/assets/fonts/UnifontExMono.woff2") format("woff2"),
+    url("/assets/fonts/UnifontExMono.woff") format("woff"),
+    url("/assets/fonts/UnifontExMono.ttf") format("truetype"),
+    url("/assets/fonts/UnifontExMono.eot") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@theme {
+  --font-sans: "UnifontExMono", monospace;
+  --font-weight-*: initial;
+}
+
+/* Redefine */
+@layer base {
+  .font-bold {
+    text-shadow:
+      -1px -1px 0 inherit,
+      0px -1px 0 inherit,
+      1px -1px 0 inherit,
+      1px 0px 0 inherit,
+      1px 1px 0 inherit,
+      0px 1px 0 inherit,
+      -1px 1px 0 inherit,
+      -1px 0px 0 inherit;
+  }
+
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .font-bold {
+      text-shadow: none;
+      -webkit-text-stroke-width: 1px;
+      -webkit-text-stroke-color: inherit;
+    }
+  }
+
+  .text-sm {
+    text-shadow:
+      -0.025px -0.025px 0 currentColor,
+      0px -0.025px 0 currentColor,
+      0.025px -0.025px 0 currentColor,
+      0.025px 0px 0 currentColor,
+      0.025px 0.025px 0 currentColor,
+      0px 0.025px 0 currentColor,
+      -0.025px 0.025px 0 currentColor,
+      -0.025px 0px 0 currentColor;
+  }
+
+  .text-xs {
+    text-shadow:
+      -0.0125px -0.0125px 0 currentColor,
+      0px -0.0125px 0 currentColor,
+      0.0125px -0.0125px 0 currentColor,
+      0.0125px 0px 0 currentColor,
+      0.0125px 0.0125px 0 currentColor,
+      0px 0.0125px 0 currentColor,
+      -0.0125px 0.0125px 0 currentColor,
+      -0.0125px 0px 0 currentColor;
+  }
+}
+
+/* Define .font-stroke-white */
+
+@layer utilities {
+  .font-stroke-white,
+  .text-base.font-stroke-white {
+    text-shadow:
+      -2px -2px 0 #fff,
+      -1px -2px 0 #fff,
+      0px -2px 0 #fff,
+      1px -2px 0 #fff,
+      2px -2px 0 #fff,
+      -2px -1px 0 #fff,
+      -1px -1px 0 #fff,
+      0px -1px 0 #fff,
+      1px -1px 0 #fff,
+      2px -1px 0 #fff,
+      -2px 0px 0 #fff,
+      -1px 0px 0 #fff,
+      1px 0px 0 #fff,
+      2px 0px 0 #fff,
+      -2px 1px 0 #fff,
+      -1px 1px 0 #fff,
+      0px 1px 0 #fff,
+      1px 1px 0 #fff,
+      2px 1px 0 #fff,
+      -2px 2px 0 #fff,
+      -1px 2px 0 #fff,
+      0px 2px 0 #fff,
+      1px 2px 0 #fff,
+      2px 2px 0 #fff;
+  }
+
+  .text-sm.font-stroke-white {
+    text-rendering: geometricPrecision;
+    text-shadow:
+      0.825px 0.825px 0 #fff,
+      0px 0.825px 0 #fff,
+      -0.825px 0.825px 0 #fff,
+      -0.825px 0px 0 #fff,
+      -0.825px -0.825px 0 #fff,
+      0px -0.825px 0 #fff,
+      0.825px -0.825px 0 #fff,
+      0.825px 0px 0 #fff,
+      0.825px 0.825px 0 #fff,
+      0px 0.825px 0 #fff,
+      -0.825px 0.825px 0 #fff,
+      -0.825px 0px 0 #fff,
+      -0.825px -0.825px 0 #fff,
+      0px -0.825px 0 #fff,
+      0.825px -0.825px 0 #fff,
+      0.825px 0px 0 #fff,
+      0.825px 0.825px 0 #fff,
+      0px 0.825px 0 #fff,
+      -0.825px 0.825px 0 #fff,
+      -0.825px 0px 0 #fff,
+      -0.825px -0.825px 0 #fff,
+      0px -0.825px 0 #fff,
+      0.825px -0.825px 0 #fff;
+  }
+}

@@ -1,8 +1,6 @@
-import { cn } from "@/shared/lib/cn";
-import { useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
 import { forwardRef } from "react";
 import { useKeyboard } from "../hooks/use-keyboard";
-import { Button } from "./button";
+import { cn } from "../lib/cn";
 
 interface ScaffoldRootProps {
   children?: React.ReactNode;
@@ -16,7 +14,7 @@ const ScaffoldRoot = forwardRef<HTMLDivElement, ScaffoldRootProps>(
     return (
       <div
         ref={ref}
-        className="relative mx-auto flex w-(--layout-max-width) flex-col overflow-y-auto overscroll-none bg-white"
+        className="relative mx-auto flex w-(--layout-max-width) flex-col overflow-y-auto overscroll-none bg-white border-x"
         style={{
           height: avoidKeyboard ? keyboard.viewportHeight : "100dvh",
         }}
@@ -31,47 +29,31 @@ interface ScaffoldHeaderProps {
   title?: React.ReactNode;
   left?: React.ReactNode;
   right?: React.ReactNode;
-  onBack?: () => Promise<void>;
+  className?: string;
 }
 
-function ScaffoldHeader({ title, left, right, onBack }: ScaffoldHeaderProps) {
-  const navigate = useNavigate();
-  const router = useRouter();
-  const canGoBack = useCanGoBack();
-  const handleBack = async () => {
-    if (canGoBack) {
-      router.history.back();
-    }
-
-    await navigate({ to: "/" });
-
-    await onBack?.();
-  };
-
+function ScaffoldHeader({
+  title,
+  left,
+  right,
+  className,
+}: ScaffoldHeaderProps) {
   return (
     <header
       className={cn(
-        "flex items-stretch justify-between gap-0",
-        title && "bg-gradient-mono-1",
+        "flex items-center justify-between gap-2 border-b border-black h-12 p-2",
+        className,
       )}
     >
-      <div className="aspect-square">
-        {left !== undefined ? (
-          left
-        ) : (
-          <Button variant="ghost" onClick={handleBack}>
-            ⬅
-          </Button>
-        )}
-      </div>
+      <div className="aspect-square w-8">{left}</div>
 
       {title && (
-        <h1 className="flex flex-1 items-center justify-center text-center text-stroke-white">
+        <h1 className="flex flex-1 items-center justify-center text-center">
           {title}
         </h1>
       )}
 
-      <div className={cn("aspect-square w-12", !title && "flex")}>{right}</div>
+      <div className={cn("aspect-square w-8")}>{right}</div>
     </header>
   );
 }
