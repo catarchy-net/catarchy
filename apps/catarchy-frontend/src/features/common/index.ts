@@ -1,3 +1,7 @@
+// Components
+export * from "./components/bastet";
+export * from "./components/layout";
+
 // Hooks
 export * from "./hooks/use-keyboard";
 
