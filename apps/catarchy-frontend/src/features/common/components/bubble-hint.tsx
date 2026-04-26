@@ -107,9 +107,15 @@ export const BubbleHint = React.forwardRef<HTMLDivElement, BubbleHintProps>(
         const tailOffsetX = `${clampedTailX}px`;
         const tailOffsetY = `${clampedTailY}px`;
 
+        // position: fixed is relative to the layout viewport, but all
+        // coordinates above are relative to the visual viewport.
+        // Add visualViewport offset to convert between the two.
+        const vpOffsetLeft = vp?.offsetLeft ?? 0;
+        const vpOffsetTop = vp?.offsetTop ?? 0;
+
         root.dataset.side = side;
-        root.style.left = `${x}px`;
-        root.style.top = `${y}px`;
+        root.style.left = `${x + vpOffsetLeft}px`;
+        root.style.top = `${y + vpOffsetTop}px`;
         root.style.setProperty(
           "--tail-offset",
           side === "left" || side === "right" ? tailOffsetY : tailOffsetX,
