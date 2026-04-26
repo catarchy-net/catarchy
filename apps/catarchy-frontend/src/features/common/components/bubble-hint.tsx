@@ -123,34 +123,15 @@ export const BubbleHint = React.forwardRef<HTMLDivElement, BubbleHintProps>(
         root.style.setProperty("visibility", "visible");
       }
 
-      let rafId = 0;
-      function scheduleUpdate() {
-        cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(update);
+      let rafId: number;
+      function loop() {
+        update();
+        rafId = requestAnimationFrame(loop);
       }
-
-      const ro = new ResizeObserver(scheduleUpdate);
-      ro.observe(target);
-      if (rootRef.current) ro.observe(rootRef.current);
-
-      const mo = new MutationObserver(scheduleUpdate);
-      mo.observe(target, { attributes: true, attributeFilter: ["style"] });
-
-      document.addEventListener("scroll", scheduleUpdate, true);
-      window.addEventListener("resize", scheduleUpdate);
-      window.visualViewport?.addEventListener("resize", scheduleUpdate);
-      window.visualViewport?.addEventListener("scroll", scheduleUpdate);
-
-      update();
+      rafId = requestAnimationFrame(loop);
 
       return () => {
         cancelAnimationFrame(rafId);
-        ro.disconnect();
-        mo.disconnect();
-        document.removeEventListener("scroll", scheduleUpdate, true);
-        window.removeEventListener("resize", scheduleUpdate);
-        window.visualViewport?.removeEventListener("resize", scheduleUpdate);
-        window.visualViewport?.removeEventListener("scroll", scheduleUpdate);
       };
     }, [targetRef, preferredSide]);
 
