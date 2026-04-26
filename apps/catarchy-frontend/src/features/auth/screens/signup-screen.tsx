@@ -8,7 +8,7 @@ import {
   useAlert,
   useToast,
 } from "@/features/common";
-import { useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
@@ -214,21 +214,13 @@ export function SignupScreen() {
         </div>
         <div>
           <Text as="p" className="text-center py-2">
-            <a
-              href="/terms.txt"
-              onClick={(e) => { e.preventDefault(); window.open("/terms.txt", "_blank", "noopener,noreferrer"); }}
-              className="underline"
-            >
+            <Link to="/toc" className="underline">
               Terms
-            </a>{" "}
+            </Link>{" "}
             /{" "}
-            <a
-              href="/privacy-policy.txt"
-              onClick={(e) => { e.preventDefault(); window.open("/privacy-policy.txt", "_blank", "noopener,noreferrer"); }}
-              className="underline"
-            >
+            <Link to="/pp" className="underline">
               Privacy
-            </a>
+            </Link>
           </Text>
         </div>
       </Scaffold.Body>

@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TocRouteImport } from './routes/toc'
+import { Route as PpRouteImport } from './routes/pp'
 import { Route as PlayIndexRouteImport } from './routes/play/index'
 import { Route as gateIndexRouteImport } from './routes/(gate)/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthPasswordResetRouteImport } from './routes/auth/password-reset'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
+const TocRoute = TocRouteImport.update({
+  id: '/toc',
+  path: '/toc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PpRoute = PpRouteImport.update({
+  id: '/pp',
+  path: '/pp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayIndexRoute = PlayIndexRouteImport.update({
   id: '/play/',
   path: '/play/',
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof gateIndexRoute
   '/play/': typeof PlayIndexRoute
+  '/toc': typeof TocRoute
+  '/pp': typeof PpRoute
 }
 export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof gateIndexRoute
   '/play': typeof PlayIndexRoute
+  '/toc': typeof TocRoute
+  '/pp': typeof PpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +78,8 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/(gate)/': typeof gateIndexRoute
   '/play/': typeof PlayIndexRoute
+  '/toc': typeof TocRoute
+  '/pp': typeof PpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,8 +89,10 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/'
     | '/play/'
+    | '/toc'
+    | '/pp'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth/login' | '/auth/password-reset' | '/auth/register' | '/' | '/play'
+  to: '/auth/login' | '/auth/password-reset' | '/auth/register' | '/' | '/play' | '/toc' | '/pp'
   id:
     | '__root__'
     | '/auth/login'
@@ -80,6 +100,8 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/(gate)/'
     | '/play/'
+    | '/toc'
+    | '/pp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,6 +110,8 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   gateIndexRoute: typeof gateIndexRoute
   PlayIndexRoute: typeof PlayIndexRoute
+  TocRoute: typeof TocRoute
+  PpRoute: typeof PpRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,6 +151,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/toc': {
+      id: '/toc'
+      path: '/toc'
+      fullPath: '/toc'
+      preLoaderRoute: typeof TocRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pp': {
+      id: '/pp'
+      path: '/pp'
+      fullPath: '/pp'
+      preLoaderRoute: typeof PpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -136,6 +174,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   gateIndexRoute: gateIndexRoute,
   PlayIndexRoute: PlayIndexRoute,
+  TocRoute: TocRoute,
+  PpRoute: PpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
