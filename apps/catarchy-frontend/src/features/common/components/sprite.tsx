@@ -1,4 +1,4 @@
-import { ImgHTMLAttributes, useId } from "react";
+import { forwardRef, ImgHTMLAttributes, useId } from "react";
 import { cn } from "../lib/cn";
 import styles from "./sprite.module.css";
 
@@ -36,16 +36,22 @@ export interface SpriteProps<TagName extends string = string> {
   tag?: TagName | null;
 }
 
-export function Sprite<TagName extends string = string>({
-  className,
-  style,
-  width,
-  height,
-  texture,
-  keyframes,
-  alt,
-  tag,
-}: SpriteProps<TagName>) {
+export const Sprite = forwardRef(function Sprite<
+  TagName extends string = string,
+>(
+  {
+    className,
+    style,
+    width,
+    height,
+    texture,
+    keyframes,
+    alt,
+    tag,
+  }: SpriteProps<TagName>,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  console.log("Rendering Sprite", texture);
   const id = useId();
   const {
     frameSize = { w: width, h: height },
@@ -83,6 +89,7 @@ export function Sprite<TagName extends string = string>({
         `}</style>
       )}
       <div
+        ref={ref}
         role="img"
         aria-label={alt}
         aria-hidden={!alt}
@@ -91,7 +98,7 @@ export function Sprite<TagName extends string = string>({
         style={{
           width,
           height,
-          backgroundImage: texture ? `url(${texture})` : undefined,
+          backgroundImage: texture ? `url("${texture}")` : undefined,
           backgroundSize: `${sheetW * scale}px ${sheetH * scale}px`,
           backgroundPosition: `${-fromX * scale}px 0px`,
           animation:
@@ -103,4 +110,6 @@ export function Sprite<TagName extends string = string>({
       />
     </>
   );
-}
+}) as <TagName extends string = string>(
+  props: SpriteProps<TagName> & { ref?: React.Ref<HTMLDivElement> },
+) => React.ReactElement | null;

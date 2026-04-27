@@ -1,3 +1,6 @@
+// Assets
+export { default as TextLogo } from "./assets/logo-text.svg?react";
+
 // Components
 export * from "./components/alert-modal";
 export * from "./components/bastet";

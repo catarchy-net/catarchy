@@ -8,11 +8,18 @@
   --background-image-gradient-dither-7: url("/assets/gradient-pattern/mono-7.svg");
   --background-image-gradient-dither-8: url("/assets/gradient-pattern/mono-8.svg");
   --background-image-gradient-dither-9: url("/assets/gradient-pattern/mono-9.svg");
+
+  --background-image-gradient-pattern-cat: url("/assets/image-pattern/cat.svg");
 }
 
 @layer components {
   [class*="bg-gradient-dither-"] {
     background-size: 3px 3px;
+    background-repeat: repeat;
+  }
+
+  [class*="bg-gradient-pattern-"] {
+    background-size: 16px 16px;
     background-repeat: repeat;
   }
 }

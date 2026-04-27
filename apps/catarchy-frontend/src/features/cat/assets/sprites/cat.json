@@ -1,0 +1,48 @@
+{
+  "frameSize": { "w": 32, "h": 32 },
+  "frames": [
+    {
+      "id": "default",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "walk-1",
+      "x": 32,
+      "y": 0,
+      "duration": 200
+    },
+    {
+      "id": "walk-2",
+      "x": 64,
+      "y": 0,
+      "duration": 200
+    },
+    {
+      "id": "walk-3",
+      "x": 96,
+      "y": 0,
+      "duration": 200
+    },
+    {
+      "id": "walk-4",
+      "x": 128,
+      "y": 0,
+      "duration": 200
+    }
+  ],
+  "tags": [
+    {
+      "name": "default",
+      "from": 0,
+      "to": 0
+    },
+    {
+      "name": "walk",
+      "from": 1,
+      "to": 4,
+      "direction": "pingpong",
+      "loop": true
+    }
+  ]
+}

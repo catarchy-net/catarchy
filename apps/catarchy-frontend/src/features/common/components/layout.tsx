@@ -5,16 +5,20 @@ import { cn } from "../lib/cn";
 interface ScaffoldRootProps {
   children?: React.ReactNode;
   avoidKeyboard?: boolean;
+  className?: string;
 }
 
 const ScaffoldRoot = forwardRef<HTMLDivElement, ScaffoldRootProps>(
-  ({ children, avoidKeyboard = false }, ref) => {
+  ({ children, avoidKeyboard = false, className }, ref) => {
     const keyboard = useKeyboard();
 
     return (
       <div
         ref={ref}
-        className="mx-auto flex w-(--layout-max-width) flex-col overflow-hidden bg-white transition-[height] duration-300 ease-out"
+        className={cn(
+          "mx-auto flex w-(--layout-max-width) flex-col overflow-hidden bg-white transition-[height] duration-300 ease-out",
+          className,
+        )}
         style={{
           height: avoidKeyboard ? keyboard.viewportHeight : "100dvh",
         }}
