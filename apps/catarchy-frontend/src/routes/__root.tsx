@@ -13,8 +13,13 @@ interface RouterContext {
   queryClient: QueryClient;
 }
 
+function RootError() {
+  return null;
+}
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
+  errorComponent: RootError,
 });
 
 function RootLayout() {

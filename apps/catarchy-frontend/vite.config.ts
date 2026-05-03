@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       }),
       react(),
       VitePWA({
-        registerType: "prompt",
+        registerType: "autoUpdate",
         manifest: {
           name: "Catarchy",
           short_name: "Catarchy",
