@@ -44,4 +44,8 @@ export abstract class UserRepository {
 
     return user;
   }
+
+  static create({ id, handle }: { id: string; handle: string }) {
+    return UserRepository.db.insert(table.user).values({ id, handle });
+  }
 }

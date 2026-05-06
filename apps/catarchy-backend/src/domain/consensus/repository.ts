@@ -10,6 +10,8 @@ import {
 } from "./definitions";
 
 const PREFIX = "consensus:";
+const NAME_SUFFIX = ":name";
+const PURPOSE_SUFFIX = ":purpose";
 
 function parseValue(
   raw: string,
@@ -25,7 +27,62 @@ function parseValue(
   }
 }
 
+function cacheSetMeta(key: ConsensusKey, name: string, purpose: string) {
+  cache.set(PREFIX + key + NAME_SUFFIX, name);
+  cache.set(PREFIX + key + PURPOSE_SUFFIX, purpose);
+}
+
 export abstract class ConsensusRepository {
+  static async getAllValues() {
+    return Promise.all(
+      (Object.keys(CONSENSUS_DEFINITIONS) as ConsensusKey[]).map((key) =>
+        ConsensusRepository.getValueWithMeta(key),
+      ),
+    );
+  }
+
+  static async getValueWithMeta<K extends ConsensusKey>(key: K) {
+    const valueType = CONSENSUS_DEFINITIONS[key];
+    const cacheKey = PREFIX + key;
+
+    const cachedValue = cache.get(cacheKey);
+    const cachedName = cache.get(cacheKey + NAME_SUFFIX);
+    const cachedPurpose = cache.get(cacheKey + PURPOSE_SUFFIX);
+
+    if (cachedValue !== undefined && cachedName !== undefined && cachedPurpose !== undefined) {
+      return {
+        key,
+        value: parseValue(cachedValue, valueType) as ConsensusValue<K>,
+        name: cachedName,
+        purpose: cachedPurpose,
+      };
+    }
+
+    const db = getDatabase();
+    const [row] = await db
+      .select({
+        value: table.consensus.value,
+        name: table.consensus.name,
+        purpose: table.consensus.purpose,
+      })
+      .from(table.consensus)
+      .where(eq(table.consensus.key, key))
+      .limit(1);
+
+    if (!row)
+      throw new NotFoundError(`Consensus key "${key}" not found in database.`);
+
+    cache.set(cacheKey, row.value);
+    cacheSetMeta(key, row.name, row.purpose);
+
+    return {
+      key,
+      value: parseValue(row.value, valueType) as ConsensusValue<K>,
+      name: row.name,
+      purpose: row.purpose,
+    };
+  }
+
   static async getValue<K extends ConsensusKey>(
     key: K,
   ): Promise<ConsensusValue<K>> {
@@ -38,7 +95,11 @@ export abstract class ConsensusRepository {
 
     const db = getDatabase();
     const [row] = await db
-      .select({ value: table.consensus.value })
+      .select({
+        value: table.consensus.value,
+        name: table.consensus.name,
+        purpose: table.consensus.purpose,
+      })
       .from(table.consensus)
       .where(eq(table.consensus.key, key))
       .limit(1);
@@ -47,6 +108,8 @@ export abstract class ConsensusRepository {
       throw new NotFoundError(`Consensus key "${key}" not found in database.`);
 
     cache.set(cacheKey, row.value);
+    cacheSetMeta(key, row.name, row.purpose);
+
     return parseValue(row.value, valueType) as ConsensusValue<K>;
   }
 
@@ -67,5 +130,7 @@ export abstract class ConsensusRepository {
 
   static invalidate(key: ConsensusKey) {
     cache.delete(PREFIX + key);
+    cache.delete(PREFIX + key + NAME_SUFFIX);
+    cache.delete(PREFIX + key + PURPOSE_SUFFIX);
   }
 }

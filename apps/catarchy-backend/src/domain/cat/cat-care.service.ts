@@ -115,7 +115,10 @@ export abstract class CatCareService {
     }
 
     // 6) 돌봄 기록 생성 + 푸시 알림 발송 (병렬)
-    const fcmTokens = await CatCareService.notificationRepository.findTokensByUserId({ userId });
+    const fcmTokens =
+      await CatCareService.notificationRepository.findTokensByUserId({
+        userId,
+      });
     await Promise.all([
       CatCareService.careRecordRepository.create({
         catId: cat.id,
@@ -133,7 +136,11 @@ export abstract class CatCareService {
 
     return {
       growth: updatedCatStat.growth,
-      emotion: updatedCatStat.emotion,
+      emotion: {
+        value: updatedCatStat.emotion,
+        emoji: emotionState.emoji,
+        level: emotionState.level,
+      },
       message,
     };
   }

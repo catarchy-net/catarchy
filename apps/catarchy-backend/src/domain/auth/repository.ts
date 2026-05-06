@@ -1,42 +1,26 @@
 import { and, eq } from "drizzle-orm";
-import {
-  type Database,
-  type Transaction,
-  getDatabase,
-  table,
-} from "../../infra/db";
-
-type Client = Database | Transaction;
+import { getDatabase, table } from "../../infra/db";
 
 export abstract class AuthRepository {
   private static get db() {
     return getDatabase();
   }
 
-  static async createEmailAuth(
-    {
+  static createEmailAuth({
+    email,
+    passwordHashed,
+    userId,
+  }: {
+    email: string;
+    passwordHashed: string;
+    userId: string;
+  }) {
+    return AuthRepository.db.insert(table.auth).values({
+      provider: "email_password",
       email,
-      passwordHashed,
+      password: passwordHashed,
       userId,
-    }: {
-      email: string;
-      passwordHashed: string;
-      userId: string;
-    },
-    tx?: Client,
-  ) {
-    const client = tx ?? AuthRepository.db;
-    const [auth] = await client
-      .insert(table.auth)
-      .values({
-        provider: "email_password",
-        email,
-        password: passwordHashed,
-        userId,
-      })
-      .returning();
-
-    return auth;
+    });
   }
 
   static async findAuthByEmail({ email }: { email: string }) {

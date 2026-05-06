@@ -1,5 +1,6 @@
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
+import { getEmotion } from "./constants/emotion";
 import { CatRepository } from "./repository";
 
 export abstract class CatService {
@@ -15,12 +16,18 @@ export abstract class CatService {
       throw new NotFoundError("Cat not found for the user.");
     }
 
+    const emotionState = getEmotion(cat.stat.emotion);
+
     return {
       id: cat.cat.id,
       name: cat.cat.name,
       stat: {
         growth: cat.stat.growth,
-        emotion: cat.stat.emotion,
+        emotion: {
+          value: cat.stat.emotion,
+          emoji: emotionState.emoji,
+          level: emotionState.level,
+        },
       },
       lastCaredAt: cat.cat.lastCaredAt,
     };
