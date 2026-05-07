@@ -1,6 +1,7 @@
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
 import { getEmotion } from "./constants/emotion";
+import { getAgeGroup } from "./constants/growth";
 import { CatRepository } from "./repository";
 
 export abstract class CatService {
@@ -22,7 +23,10 @@ export abstract class CatService {
       id: cat.cat.id,
       name: cat.cat.name,
       stat: {
-        growth: cat.stat.growth,
+        growth: {
+          age: getAgeGroup(cat.stat.growth),
+          value: cat.stat.growth,
+        },
         emotion: {
           value: cat.stat.emotion,
           emoji: emotionState.emoji,

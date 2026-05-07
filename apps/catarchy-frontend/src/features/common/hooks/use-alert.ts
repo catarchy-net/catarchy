@@ -10,6 +10,7 @@ type AlertProps = {
   onConfirm?: (close: () => void) => void;
   cancelLabel?: string;
   onCancel?: () => void;
+  dimClosable?: boolean;
 };
 
 export function useAlert() {

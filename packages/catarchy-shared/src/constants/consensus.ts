@@ -1,0 +1,13 @@
+export enum ConsensusValueType {
+  STRING = "STRING",
+  NUMBER = "NUMBER",
+  BOOLEAN = "BOOLEAN",
+}
+
+export type ConsensusKey =
+  | "CAT.COOLDOWN_HOUR_BETWEEN_CARE"
+  | "CAT.GROWTH_PER_CARE"
+  | "CAT.EMOTION_PER_CARE"
+  | "CAT.EMOTION_DECREASE"
+  | "CAT.EMOTION_DECREASE_FREQUENCY_HOUR"
+  | "CAT.MAX_GROWTH";

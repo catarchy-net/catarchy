@@ -16,6 +16,7 @@ type BottomSheetProps = {
   onDimClick?: () => void;
   header?: BottomSheetHeader;
   isClosing?: boolean;
+  dimClosable?: boolean;
 };
 
 const DURATION = 250;
@@ -26,6 +27,7 @@ export function BottomSheet({
   onDimClick,
   header,
   isClosing,
+  dimClosable = true,
 }: BottomSheetProps) {
   const [visible, setVisible] = useState(false);
   const closing = useRef(false);
@@ -52,7 +54,7 @@ export function BottomSheet({
     <>
       <div
         className={styles.dim}
-        onClick={onDimClick ?? startClose}
+        onClick={onDimClick ?? (dimClosable ? startClose : undefined)}
         style={{
           transitionDuration: `${DURATION}ms`,
           transitionTimingFunction: "steps(8, end)",

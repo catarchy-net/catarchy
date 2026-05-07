@@ -14,9 +14,10 @@ type ModalProps = {
   children?: React.ReactNode;
   onClose?: () => void;
   header?: ModalHeader;
+  dimClosable?: boolean;
 };
 
-export function Modal({ children, onClose, header }: ModalProps) {
+export function Modal({ children, onClose, header, dimClosable = true }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export function Modal({ children, onClose, header }: ModalProps) {
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === e.currentTarget) onClose?.();
+    if (e.target === e.currentTarget && dimClosable) onClose?.();
   };
 
   return (

@@ -1,0 +1,17 @@
+.room {
+  width: 286px;
+  height: 198px;
+  position: relative;
+}
+
+.character {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  will-change: transform, left, top;
+}
+
+.platform {
+  position: absolute;
+  background-color: red;
+}

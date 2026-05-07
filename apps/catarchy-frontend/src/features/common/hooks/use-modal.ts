@@ -6,6 +6,7 @@ type ModalOpenProps = {
   id: string;
   component: React.ReactNode;
   header?: ModalHeader;
+  dimClosable?: boolean;
 };
 
 export function useModal() {
@@ -13,8 +14,8 @@ export function useModal() {
   const close = useOverlayStore((s) => s.close);
 
   return {
-    open: ({ id, component, header }: ModalOpenProps) =>
-      open({ id, type: "modal", component, header }),
+    open: ({ id, component, header, dimClosable }: ModalOpenProps) =>
+      open({ id, type: "modal", component, header, dimClosable }),
     close,
   };
 }

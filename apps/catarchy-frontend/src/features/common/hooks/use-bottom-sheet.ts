@@ -7,6 +7,7 @@ type BottomSheetOpenProps = {
   component?: React.ReactNode;
   header?: BottomSheetHeader;
   onDimClick?: () => void;
+  dimClosable?: boolean;
 };
 
 export function useBottomSheet() {
@@ -14,12 +15,12 @@ export function useBottomSheet() {
   const close = useOverlayStore((s) => s.close);
 
   return {
-    open: ({ id, component, header, onDimClick }: BottomSheetOpenProps) =>
+    open: ({ id, component, header, onDimClick, dimClosable }: BottomSheetOpenProps) =>
       open({
         id,
         type: "bottom-sheet",
         component,
-        props: { header, onDimClick },
+        props: { header, onDimClick, dimClosable },
       }),
     close,
   };

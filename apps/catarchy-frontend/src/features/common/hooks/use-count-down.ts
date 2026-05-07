@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from "react";
 export function useCountDown({
   target,
   pauseWhen,
+  onEnd,
 }: {
   target: Date;
   pauseWhen?: boolean;
+  onEnd?: () => void;
 }) {
   const [remainSeconds, setRemainSeconds] = useState(() => {
     const diff = target.getTime() - new Date().getTime();
@@ -29,6 +31,11 @@ export function useCountDown({
     intervalRef.current = setInterval(() => {
       const diff = target.getTime() - new Date().getTime();
       setRemainSeconds(diff <= 0 ? 0 : Math.ceil(diff / 1000));
+
+      if (diff <= 0) {
+        clearTimer();
+        onEnd?.();
+      }
     }, 1000);
 
     return clearTimer;

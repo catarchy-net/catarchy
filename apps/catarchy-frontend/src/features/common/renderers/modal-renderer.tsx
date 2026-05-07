@@ -15,6 +15,7 @@ export function ModalRenderer() {
           key={overlay.id}
           onClose={() => close(overlay.id)}
           header={overlay.header}
+          dimClosable={overlay.dimClosable}
         >
           {overlay.component}
         </Modal>

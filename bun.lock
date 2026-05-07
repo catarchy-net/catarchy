@@ -17,6 +17,7 @@
       "dependencies": {
         "@ai-sdk/alibaba": "1.0.21",
         "@ai-sdk/anthropic": "3.0.74",
+        "@catarchy/shared": "workspace:*",
         "@elysiajs/cors": "1.4.2",
         "@elysiajs/eden": "1.4.9",
         "@elysiajs/jwt": "1.4.2",
@@ -46,6 +47,7 @@
       "name": "catarchy-frontend",
       "version": "0.0.1",
       "dependencies": {
+        "@catarchy/shared": "workspace:*",
         "@elysiajs/eden": "1.4.9",
         "@hookform/resolvers": "5.2.2",
         "@tanstack/react-query": "5.100.8",
@@ -73,6 +75,10 @@
         "vite-plugin-svgr": "5.2.0",
         "wrangler": "4.87.0",
       },
+    },
+    "packages/catarchy-shared": {
+      "name": "@catarchy/shared",
+      "version": "0.0.1",
     },
   },
   "overrides": {
@@ -338,6 +344,8 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@1.9.4", "", { "os": "win32", "cpu": "x64" }, "sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA=="],
 
     "@borewit/text-codec": ["@borewit/text-codec@0.2.1", "", {}, "sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw=="],
+
+    "@catarchy/shared": ["@catarchy/shared@workspace:packages/catarchy-shared"],
 
     "@cloudflare/kv-asset-handler": ["@cloudflare/kv-asset-handler@0.5.0", "", {}, "sha512-jxQYkj8dSIzc0cD6cMMNdOc1UVjqSqu8BZdor5s8cGjW2I8BjODt/kWPVdY+u9zj3ms75Q5qaZgnxUad83+eAg=="],
 

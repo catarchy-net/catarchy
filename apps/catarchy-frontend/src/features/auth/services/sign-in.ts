@@ -1,14 +1,23 @@
 import { api } from "@/features/common";
+import { mutationOptions } from "@tanstack/react-query";
 
-type Payload = Parameters<(typeof api.auth)["sign-in-email"]["post"]>[0];
+export type Payload = Parameters<(typeof api.auth)["sign-in-email"]["post"]>[0];
+export type ApiResponse = Awaited<
+  ReturnType<(typeof api.auth)["sign-in-email"]["post"]>
+>["data"];
+export type ApiError = Awaited<
+  ReturnType<(typeof api.auth)["sign-in-email"]["post"]>
+>["error"];
 
-export function signInWithEmail(payload: Payload) {
-  return api.auth["sign-in-email"].post(payload);
+export async function signInWithEmail(payload: Payload) {
+  const { data, error } = await api.auth["sign-in-email"].post(payload);
+  if (error) throw error;
+  return data;
 }
 
 export function signInWithEmailOptions() {
-  return {
+  return mutationOptions({
     mutationKey: ["auth", "sign-in"],
     mutationFn: signInWithEmail,
-  };
+  });
 }

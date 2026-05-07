@@ -1,0 +1,27 @@
+@keyframes write-character {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    min-width: 1ch;
+    width: inherit;
+    height: inherit;
+    opacity: 1;
+  }
+}
+
+.character {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  display: inline-block;
+  animation: write-character var(--duration) ease forwards;
+  animation-delay: var(--delay);
+  transition-timing-function: step(32, end);
+}
+
+br.character {
+  display: none;
+}

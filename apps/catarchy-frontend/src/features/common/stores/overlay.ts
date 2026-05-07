@@ -11,6 +11,7 @@ export type Overlay<P = Record<string, unknown>> = {
   header?: ModalHeader;
   props?: P;
   closing?: boolean;
+  dimClosable?: boolean;
 };
 
 type OverlayStore = {

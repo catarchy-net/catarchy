@@ -2,7 +2,8 @@
   "name": "catarchy",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "engines": {
     "bun": "1.3.13"

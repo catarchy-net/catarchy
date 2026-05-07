@@ -29,21 +29,20 @@ export function SignInScreen() {
   const toast = useToast();
   const { email } = useSearch({ from: "/auth/sign-in" });
   const { form } = useEmailSignInForm({ defaultEmail: email });
-  const options = signInWithEmailOptions();
-  const mutation = useMutation(options);
+
+  const mutation = useMutation({
+    ...signInWithEmailOptions(),
+    onError(error) {
+      toast.push(error.message, {
+        id: "sign-in-error",
+      });
+    },
+  });
   const notification = useNotification();
   const bottomSheet = useBottomSheet();
 
   const signIn = async (formData: z.infer<typeof emailSignInFormSchema>) => {
-    const { data, error } = await mutation.mutateAsync(formData);
-
-    if (error) {
-      toast.push(
-        error.value.message ||
-          "An unexpected error occurred. Please try again later or contact support.",
-      );
-      return;
-    }
+    const data = await mutation.mutateAsync(formData);
 
     if (!data) {
       toast.push(

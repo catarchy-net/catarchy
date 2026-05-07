@@ -8,6 +8,10 @@
       "name": "frontend",
       "path": "apps/catarchy-frontend",
     },
+    {
+      "name": "shared",
+      "path": "packages/catarchy-shared",
+    },
   ],
   "settings": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

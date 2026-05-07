@@ -1,8 +1,13 @@
 import { api } from "@/features/common";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export function checkToken() {
-  return api.auth.check.get();
+export type ApiResponse = Awaited<ReturnType<typeof api.auth.check.get>>["data"];
+export type ApiError = Awaited<ReturnType<typeof api.auth.check.get>>["error"];
+
+export async function checkToken() {
+  const { data, error } = await api.auth.check.get();
+  if (error) throw error;
+  return data;
 }
 
 export function checkTokenOptions() {
@@ -15,6 +20,5 @@ export function checkTokenOptions() {
 
 export function useIsAuthenticated() {
   const { data } = useQuery(checkTokenOptions());
-
-  return Boolean(data?.data?.ok);
+  return Boolean(data?.ok);
 }

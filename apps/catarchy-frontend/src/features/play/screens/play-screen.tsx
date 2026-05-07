@@ -1,6 +1,7 @@
 import { PowerOffButton } from "@/features/auth";
-import { Button, LogoText, Scaffold } from "@/features/common";
+import { LogoText, Scaffold } from "@/features/common";
 
+import { CareButton } from "../components/care-button";
 import { Interface } from "../components/interface";
 import styles from "./play-screen.module.css";
 
@@ -20,7 +21,7 @@ export function PlayScreen() {
         </div>
       </Scaffold.Body>
       <Scaffold.Bottom sticky>
-        <Button disabled>Check</Button>
+        <CareButton />
       </Scaffold.Bottom>
     </Scaffold>
   );

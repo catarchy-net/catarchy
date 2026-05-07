@@ -7,6 +7,7 @@ export * from "./components/bastet";
 export * from "./components/bottom-sheet";
 export * from "./components/box";
 export * from "./components/bubble-hint";
+export * from "./components/bubble-hint-toggle";
 export * from "./components/bubble-message";
 export * from "./components/button";
 export * from "./components/checkbox-input";

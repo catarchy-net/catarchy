@@ -24,6 +24,7 @@
     "localflare": "localflare"
   },
   "dependencies": {
+    "@catarchy/shared": "workspace:*",
     "@ai-sdk/alibaba": "1.0.21",
     "@ai-sdk/anthropic": "3.0.74",
     "@elysiajs/cors": "1.4.2",

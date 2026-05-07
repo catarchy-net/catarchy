@@ -15,6 +15,7 @@ type AlertModalProps = {
   onConfirm?: (close: () => void) => void;
   cancelLabel?: string;
   onCancel?: () => void;
+  dimClosable?: boolean;
 };
 
 export function AlertModal({
@@ -25,6 +26,7 @@ export function AlertModal({
   onConfirm,
   cancelLabel = "Cancel",
   onCancel,
+  dimClosable = true,
 }: AlertModalProps) {
   const { close } = useOverlayStore();
   const isMessageString = typeof message === "string";
@@ -41,6 +43,7 @@ export function AlertModal({
   return (
     <Modal
       onClose={handleCancel}
+      dimClosable={dimClosable}
       header={{
         title,
         right: <ModalCloseButton onClick={handleCancel} />,

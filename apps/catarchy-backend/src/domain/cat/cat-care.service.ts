@@ -82,8 +82,8 @@ export abstract class CatCareService {
       });
 
     // 5) AI 메시지 생성
-    const emotionState = getEmotion(catStat.emotion);
-    const ageGroup = getAgeGroup(catStat.growth);
+    const emotionState = getEmotion(newEmotion);
+    const ageGroup = getAgeGroup(newGrowth);
 
     const carePrompt = buildCarePrompt({
       catName: cat.name,
@@ -135,7 +135,10 @@ export abstract class CatCareService {
     ]);
 
     return {
-      growth: updatedCatStat.growth,
+      growth: {
+        age: getAgeGroup(updatedCatStat.growth),
+        value: updatedCatStat.growth,
+      },
       emotion: {
         value: updatedCatStat.emotion,
         emoji: emotionState.emoji,

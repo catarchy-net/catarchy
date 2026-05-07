@@ -1,3 +1,4 @@
+import { ConsensusValueType } from "@catarchy/shared/constants/consensus";
 import { relations, sql } from "drizzle-orm";
 import {
   check,
@@ -264,11 +265,7 @@ export const catRelationship = sqliteTable(
   ],
 );
 
-export enum ConsensusValueType {
-  STRING = "STRING",
-  NUMBER = "NUMBER",
-  BOOLEAN = "BOOLEAN",
-}
+export { ConsensusValueType };
 
 /** World-wide game parameters whose values are determined by community voting */
 export const consensusTable = sqliteTable("consensus", {

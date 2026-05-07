@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "../lib/cn";
 import styles from "./text.module.css";
 
-type TextTag =
+export type TextTag =
   | "i"
   | "em"
   | "s"

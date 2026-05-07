@@ -1,0 +1,7 @@
+.text {
+  padding: 0px 8px;
+  display: flex;
+  height: 35px;
+  align-items: center;
+  justify-content: center;
+}
