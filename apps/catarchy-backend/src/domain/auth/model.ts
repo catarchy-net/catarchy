@@ -205,6 +205,12 @@ export const authModel = new Elysia({ name: "model.auth" }).model({
       examples: ["Unauthorized"],
     }),
   }),
+  "auth.check.no-token-provided": t.Object({
+    message: t.String({
+      description: "A message indicating no token was provided",
+      examples: ["No token provided"],
+    }),
+  }),
   "auth.send-reset-password-email.body": t.Object({
     email: t.String({
       format: "email",
