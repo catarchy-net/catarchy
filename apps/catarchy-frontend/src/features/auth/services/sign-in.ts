@@ -16,7 +16,7 @@ export async function signInWithEmail(payload: Payload) {
 }
 
 export function signInWithEmailOptions() {
-  return mutationOptions({
+  return mutationOptions<ApiResponse, ApiError, Payload>({
     mutationKey: ["auth", "sign-in"],
     mutationFn: signInWithEmail,
   });

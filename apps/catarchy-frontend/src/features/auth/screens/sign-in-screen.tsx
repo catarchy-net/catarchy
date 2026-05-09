@@ -33,7 +33,7 @@ export function SignInScreen() {
   const mutation = useMutation({
     ...signInWithEmailOptions(),
     onError(error) {
-      toast.push(error.message, {
+      toast.push(error.value.message, {
         id: "sign-in-error",
       });
     },
