@@ -1,4 +1,5 @@
-import { api, env } from "@/features/common";
+import { env } from "@/features/common";
+import { registerNotificationToken } from "@/features/notification/services/notification";
 import {
   NotificationContext,
   PermissionState,
@@ -104,7 +105,7 @@ export function NotificationProvider({
       vapidKey: env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
-    await api.notification.token.post({ token });
+    await registerNotificationToken({ token });
     setIsRegistered(true);
 
     return true;

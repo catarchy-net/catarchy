@@ -1,4 +1,5 @@
 import Elysia, { StatusMap } from "elysia";
+import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
 import { notificationModel } from "./model";
 import { NotificationService } from "./service";
@@ -21,9 +22,9 @@ export const notificationRouter = () => {
       },
       {
         body: "notification.register-token.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "notification.register-token.response",
-        },
+        }),
       },
     )
     .delete(

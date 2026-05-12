@@ -19,34 +19,48 @@ const getPathname = (input: RequestInfo | URL) => {
   return "";
 };
 
-const normalizeContentType = (response: Response) =>
-  response.headers.get("content-type")?.startsWith("text/plain") &&
-  response.headers.get("transfer-encoding") === "chunked"
-    ? new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers: (() => {
-          const h = new Headers(response.headers);
-          h.set("content-type", "application/json");
-          return h;
-        })(),
-      })
-    : response;
-
 const fetchWithRefresh = async (
   input: RequestInfo | URL,
   init?: RequestInit,
 ) => {
-  const response = await fetch(input, { ...init, credentials: "include" });
+  let response: Response = await fetch(input, {
+    ...init,
+    credentials: "include",
+  });
+
+  // Extract request ID for logging/debugging purposes
+  const requestId = response.headers.get("x-request-id");
+
+  // If session is valid, return the response immediately
+  if (response.status !== 401) return response;
+
+  // Bypass token refresh for auth check and refresh endpoints to avoid infinite loop
   const isCheckEndpoint = getPathname(input).endsWith("/auth/check");
   const isRefreshEndpoint = getPathname(input).endsWith("/auth/refresh");
 
-  if (response.status !== 401) return normalizeContentType(response);
-
   if (isRefreshEndpoint || isCheckEndpoint) {
-    return normalizeContentType(response);
+    return response;
   }
 
+  // Refresh the token and retry the original request
+  const refreshed = await refreshToken();
+
+  // If token refresh failed, redirect to gate
+  if (!refreshed) {
+    if (window.location.pathname !== "/") {
+      window.location.href = "/";
+    }
+    return response; // for type consistency
+  }
+
+  return await fetch(input, { ...init, credentials: "include" });
+};
+
+export const api = treaty<App>(`${window.location.origin}/api`, {
+  fetcher: fetchWithRefresh as typeof fetch,
+});
+
+async function refreshToken(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = fetch(`${window.location.origin}/api/auth/refresh`, {
       method: "POST",
@@ -58,21 +72,5 @@ const fetchWithRefresh = async (
         refreshPromise = null;
       });
   }
-
-  const refreshed = await refreshPromise;
-
-  if (!refreshed) {
-    if (window.location.pathname !== "/") {
-      window.location.href = "/";
-    }
-    return response; // for type consistency
-  }
-
-  return normalizeContentType(
-    await fetch(input, { ...init, credentials: "include" }),
-  );
-};
-
-export const api = treaty<App>(`${window.location.origin}/api`, {
-  fetcher: fetchWithRefresh as typeof fetch,
-});
+  return refreshPromise;
+}

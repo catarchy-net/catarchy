@@ -4,8 +4,12 @@ import { queryOptions } from "@tanstack/react-query";
 
 export type { ConsensusKey };
 
-export type ApiResponse = Awaited<ReturnType<typeof api.consensus.get>>["data"];
-export type ApiError = Awaited<ReturnType<typeof api.consensus.get>>["error"];
+export type GetConsensusResponse = Awaited<
+  ReturnType<typeof api.consensus.get>
+>["data"];
+export type GetConsensusError = Awaited<
+  ReturnType<typeof api.consensus.get>
+>["error"];
 
 export async function getAllConsensus() {
   const { data, error } = await api.consensus.get();

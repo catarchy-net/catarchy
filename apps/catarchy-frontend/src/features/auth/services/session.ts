@@ -1,10 +1,12 @@
 import { api } from "@/features/common";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export type ApiResponse = Awaited<
+export type CheckSessionResponse = Awaited<
   ReturnType<typeof api.auth.check.get>
 >["data"];
-export type ApiError = Awaited<ReturnType<typeof api.auth.check.get>>["error"];
+export type CheckSessionError = Awaited<
+  ReturnType<typeof api.auth.check.get>
+>["error"];
 
 export async function checkSession() {
   const firstAttempt = await api.auth.check.get();

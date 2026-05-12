@@ -11,7 +11,7 @@ export function PowerOffButton({
 }) {
   const router = useRouter();
   const alert = useAlert();
-  const mutation = useMutation(signOutOptions());
+  const signOut = useMutation(signOutOptions());
   const context = useRouteContext({
     from: "__root__",
   });
@@ -24,7 +24,7 @@ export function PowerOffButton({
       cancelLabel: "No",
       confirmLabel: "Yes",
       onConfirm: async () => {
-        await mutation.mutateAsync();
+        await signOut.mutateAsync();
         context.queryClient.clear();
         alert.close("sign-out-confirmation");
         onAfterSignOut?.();

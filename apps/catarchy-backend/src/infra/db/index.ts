@@ -2,7 +2,6 @@ import { drizzle } from "drizzle-orm/d1";
 import * as schema from "./schema";
 
 export * from "./schema";
-export * from "./model";
 
 export type Database = ReturnType<typeof drizzle<typeof schema>>;
 export type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];

@@ -11,8 +11,10 @@ import { StatusReportModal } from "./status-report-modal";
 
 export function CareButton() {
   const modal = useModal();
+
   const queryClient = useQueryClient();
-  const mutation = useMutation({
+
+  const careForCat = useMutation({
     ...careForCatOptions(),
     async onSuccess() {
       await queryClient.invalidateQueries(catInfoOptions());
@@ -22,7 +24,7 @@ export function CareButton() {
   const cooldown = useCareCooldown();
 
   const handleClick = useCallback(async () => {
-    const data = await mutation.mutateAsync();
+    const data = await careForCat.mutateAsync();
 
     if (!data) {
       return;
@@ -42,15 +44,15 @@ export function CareButton() {
       ),
       dimClosable: false,
     });
-  }, [mutation, modal]);
+  }, [careForCat, modal]);
 
   return (
     <Button
       size="big"
-      disabled={mutation.status === "pending" || cooldown.activated}
+      disabled={careForCat.status === "pending" || cooldown.activated}
       onClick={handleClick}
     >
-      {mutation.status === "pending" ? (
+      {careForCat.status === "pending" ? (
         "Loading..."
       ) : cooldown.activated ? (
         <CareCooldown />

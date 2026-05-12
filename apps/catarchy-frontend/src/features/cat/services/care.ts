@@ -4,8 +4,8 @@ import { mutationOptions, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { catInfoOptions } from "./cat-info";
 
-type ApiResponse = Awaited<ReturnType<typeof api.cat.care.post>>["data"];
-type ApiError = Awaited<ReturnType<typeof api.cat.care.post>>["error"];
+type CareForCatResponse = Awaited<ReturnType<typeof api.cat.care.post>>["data"];
+type CareForCatError = Awaited<ReturnType<typeof api.cat.care.post>>["error"];
 
 export async function careForCat() {
   const { data, error } = await api.cat.care.post({
@@ -20,7 +20,7 @@ export async function careForCat() {
 }
 
 export function careForCatOptions() {
-  return mutationOptions<ApiResponse, ApiError>({
+  return mutationOptions<CareForCatResponse, CareForCatError>({
     mutationKey: ["cat", "care"],
     mutationFn: careForCat,
   });

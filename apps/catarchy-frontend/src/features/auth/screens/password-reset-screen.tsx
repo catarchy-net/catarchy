@@ -34,9 +34,9 @@ export function PasswordResetScreen() {
   const { form: emailPasswordForm } = useEmailPasswordForm();
 
   // Mutations
-  const sendResetEmailMutation = useMutation(sendResetEmailOptions());
-  const verifyResetCodeMutation = useMutation(verifyResetCodeOptions());
-  const resetPasswordMutation = useMutation(resetPasswordOptions());
+  const sendResetEmail = useMutation(sendResetEmailOptions());
+  const verifyResetCode = useMutation(verifyResetCodeOptions());
+  const resetPassword = useMutation(resetPasswordOptions());
 
   // Handlers
   const handleRequestVerificationEmail = async () => {
@@ -50,14 +50,19 @@ export function PasswordResetScreen() {
       return;
     }
 
-    let sendData: Awaited<ReturnType<typeof sendResetEmailMutation.mutateAsync>> | undefined;
+    let sendData:
+      | Awaited<ReturnType<typeof sendResetEmail.mutateAsync>>
+      | undefined;
 
     try {
-      sendData = await sendResetEmailMutation.mutateAsync({
+      sendData = await sendResetEmail.mutateAsync({
         email: emailPasswordForm.getValues("email"),
       });
     } catch (err: unknown) {
-      const error = err as { status?: number; value?: { data?: { waitUntil?: string }; message?: string } };
+      const error = err as {
+        status?: number;
+        value?: { data?: { waitUntil?: string }; message?: string };
+      };
 
       if (error?.status === 409) {
         const waitUntil = error.value?.data?.waitUntil;
@@ -98,10 +103,12 @@ export function PasswordResetScreen() {
   };
 
   const handleVerifyEmail = async () => {
-    let verifyData: Awaited<ReturnType<typeof verifyResetCodeMutation.mutateAsync>> | undefined;
+    let verifyData:
+      | Awaited<ReturnType<typeof verifyResetCode.mutateAsync>>
+      | undefined;
 
     try {
-      verifyData = await verifyResetCodeMutation.mutateAsync({
+      verifyData = await verifyResetCode.mutateAsync({
         email: emailPasswordForm.getValues("email"),
         code: emailPasswordForm.getValues("code"),
       });
@@ -117,7 +124,8 @@ export function PasswordResetScreen() {
 
     if (!verifyData) {
       emailPasswordForm.setError("code", {
-        message: "Invalid verification code. Please check the code and try again.",
+        message:
+          "Invalid verification code. Please check the code and try again.",
       });
       return;
     }
@@ -145,7 +153,7 @@ export function PasswordResetScreen() {
     formData: z.infer<typeof emailPasswordSchema>,
   ) => {
     try {
-      await resetPasswordMutation.mutateAsync({
+      await resetPassword.mutateAsync({
         email: formData.email,
         password: formData.password,
       });
@@ -195,14 +203,11 @@ export function PasswordResetScreen() {
           <LogClick eventName="reset_password">
             <Button
               disabled={
-                !emailPasswordForm.formState.isValid ||
-                resetPasswordMutation.isPending
+                !emailPasswordForm.formState.isValid || resetPassword.isPending
               }
               onClick={emailPasswordForm.handleSubmit(handleResetPassword)}
             >
-              {resetPasswordMutation.isPending
-                ? "Resetting..."
-                : "Reset Password"}
+              {resetPassword.isPending ? "Resetting..." : "Reset Password"}
             </Button>
           </LogClick>
         </Scaffold.Bottom>

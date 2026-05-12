@@ -1,4 +1,5 @@
 import Elysia, { StatusMap } from "elysia";
+import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
 import { CatCareService } from "./cat-care.service";
 import { catModel } from "./model";
@@ -19,10 +20,10 @@ export const catRouter = () => {
         return await catService.getCatInfo({ userId: user.id });
       },
       {
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "cat.info.response",
           [StatusMap["Not Found"]]: "cat.not-found",
-        },
+        }),
       },
     )
     .post(
@@ -35,10 +36,10 @@ export const catRouter = () => {
       },
       {
         body: "cat.summon.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "cat.summon.response",
           [StatusMap.Conflict]: "cat.conflict",
-        },
+        }),
       },
     )
     .post(
@@ -51,11 +52,11 @@ export const catRouter = () => {
       },
       {
         body: "cat.care.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "cat.care.response",
           [StatusMap["Not Found"]]: "cat.not-found",
           [StatusMap.Conflict]: "cat.conflict",
-        },
+        }),
       },
     );
 };

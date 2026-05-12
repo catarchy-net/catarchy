@@ -1,6 +1,5 @@
 import { LogClick } from "@/features/analytics";
 import {
-  api,
   Button,
   HeaderBackButton,
   Scaffold,
@@ -8,6 +7,7 @@ import {
   useAlert,
   useToast,
 } from "@/features/common";
+import { useMutation } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
@@ -20,6 +20,11 @@ import {
   useEmailPasswordForm,
 } from "../hooks/use-email-password-form";
 import { handleFormSchema, useHandleForm } from "../hooks/use-handle-form";
+import {
+  sendVerificationEmailOptions,
+  verifyEmailCodeOptions,
+} from "../services/email-verification";
+import { signUpOptions } from "../services/sign-up";
 import styles from "./signup-screen.module.css";
 
 export function SignupScreen() {
@@ -31,6 +36,10 @@ export function SignupScreen() {
   const [verifyUntil, setVerifyUntil] = useState<Date | null>(null);
   const [emailPasswordSet, setEmailPasswordSet] = useState(false);
 
+  const sendVerificationEmail = useMutation(sendVerificationEmailOptions());
+  const verifyEmailCode = useMutation(verifyEmailCodeOptions());
+  const signUp = useMutation(signUpOptions());
+
   const handleRequestVerificationEmail = async () => {
     const email = emailPasswordForm.getValues("email");
 
@@ -38,18 +47,20 @@ export function SignupScreen() {
 
     if (!validation.success) {
       emailPasswordForm.trigger("email");
-
       return;
     }
 
-    const { data, error } = await api.auth["send-verification-email"].post({
-      email: emailPasswordForm.getValues("email"),
-    });
+    let data:
+      | Awaited<ReturnType<typeof sendVerificationEmail.mutateAsync>>
+      | undefined;
 
-    if (error) {
+    try {
+      data = await sendVerificationEmail.mutateAsync({ email });
+    } catch (err: unknown) {
+      const error = err as { value?: { message?: string } };
       emailPasswordForm.setError("email", {
         message:
-          error.value.message ||
+          error?.value?.message ||
           "Unexpected error occurred. Please try again later or contact support.",
       });
       return;
@@ -68,22 +79,25 @@ export function SignupScreen() {
 
     toast.push(
       "Verification email sent. Please check your inbox and enter the code here.",
-      {
-        id: "verification-email-sent",
-      },
+      { id: "verification-email-sent" },
     );
   };
 
   const handleVerifyEmail = async () => {
-    const { data, error } = await api.auth["verify-email-code"].patch({
-      email: emailPasswordForm.getValues("email"),
-      code: emailPasswordForm.getValues("code"),
-    });
+    let data:
+      | Awaited<ReturnType<typeof verifyEmailCode.mutateAsync>>
+      | undefined;
 
-    if (error) {
+    try {
+      data = await verifyEmailCode.mutateAsync({
+        email: emailPasswordForm.getValues("email"),
+        code: emailPasswordForm.getValues("code"),
+      });
+    } catch (err: unknown) {
+      const error = err as { value?: { message?: string } };
       emailPasswordForm.setError("code", {
         message:
-          error.value.message ||
+          error?.value?.message ||
           "Unexpected error occurred. Please try again later or contact support.",
       });
       return;
@@ -94,65 +108,64 @@ export function SignupScreen() {
         message:
           "Invalid verification code. Please check the code and try again.",
       });
-
       return;
     }
 
     emailPasswordForm.setValue("emailVerified", true);
     emailPasswordForm.clearErrors("code");
 
-    toast.push("Email verified successfully.", {
-      id: "email-verified",
-    });
+    toast.push("Email verified successfully.", { id: "email-verified" });
   };
 
   const handleSignUp = async (
     handleFormData: z.infer<typeof handleFormSchema>,
   ) => {
-    const { data, error } = await api.auth["sign-up-email"].post({
-      email: emailPasswordForm.getValues("email"),
-      password: emailPasswordForm.getValues("password"),
-      handle: handleFormData.handle,
-    });
+    let data: Awaited<ReturnType<typeof signUp.mutateAsync>> | undefined;
 
-    // Email is not verified
-    if (error?.status === 403) {
-      handleForm.setError("handle", {
-        message: error.value.message,
+    try {
+      data = await signUp.mutateAsync({
+        email: emailPasswordForm.getValues("email"),
+        password: emailPasswordForm.getValues("password"),
+        handle: handleFormData.handle,
       });
-      return;
-    }
-
-    // Handle already exists
-    if (error?.status === 409) {
-      const errorValue = error.value as {
-        message: string;
-        data: { conflicted: "email" | "handle" };
+    } catch (err: unknown) {
+      const error = err as {
+        status?: number;
+        value?: {
+          message?: string;
+          data?: { conflicted?: "email" | "handle" };
+        };
       };
-      if (errorValue.data.conflicted === "email") {
-        alert.open({
-          id: "signup-error",
-          title: "Error",
-          message:
-            "An account with this email already exists. Please use a different email or sign in to your existing account.",
-          confirmLabel: "OK",
-          onConfirm(close) {
-            close();
-            router.navigate({
-              to: "/auth/sign-in",
-            });
-          },
+
+      if (error?.status === 403) {
+        handleForm.setError("handle", {
+          message: error.value?.message,
         });
         return;
       }
 
-      handleForm.setError("handle", {
-        message: errorValue.message,
-      });
-      return;
-    }
+      if (error?.status === 409) {
+        if (error.value?.data?.conflicted === "email") {
+          alert.open({
+            id: "signup-error",
+            title: "Error",
+            message:
+              "An account with this email already exists. Please use a different email or sign in to your existing account.",
+            confirmLabel: "OK",
+            onConfirm(close) {
+              close();
+              router.navigate({ to: "/auth/sign-in" });
+            },
+          });
+          return;
+        }
 
-    if (!data) {
+        handleForm.setError("handle", {
+          message: error.value?.message,
+        });
+        return;
+      }
+
       alert.open({
         id: "signup-error",
         title: "Error",
@@ -166,13 +179,9 @@ export function SignupScreen() {
       return;
     }
 
-    const { message } = data;
-
     toast.push(
-      message || "Account created successfully. You can now sign in.",
-      {
-        id: "signup-success",
-      },
+      data?.message || "Account created successfully. You can now sign in.",
+      { id: "signup-success" },
     );
 
     router.navigate({

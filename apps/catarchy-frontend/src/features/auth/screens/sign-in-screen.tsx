@@ -30,7 +30,7 @@ export function SignInScreen() {
   const { email } = useSearch({ from: "/auth/sign-in" });
   const { form } = useEmailSignInForm({ defaultEmail: email });
 
-  const mutation = useMutation({
+  const signInWithEmail = useMutation({
     ...signInWithEmailOptions(),
     onError(error) {
       toast.push(error.value.message, {
@@ -42,7 +42,7 @@ export function SignInScreen() {
   const bottomSheet = useBottomSheet();
 
   const signIn = async (formData: z.infer<typeof emailSignInFormSchema>) => {
-    const data = await mutation.mutateAsync(formData);
+    const data = await signInWithEmail.mutateAsync(formData);
 
     if (!data) {
       toast.push(
@@ -119,7 +119,7 @@ export function SignInScreen() {
                 onClick={form.handleSubmit(signIn)}
               >
                 {/* Sign In */}
-                {mutation.isPending ? "Signing In..." : "Sign In"}
+                {signInWithEmail.isPending ? "Signing In..." : "Sign In"}
               </Button>
             </LogClick>
           </div>

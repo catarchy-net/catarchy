@@ -24,7 +24,7 @@ export const errorHandler = new Elysia({ name: "errorHandler" })
     if (code === "VALIDATION") {
       set.status = 422;
       logger.error(requestId, error);
-      return { message: error.message };
+      return { message: "Wrong input" };
     }
 
     if (code === "NOT_FOUND") {

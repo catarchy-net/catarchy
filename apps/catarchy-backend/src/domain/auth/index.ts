@@ -5,6 +5,7 @@ import { EmailService } from "../../infra/email/service";
 import { setAuthCookie } from "../../lib/cookie";
 import { ENVIRONMENT, getEnv } from "../../lib/env";
 import { ExternalServiceError } from "../../lib/error";
+import { withCommonError } from "../../lib/response";
 import { authModel } from "./model";
 import { AuthService } from "./service";
 
@@ -67,12 +68,12 @@ export const authRouter = () => {
       },
       {
         body: "auth.send-verification-email.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.send-verification-email.response",
           [StatusMap.Conflict]: "auth.send-verification-email.conflict",
           [StatusMap["Bad Gateway"]]:
             "auth.send-verification-email.bad-gateway",
-        },
+        }),
       },
     )
     .patch(
@@ -88,11 +89,11 @@ export const authRouter = () => {
       },
       {
         body: "auth.verify-email-code.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.verify-email-code.response",
           [StatusMap["Not Found"]]: "auth.verify-email-code.not-found",
           [StatusMap.Conflict]: "auth.verify-email-code.conflict",
-        },
+        }),
       },
     )
     .post(
@@ -113,11 +114,11 @@ export const authRouter = () => {
       },
       {
         body: "auth.sign-up-email.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.sign-up-email.response",
           [StatusMap.Forbidden]: "auth.sign-up-email.forbidden",
           [StatusMap.Conflict]: "auth.sign-up-email.conflict",
-        },
+        }),
       },
     )
     .post(
@@ -162,11 +163,11 @@ export const authRouter = () => {
           accessToken: t.Optional(t.String()),
           refreshToken: t.Optional(t.String()),
         }),
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.sign-in-email.response",
           [StatusMap["Not Found"]]: "auth.sign-in-email.not-found",
           [StatusMap.Forbidden]: "auth.sign-in-email.forbidden",
-        },
+        }),
       },
     )
     .post(
@@ -228,10 +229,10 @@ export const authRouter = () => {
           accessToken: t.Optional(t.String()),
           refreshToken: t.Optional(t.String()),
         }),
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.refresh.response",
           [StatusMap.Unauthorized]: "auth.refresh.unauthorized",
-        },
+        }),
       },
     )
     .get(
@@ -262,10 +263,10 @@ export const authRouter = () => {
         cookie: t.Cookie({
           accessToken: t.Optional(t.String()),
         }),
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.check.response",
           [StatusMap.Unauthorized]: "auth.check.unauthorized",
-        },
+        }),
       },
     )
     .post(
@@ -284,9 +285,9 @@ export const authRouter = () => {
           accessToken: t.Optional(t.String()),
           refreshToken: t.Optional(t.String()),
         }),
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.sign-out.response",
-        },
+        }),
       },
     )
     .post(
@@ -321,13 +322,13 @@ export const authRouter = () => {
       },
       {
         body: "auth.send-reset-password-email.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.send-reset-password-email.response",
           [StatusMap["Not Found"]]: "auth.send-reset-password-email.not-found",
           [StatusMap.Conflict]: "auth.send-reset-password-email.conflict",
           [StatusMap["Bad Gateway"]]:
             "auth.send-reset-password-email.bad-gateway",
-        },
+        }),
       },
     )
     .post(
@@ -341,11 +342,11 @@ export const authRouter = () => {
       },
       {
         body: "auth.reset-password.body",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "auth.reset-password.response",
           [StatusMap.Forbidden]: "auth.reset-password.forbidden",
           [StatusMap["Not Found"]]: "auth.reset-password.not-found",
-        },
+        }),
       },
     );
 };

@@ -1,4 +1,5 @@
 import Elysia, { StatusMap } from "elysia";
+import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
 import type { ConsensusKey } from "./definitions";
 import { consensusModel } from "./model";
@@ -17,9 +18,9 @@ export const consensusRouter = () => {
         return await ConsensusService.getAll();
       },
       {
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "consensus.all.response",
-        },
+        }),
       },
     )
     .get(
@@ -29,10 +30,10 @@ export const consensusRouter = () => {
       },
       {
         params: "consensus.one.params",
-        response: {
+        response: withCommonError({
           [StatusMap.OK]: "consensus.one.response",
           [StatusMap["Not Found"]]: "consensus.not-found",
-        },
+        }),
       },
     );
 };

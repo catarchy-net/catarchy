@@ -1,8 +1,8 @@
 import { api } from "@/features/common";
 import { queryOptions } from "@tanstack/react-query";
 
-export type ApiResponse = Awaited<ReturnType<typeof api.user.me.get>>["data"];
-export type ApiError = Awaited<ReturnType<typeof api.user.me.get>>["error"];
+export type MeResponse = Awaited<ReturnType<typeof api.user.me.get>>["data"];
+export type MeError = Awaited<ReturnType<typeof api.user.me.get>>["error"];
 
 export async function getMe() {
   const { data, error } = await api.user.me.get();
@@ -11,7 +11,7 @@ export async function getMe() {
 }
 
 export function meOptions() {
-  return queryOptions({
+  return queryOptions<MeResponse, MeError>({
     queryKey: ["me"],
     queryFn: getMe,
     staleTime: 5 * 60 * 1000,

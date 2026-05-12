@@ -1,8 +1,8 @@
 import { api } from "@/features/common";
 import { queryOptions } from "@tanstack/react-query";
 
-type ApiResponse = Awaited<ReturnType<typeof api.cat.get>>["data"];
-type ApiError = Awaited<ReturnType<typeof api.cat.get>>["error"];
+type CatInfoResponse = Awaited<ReturnType<typeof api.cat.get>>["data"];
+type CatInfoError = Awaited<ReturnType<typeof api.cat.get>>["error"];
 
 export async function getCatInfo() {
   const { data, error } = await api.cat.get();
@@ -11,10 +11,9 @@ export async function getCatInfo() {
 }
 
 export function catInfoOptions() {
-  return queryOptions<ApiResponse, ApiError>({
+  return queryOptions<CatInfoResponse, CatInfoError>({
     queryKey: ["cat", "info"],
     queryFn: getCatInfo,
     staleTime: 5 * 60 * 1000,
   });
 }
-

@@ -1,4 +1,5 @@
 import Elysia, { StatusMap } from "elysia";
+import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
 import { userModel } from "./model";
 import { UserService } from "./service";
@@ -18,10 +19,10 @@ export const userRouter = () => {
         return await userService.getCurrentUser({ id });
       },
       {
-        response: {
+        response: withCommonError({
           [StatusMap["Not Found"]]: "user.not-found",
           [StatusMap.OK]: "user.current-user.response",
-        },
+        }),
       },
     );
 };
