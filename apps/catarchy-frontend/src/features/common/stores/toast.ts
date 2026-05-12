@@ -29,9 +29,3 @@ export const useToastStore = create<ToastStore>((set) => ({
   dismiss: (id) =>
     set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));
-
-export const toast = {
-  push: (message: React.ReactNode, options?: Omit<Toast, "id" | "message"> & { id?: string }) =>
-    useToastStore.getState().push({ message, ...options }),
-  dismiss: (id: string) => useToastStore.getState().dismiss(id),
-};

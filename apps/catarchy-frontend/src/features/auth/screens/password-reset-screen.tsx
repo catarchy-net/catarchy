@@ -5,10 +5,7 @@ import {
   Scaffold,
   useToast,
 } from "@/features/common";
-import { ServerError } from "@/features/common/lib/error";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
 import { EmailPasswordForm } from "../components/email-password-form";
@@ -16,8 +13,10 @@ import {
   emailPasswordSchema,
   useEmailPasswordForm,
 } from "../hooks/use-email-password-form";
+
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import {
-  isSendResetEmailConflictError,
   resetPasswordOptions,
   sendResetEmailOptions,
   verifyResetCodeOptions,
@@ -28,16 +27,41 @@ export function PasswordResetScreen() {
   const router = useRouter();
   const toast = useToast();
 
+  // Local state
   const [verifyUntil, setVerifyUntil] = useState<Date | null>(null);
+
+  // Form state
   const { form: emailPasswordForm } = useEmailPasswordForm();
 
-  const sendResetEmail = useMutation({
-    ...sendResetEmailOptions(),
-    onError(error) {
-      if (!(error instanceof ServerError)) return;
+  // Mutations
+  const sendResetEmailMutation = useMutation(sendResetEmailOptions());
+  const verifyResetCodeMutation = useMutation(verifyResetCodeOptions());
+  const resetPasswordMutation = useMutation(resetPasswordOptions());
 
-      if (isSendResetEmailConflictError(error)) {
-        if (error.data?.waitUntil) setVerifyUntil(new Date(error.data.waitUntil));
+  // Handlers
+  const handleRequestVerificationEmail = async () => {
+    const email = emailPasswordForm.getValues("email");
+
+    const validation = emailPasswordSchema.shape.email.safeParse(email);
+
+    if (!validation.success) {
+      emailPasswordForm.trigger("email");
+
+      return;
+    }
+
+    let sendData: Awaited<ReturnType<typeof sendResetEmailMutation.mutateAsync>> | undefined;
+
+    try {
+      sendData = await sendResetEmailMutation.mutateAsync({
+        email: emailPasswordForm.getValues("email"),
+      });
+    } catch (err: unknown) {
+      const error = err as { status?: number; value?: { data?: { waitUntil?: string }; message?: string } };
+
+      if (error?.status === 409) {
+        const waitUntil = error.value?.data?.waitUntil;
+        if (waitUntil) setVerifyUntil(new Date(waitUntil));
         toast.push(
           "A verification email has already been sent. Please check your inbox and enter the code here.",
           { id: "verification-email-already-sent" },
@@ -46,65 +70,64 @@ export function PasswordResetScreen() {
         return;
       }
 
-      emailPasswordForm.setError("email", { message: error.message });
-    },
-  });
-
-  const verifyResetCode = useMutation({
-    ...verifyResetCodeOptions(),
-    onError(error) {
-      if (error instanceof ServerError) {
-        emailPasswordForm.setError("code", { message: error.message });
-      }
-    },
-  });
-
-  const resetPassword = useMutation({
-    ...resetPasswordOptions(),
-    onError(error) {
-      if (error instanceof ServerError) {
-        toast.push(error.message, { id: "password-reset-error" });
-      }
-    },
-  });
-
-  const handleRequestVerificationEmail = async () => {
-    const email = emailPasswordForm.getValues("email");
-
-    const validation = emailPasswordSchema.shape.email.safeParse(email);
-
-    if (!validation.success) {
-      emailPasswordForm.trigger("email");
+      emailPasswordForm.setError("email", {
+        message:
+          error?.value?.message ||
+          "Unexpected error occurred. Please try again later or contact support.",
+      });
       return;
     }
 
-    const sendData = await sendResetEmail.mutateAsync({
-      email: emailPasswordForm.getValues("email"),
-    });
-
-    if (!sendData) return;
+    if (!sendData) {
+      emailPasswordForm.setError("email", {
+        message:
+          "An unexpected error occurred. Please try again later or contact support.",
+      });
+      return;
+    }
 
     emailPasswordForm.clearErrors("email");
     setVerifyUntil(new Date(sendData.expiredAt));
 
     toast.push(
       "Verification email sent. Please check your inbox and enter the code here.",
-      { id: "verification-email-sent" },
+      {
+        id: "verification-email-sent",
+      },
     );
   };
 
   const handleVerifyEmail = async () => {
-    const verifyData = await verifyResetCode.mutateAsync({
-      email: emailPasswordForm.getValues("email"),
-      code: emailPasswordForm.getValues("code"),
-    });
+    let verifyData: Awaited<ReturnType<typeof verifyResetCodeMutation.mutateAsync>> | undefined;
 
-    if (!verifyData) return;
+    try {
+      verifyData = await verifyResetCodeMutation.mutateAsync({
+        email: emailPasswordForm.getValues("email"),
+        code: emailPasswordForm.getValues("code"),
+      });
+    } catch (err: unknown) {
+      const error = err as { value?: { message?: string } };
+      emailPasswordForm.setError("code", {
+        message:
+          error?.value?.message ||
+          "Unexpected error occurred. Please try again later or contact support.",
+      });
+      return;
+    }
+
+    if (!verifyData) {
+      emailPasswordForm.setError("code", {
+        message: "Invalid verification code. Please check the code and try again.",
+      });
+      return;
+    }
 
     emailPasswordForm.setValue("emailVerified", true);
     emailPasswordForm.clearErrors("code");
 
-    toast.push("Email verified successfully.", { id: "email-verified" });
+    toast.push("Email verified successfully.", {
+      id: "email-verified",
+    });
   };
 
   const handleResetEmail = () => {
@@ -121,14 +144,26 @@ export function PasswordResetScreen() {
   const handleResetPassword = async (
     formData: z.infer<typeof emailPasswordSchema>,
   ) => {
-    await resetPassword.mutateAsync({
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      await resetPasswordMutation.mutateAsync({
+        email: formData.email,
+        password: formData.password,
+      });
+    } catch (err: unknown) {
+      const error = err as { value?: { message?: string } };
+      toast.push(
+        error?.value?.message ||
+          "Unexpected error occurred. Please try again later or contact support.",
+        { id: "password-reset-error" },
+      );
+      return;
+    }
 
     toast.push(
       "Password reset successfully. You can now sign in with your new password.",
-      { id: "password-reset-success" },
+      {
+        id: "password-reset-success",
+      },
     );
 
     emailPasswordForm.clearErrors();
@@ -160,11 +195,14 @@ export function PasswordResetScreen() {
           <LogClick eventName="reset_password">
             <Button
               disabled={
-                !emailPasswordForm.formState.isValid || resetPassword.isPending
+                !emailPasswordForm.formState.isValid ||
+                resetPasswordMutation.isPending
               }
               onClick={emailPasswordForm.handleSubmit(handleResetPassword)}
             >
-              {resetPassword.isPending ? "Resetting..." : "Reset Password"}
+              {resetPasswordMutation.isPending
+                ? "Resetting..."
+                : "Reset Password"}
             </Button>
           </LogClick>
         </Scaffold.Bottom>

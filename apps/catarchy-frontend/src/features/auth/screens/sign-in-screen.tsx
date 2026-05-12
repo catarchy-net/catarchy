@@ -6,7 +6,6 @@ import {
   useBottomSheet,
   useToast,
 } from "@/features/common";
-import { ServerError } from "@/features/common/lib/error";
 import { Link, useRouter, useSearch } from "@tanstack/react-router";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
@@ -31,20 +30,19 @@ export function SignInScreen() {
   const { email } = useSearch({ from: "/auth/sign-in" });
   const { form } = useEmailSignInForm({ defaultEmail: email });
 
-  const signInWithEmail = useMutation({
+  const mutation = useMutation({
     ...signInWithEmailOptions(),
     onError(error) {
-      if (error instanceof ServerError) {
-        toast.push(error.message, { id: "sign-in-error" });
-      }
+      toast.push(error.value.message, {
+        id: "sign-in-error",
+      });
     },
   });
-
   const notification = useNotification();
   const bottomSheet = useBottomSheet();
 
   const signIn = async (formData: z.infer<typeof emailSignInFormSchema>) => {
-    const data = await signInWithEmail.mutateAsync(formData);
+    const data = await mutation.mutateAsync(formData);
 
     if (!data) {
       toast.push(
@@ -121,7 +119,7 @@ export function SignInScreen() {
                 onClick={form.handleSubmit(signIn)}
               >
                 {/* Sign In */}
-                {signInWithEmail.isPending ? "Signing In..." : "Sign In"}
+                {mutation.isPending ? "Signing In..." : "Sign In"}
               </Button>
             </LogClick>
           </div>

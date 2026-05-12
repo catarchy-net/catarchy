@@ -1,4 +1,4 @@
-import Elysia, { StatusMap, t } from "elysia";
+import Elysia, { StatusMap } from "elysia";
 import { authGuard } from "../auth/guard";
 import { CatCareService } from "./cat-care.service";
 import { catModel } from "./model";
@@ -38,9 +38,6 @@ export const catRouter = () => {
         response: {
           [StatusMap.OK]: "cat.summon.response",
           [StatusMap.Conflict]: "cat.conflict",
-          [StatusMap["Unprocessable Content"]]: t.Object({
-            message: t.String(),
-          }),
         },
       },
     )
@@ -58,9 +55,6 @@ export const catRouter = () => {
           [StatusMap.OK]: "cat.care.response",
           [StatusMap["Not Found"]]: "cat.not-found",
           [StatusMap.Conflict]: "cat.conflict",
-          [StatusMap["Unprocessable Content"]]: t.Object({
-            message: t.String(),
-          }),
         },
       },
     );

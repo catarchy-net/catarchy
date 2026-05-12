@@ -1,4 +1,4 @@
-import Elysia, { StatusMap, t } from "elysia";
+import Elysia, { StatusMap } from "elysia";
 import { authGuard } from "../auth/guard";
 import type { ConsensusKey } from "./definitions";
 import { consensusModel } from "./model";
@@ -32,9 +32,6 @@ export const consensusRouter = () => {
         response: {
           [StatusMap.OK]: "consensus.one.response",
           [StatusMap["Not Found"]]: "consensus.not-found",
-          [StatusMap["Unprocessable Content"]]: t.Object({
-            message: t.String(),
-          }),
         },
       },
     );

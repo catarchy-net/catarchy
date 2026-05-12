@@ -3,8 +3,7 @@ import {
   catInfoOptions,
   useCareCooldown,
 } from "@/features/cat";
-import { Button, toast, useModal } from "@/features/common";
-import { ServerError } from "@/features/common/lib/error";
+import { Button, useModal } from "@/features/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { CareCooldown } from "./care-cooldown";
@@ -13,22 +12,17 @@ import { StatusReportModal } from "./status-report-modal";
 export function CareButton() {
   const modal = useModal();
   const queryClient = useQueryClient();
-  const careForCat = useMutation({
+  const mutation = useMutation({
     ...careForCatOptions(),
     async onSuccess() {
       await queryClient.invalidateQueries(catInfoOptions());
-    },
-    onError(error) {
-      if (error instanceof ServerError) {
-        toast.push(error.message, { id: "care-cat-error" });
-      }
     },
   });
 
   const cooldown = useCareCooldown();
 
   const handleClick = useCallback(async () => {
-    const data = await careForCat.mutateAsync();
+    const data = await mutation.mutateAsync();
 
     if (!data) {
       return;
@@ -48,15 +42,15 @@ export function CareButton() {
       ),
       dimClosable: false,
     });
-  }, [careForCat, modal]);
+  }, [mutation, modal]);
 
   return (
     <Button
       size="big"
-      disabled={careForCat.status === "pending" || cooldown.activated}
+      disabled={mutation.status === "pending" || cooldown.activated}
       onClick={handleClick}
     >
-      {careForCat.status === "pending" ? (
+      {mutation.status === "pending" ? (
         "Loading..."
       ) : cooldown.activated ? (
         <CareCooldown />
