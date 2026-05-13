@@ -34,13 +34,28 @@ export const catModel = new Elysia({
     }),
     stat: t.Object({
       growth: t.Object({
-        age: t.Enum(AgeGroup, { description: "Age group of the cat", examples: ["KITTEN"] }),
-        value: t.Number({ description: "Current growth points", examples: [120] }),
+        age: t.Enum(AgeGroup, {
+          description: "Age group of the cat",
+          examples: ["KITTEN"],
+        }),
+        value: t.Number({
+          description: "Current growth points",
+          examples: [120],
+        }),
       }),
       emotion: t.Object({
-        value: t.Number({ description: "Current emotion score (0-100)", examples: [85] }),
-        emoji: t.String({ description: "Emoji representing the emotion level", examples: ["😄"] }),
-        level: t.String({ description: "Emotion level label", examples: ["happy"] }),
+        value: t.Number({
+          description: "Current emotion score (0-100)",
+          examples: [85],
+        }),
+        emoji: t.String({
+          description: "Emoji representing the emotion level",
+          examples: ["😄"],
+        }),
+        level: t.String({
+          description: "Emotion level label",
+          examples: ["happy"],
+        }),
       }),
     }),
     lastCaredAt: t.Nullable(
@@ -56,10 +71,10 @@ export const catModel = new Elysia({
   "cat.summon.body": t.Object({
     name: t.String({
       minLength: 1,
-      maxLength: 20,
+      maxLength: 50,
       description: "The name for the new cat",
       examples: ["Mochi"],
-      error: "Cat name must be between 1 and 20 characters",
+      error: "Cat name must be between 1 and 50 characters",
     }),
   }),
 
@@ -91,13 +106,28 @@ export const catModel = new Elysia({
 
   "cat.care.response": t.Object({
     growth: t.Object({
-      age: t.Enum(AgeGroup, { description: "Age group of the cat after care", examples: ["KITTEN"] }),
-      value: t.Number({ description: "Updated growth points after care", examples: [130] }),
+      age: t.Enum(AgeGroup, {
+        description: "Age group of the cat after care",
+        examples: ["KITTEN"],
+      }),
+      value: t.Number({
+        description: "Updated growth points after care",
+        examples: [130],
+      }),
     }),
     emotion: t.Object({
-      value: t.Number({ description: "Updated emotion score after care (0-100)", examples: [90] }),
-      emoji: t.String({ description: "Emoji representing the emotion level", examples: ["😄"] }),
-      level: t.String({ description: "Emotion level label", examples: ["happy"] }),
+      value: t.Number({
+        description: "Updated emotion score after care (0-100)",
+        examples: [90],
+      }),
+      emoji: t.String({
+        description: "Emoji representing the emotion level",
+        examples: ["😄"],
+      }),
+      level: t.String({
+        description: "Emotion level label",
+        examples: ["happy"],
+      }),
     }),
     message: t.String({
       description: "AI-generated description of the cat's reaction",
