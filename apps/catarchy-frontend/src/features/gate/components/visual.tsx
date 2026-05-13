@@ -1,5 +1,5 @@
-import { CatCharacter } from "@/features/cat";
-import { cn } from "@/features/common";
+import { CatCharacter, cn } from "@/features/common";
+import { AgeGroup } from "@catarchy/shared/constants/cat";
 import Background from "../assets/gate-background.png";
 import styles from "./visual.module.css";
 
@@ -22,7 +22,7 @@ export function Visual() {
           className={cn(styles.background, styles.second)}
         />
         <div className={styles.catChar}>
-          <CatCharacter tag="walk" age="adult" />
+          <CatCharacter tag="walk" age={AgeGroup.ADULT} />
         </div>
       </div>
     </div>
