@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1773243047000,
-      "tag": "0000_initial",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1777201683810,
-      "tag": "0001_nosy_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1777296648146,
-      "tag": "0002_daffy_beast",
+      "when": 1778634362086,
+      "tag": "0000_wonderful_overlord",
       "breakpoints": true
     }
   ]

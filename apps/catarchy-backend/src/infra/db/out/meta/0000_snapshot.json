@@ -1,8 +1,8 @@
 {
-  "id": "489ecd58-3a4e-4f46-be64-4aab6b8fb3ef",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "sqlite",
+  "id": "94da863e-f280-472d-88fd-0f5b1cf6ec7d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auth": {
       "name": "auth",
@@ -62,7 +62,9 @@
       "indexes": {
         "auth_email_unique": {
           "name": "auth_email_unique",
-          "columns": ["email"],
+          "columns": [
+            "email"
+          ],
           "isUnique": true
         }
       },
@@ -70,11 +72,15 @@
         "auth_user_id_user_id_fk": {
           "name": "auth_user_id_user_id_fk",
           "tableFrom": "auth",
-          "columnsFrom": ["user_id"],
           "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -138,12 +144,16 @@
       "indexes": {
         "care_record_cat_id_idx": {
           "name": "care_record_cat_id_idx",
-          "columns": ["cat_id"],
+          "columns": [
+            "cat_id"
+          ],
           "isUnique": false
         },
         "care_record_servant_id_idx": {
           "name": "care_record_servant_id_idx",
-          "columns": ["servant_id"],
+          "columns": [
+            "servant_id"
+          ],
           "isUnique": false
         }
       },
@@ -151,20 +161,28 @@
         "cat_care_record_cat_id_cat_id_fk": {
           "name": "cat_care_record_cat_id_cat_id_fk",
           "tableFrom": "cat_care_record",
-          "columnsFrom": ["cat_id"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "cat_care_record_servant_id_user_id_fk": {
           "name": "cat_care_record_servant_id_user_id_fk",
           "tableFrom": "cat_care_record",
-          "columnsFrom": ["servant_id"],
           "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "servant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -186,6 +204,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "sex": {
+          "name": "sex",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "servant_id": {
@@ -222,7 +247,9 @@
       "indexes": {
         "cat_servant_unique": {
           "name": "cat_servant_unique",
-          "columns": ["servant_id"],
+          "columns": [
+            "servant_id"
+          ],
           "isUnique": true
         }
       },
@@ -230,11 +257,15 @@
         "cat_servant_id_user_id_fk": {
           "name": "cat_servant_id_user_id_fk",
           "tableFrom": "cat",
-          "columnsFrom": ["servant_id"],
           "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "servant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -300,11 +331,15 @@
         "cat_personality_cat_id_cat_id_fk": {
           "name": "cat_personality_cat_id_cat_id_fk",
           "tableFrom": "cat_personality",
-          "columnsFrom": ["cat_id"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -383,12 +418,17 @@
       "indexes": {
         "cat_relationship_cat_id_2_idx": {
           "name": "cat_relationship_cat_id_2_idx",
-          "columns": ["cat_id_2"],
+          "columns": [
+            "cat_id_2"
+          ],
           "isUnique": false
         },
         "cat_relationship_unique": {
           "name": "cat_relationship_unique",
-          "columns": ["cat_id_1", "cat_id_2"],
+          "columns": [
+            "cat_id_1",
+            "cat_id_2"
+          ],
           "isUnique": true
         }
       },
@@ -396,20 +436,28 @@
         "cat_relationship_cat_id_1_cat_id_fk": {
           "name": "cat_relationship_cat_id_1_cat_id_fk",
           "tableFrom": "cat_relationship",
-          "columnsFrom": ["cat_id_1"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id_1"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "cat_relationship_cat_id_2_cat_id_fk": {
           "name": "cat_relationship_cat_id_2_cat_id_fk",
           "tableFrom": "cat_relationship",
-          "columnsFrom": ["cat_id_2"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id_2"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -461,11 +509,15 @@
         "cat_stat_cat_id_cat_id_fk": {
           "name": "cat_stat_cat_id_cat_id_fk",
           "tableFrom": "cat_stat",
-          "columnsFrom": ["cat_id"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -518,7 +570,9 @@
       "indexes": {
         "chronicle_created_at_idx": {
           "name": "chronicle_created_at_idx",
-          "columns": ["created_at"],
+          "columns": [
+            "created_at"
+          ],
           "isUnique": false
         }
       },
@@ -647,7 +701,9 @@
       "indexes": {
         "email_verification_email_idx": {
           "name": "email_verification_email_idx",
-          "columns": ["email"],
+          "columns": [
+            "email"
+          ],
           "isUnique": false
         }
       },
@@ -700,12 +756,16 @@
       "indexes": {
         "fcm_token_token_unique": {
           "name": "fcm_token_token_unique",
-          "columns": ["token"],
+          "columns": [
+            "token"
+          ],
           "isUnique": true
         },
         "fcm_token_user_id_idx": {
           "name": "fcm_token_user_id_idx",
-          "columns": ["user_id"],
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
@@ -713,11 +773,83 @@
         "fcm_token_user_id_user_id_fk": {
           "name": "fcm_token_user_id_user_id_fk",
           "tableFrom": "fcm_token",
-          "columnsFrom": ["user_id"],
           "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "nonce": {
+      "name": "nonce",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nonce": {
+          "name": "nonce",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expired_at": {
+          "name": "expired_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        }
+      },
+      "indexes": {
+        "nonce_wallet_id_idx": {
+          "name": "nonce_wallet_id_idx",
+          "columns": [
+            "wallet_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "nonce_wallet_id_wallet_id_fk": {
+          "name": "nonce_wallet_id_wallet_id_fk",
+          "tableFrom": "nonce",
+          "tableTo": "wallet",
+          "columnsFrom": [
+            "wallet_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -762,207 +894,15 @@
         "personality_test_cat_id_cat_id_fk": {
           "name": "personality_test_cat_id_cat_id_fk",
           "tableFrom": "personality_test",
-          "columnsFrom": ["cat_id"],
           "tableTo": "cat",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "proposal": {
-      "name": "proposal",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "proposer_type": {
-          "name": "proposer_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "proposer_id": {
-          "name": "proposer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "target_key": {
-          "name": "target_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "proposed_value": {
-          "name": "proposed_value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'ACTIVE'"
-        },
-        "ends_at": {
-          "name": "ends_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        }
-      },
-      "indexes": {
-        "proposal_status_idx": {
-          "name": "proposal_status_idx",
-          "columns": ["status"],
-          "isUnique": false
-        },
-        "proposal_ends_at_idx": {
-          "name": "proposal_ends_at_idx",
-          "columns": ["ends_at"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "proposal_proposer_id_user_id_fk": {
-          "name": "proposal_proposer_id_user_id_fk",
-          "tableFrom": "proposal",
-          "columnsFrom": ["proposer_id"],
-          "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "set null"
-        },
-        "proposal_target_key_consensus_key_fk": {
-          "name": "proposal_target_key_consensus_key_fk",
-          "tableFrom": "proposal",
-          "columnsFrom": ["target_key"],
-          "tableTo": "consensus",
-          "columnsTo": ["key"],
-          "onUpdate": "no action",
-          "onDelete": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "proposal_vote": {
-      "name": "proposal_vote",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "proposal_id": {
-          "name": "proposal_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "choice": {
-          "name": "choice",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        }
-      },
-      "indexes": {
-        "proposal_vote_user_id_idx": {
-          "name": "proposal_vote_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "proposal_vote_unique": {
-          "name": "proposal_vote_unique",
-          "columns": ["proposal_id", "user_id"],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "proposal_vote_proposal_id_proposal_id_fk": {
-          "name": "proposal_vote_proposal_id_proposal_id_fk",
-          "tableFrom": "proposal_vote",
-          "columnsFrom": ["proposal_id"],
-          "tableTo": "proposal",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
-        },
-        "proposal_vote_user_id_user_id_fk": {
-          "name": "proposal_vote_user_id_user_id_fk",
-          "tableFrom": "proposal_vote",
-          "columnsFrom": ["user_id"],
-          "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "cat_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1000,6 +940,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "absolute_expired_at": {
+          "name": "absolute_expired_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
@@ -1012,12 +959,16 @@
       "indexes": {
         "session_refresh_token_unique": {
           "name": "session_refresh_token_unique",
-          "columns": ["refresh_token"],
+          "columns": [
+            "refresh_token"
+          ],
           "isUnique": true
         },
         "session_user_id_idx": {
           "name": "session_user_id_idx",
-          "columns": ["user_id"],
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
@@ -1025,11 +976,15 @@
         "session_user_id_user_id_fk": {
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
-          "columnsFrom": ["user_id"],
           "tableTo": "user",
-          "columnsTo": ["id"],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1073,11 +1028,89 @@
       "indexes": {
         "user_handle_unique": {
           "name": "user_handle_unique",
-          "columns": ["handle"],
+          "columns": [
+            "handle"
+          ],
           "isUnique": true
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "wallet": {
+      "name": "wallet",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(CURRENT_TIMESTAMP)"
+        }
+      },
+      "indexes": {
+        "wallet_address_unique": {
+          "name": "wallet_address_unique",
+          "columns": [
+            "address"
+          ],
+          "isUnique": true
+        },
+        "wallet_user_id_unique": {
+          "name": "wallet_user_id_unique",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "wallet_user_id_user_id_fk": {
+          "name": "wallet_user_id_user_id_fk",
+          "tableFrom": "wallet",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -1086,9 +1119,9 @@
   "views": {},
   "enums": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
   },
   "internal": {
     "indexes": {}

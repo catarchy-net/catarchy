@@ -21,17 +21,23 @@ export const userTable = sqliteTable("user", {
   updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
 
+export enum UserAuthProvider {
+  EMAIL_PASSWORD = "email_password",
+}
+
 /** Authentication credentials per provider (user : auth = 1 : N) */
 export const authTable = sqliteTable("auth", {
   id: text("id")
     .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
-  provider: text("provider", { enum: ["email_password"] }).notNull(),
+  provider: text("provider", {
+    enum: Object.values(UserAuthProvider) as [string, ...string[]],
+  }).notNull(),
   email: text("email").unique(),
   password: text("password"),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => userTable.id),
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
@@ -62,7 +68,7 @@ export const sessionTable = sqliteTable(
       .primaryKey(),
     userId: text("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => userTable.id),
     refreshToken: text("refresh_token").notNull().unique(),
     expiredAt: integer("expired_at").notNull(),
     absoluteExpiredAt: integer("absolute_expired_at").notNull(),
@@ -95,7 +101,7 @@ export const nonceTable = sqliteTable(
       .primaryKey(),
     walletId: text("wallet_id")
       .notNull()
-      .references(() => walletTable.id, { onDelete: "cascade" }),
+      .references(() => walletTable.id),
     nonce: text("nonce").notNull(),
     expiredAt: integer("expired_at").notNull(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -114,7 +120,7 @@ export const fcmTokenTable = sqliteTable(
       .primaryKey(),
     userId: text("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => userTable.id),
     token: text("token").notNull().unique(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -124,6 +130,11 @@ export const fcmTokenTable = sqliteTable(
 
 // ── Cat ───────────────────────────────────────────────────────────────────────
 
+export enum CatSex {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
 /** Cats living in the world, each owned by a user (user : cat = 1 : N) */
 export const cat = sqliteTable(
   "cat",
@@ -132,9 +143,12 @@ export const cat = sqliteTable(
       .$defaultFn(() => crypto.randomUUID())
       .primaryKey(),
     name: text("name").notNull(),
+    sex: text("sex", {
+      enum: Object.values(CatSex) as [string, ...string[]],
+    }),
     servantId: text("servant_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => userTable.id),
     lastCaredAt: text("last_cared_at"),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -148,7 +162,7 @@ export const catStat = sqliteTable(
   {
     catId: text("cat_id")
       .primaryKey()
-      .references(() => cat.id, { onDelete: "cascade" }),
+      .references(() => cat.id),
     growth: integer("growth").notNull().default(0),
     emotion: integer("emotion").notNull().default(100),
     updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -168,10 +182,10 @@ export const careRecord = sqliteTable(
       .primaryKey(),
     catId: text("cat_id")
       .notNull()
-      .references(() => cat.id, { onDelete: "cascade" }),
+      .references(() => cat.id),
     servantId: text("servant_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => userTable.id),
     growthDelta: integer("growth_delta").notNull(),
     emotionDelta: integer("emotion_delta").notNull(),
     message: text("message").notNull(),
@@ -189,7 +203,7 @@ export const catPersonality = sqliteTable(
   {
     catId: text("cat_id")
       .primaryKey()
-      .references(() => cat.id, { onDelete: "cascade" }),
+      .references(() => cat.id),
     openness: integer("openness").notNull(),
     conscientiousness: integer("conscientiousness").notNull(),
     extraversion: integer("extraversion").notNull(),
@@ -225,7 +239,7 @@ export const personalityTest = sqliteTable("personality_test", {
     .primaryKey(),
   catId: text("cat_id")
     .notNull()
-    .references(() => cat.id, { onDelete: "cascade" }),
+    .references(() => cat.id),
   answers: text("answers").notNull(), // JSON stringified answers
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
@@ -248,10 +262,10 @@ export const catRelationship = sqliteTable(
       .primaryKey(),
     catId1: text("cat_id_1")
       .notNull()
-      .references(() => cat.id, { onDelete: "cascade" }),
+      .references(() => cat.id),
     catId2: text("cat_id_2")
       .notNull()
-      .references(() => cat.id, { onDelete: "cascade" }),
+      .references(() => cat.id),
     type: text("type", {
       enum: Object.values(CatRelationshipType) as [string, ...string[]],
     }).notNull(),
@@ -265,8 +279,6 @@ export const catRelationship = sqliteTable(
   ],
 );
 
-export { ConsensusValueType };
-
 /** World-wide game parameters whose values are determined by community voting */
 export const consensusTable = sqliteTable("consensus", {
   key: text("key").primaryKey(),
@@ -279,83 +291,6 @@ export const consensusTable = sqliteTable("consensus", {
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
-
-export enum ProposerType {
-  USER = "USER",
-  BOT = "BOT",
-  SYSTEM = "SYSTEM",
-}
-
-export enum ProposalStatus {
-  ACTIVE = "ACTIVE",
-  PASSED = "PASSED",
-  REJECTED = "REJECTED",
-  EXPIRED = "EXPIRED",
-}
-
-export enum ProposalVoteChoice {
-  FOR = "FOR",
-  AGAINST = "AGAINST",
-  ABSTAIN = "ABSTAIN",
-}
-
-/** A community proposal to change a consensus value, open for voting until endsAt */
-export const proposalTable = sqliteTable(
-  "proposal",
-  {
-    id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
-      .primaryKey(),
-    title: text("title").notNull(),
-    description: text("description").notNull(),
-    proposerType: text("proposer_type", {
-      enum: Object.values(ProposerType) as [string, ...string[]],
-    }).notNull(),
-    proposerId: text("proposer_id").references(() => userTable.id, {
-      onDelete: "set null",
-    }),
-    targetKey: text("target_key")
-      .notNull()
-      .references(() => consensusTable.key),
-    proposedValue: text("proposed_value").notNull(),
-    status: text("status", {
-      enum: Object.values(ProposalStatus) as [string, ...string[]],
-    })
-      .notNull()
-      .default(ProposalStatus.ACTIVE),
-    endsAt: text("ends_at").notNull(),
-    createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
-  },
-  (t) => [
-    index("proposal_status_idx").on(t.status),
-    index("proposal_ends_at_idx").on(t.endsAt),
-  ],
-);
-
-/** A single user's vote on a proposal, one vote per user per proposal */
-export const proposalVoteTable = sqliteTable(
-  "proposal_vote",
-  {
-    id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
-      .primaryKey(),
-    proposalId: text("proposal_id")
-      .notNull()
-      .references(() => proposalTable.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-      .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
-    choice: text("choice", {
-      enum: Object.values(ProposalVoteChoice) as [string, ...string[]],
-    }).notNull(),
-    createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
-  },
-  (t) => [
-    unique("proposal_vote_unique").on(t.proposalId, t.userId),
-    index("proposal_vote_user_id_idx").on(t.userId),
-  ],
-);
 
 // ── Chronicle ─────────────────────────────────────────────────────────────────
 
@@ -486,32 +421,6 @@ export const catRelationshipRelations = relations(
   }),
 );
 
-export const proposalRelations = relations(proposalTable, ({ one, many }) => ({
-  proposer: one(userTable, {
-    fields: [proposalTable.proposerId],
-    references: [userTable.id],
-  }),
-  target: one(consensusTable, {
-    fields: [proposalTable.targetKey],
-    references: [consensusTable.key],
-  }),
-  votes: many(proposalVoteTable),
-}));
-
-export const proposalVoteRelations = relations(
-  proposalVoteTable,
-  ({ one }) => ({
-    proposal: one(proposalTable, {
-      fields: [proposalVoteTable.proposalId],
-      references: [proposalTable.id],
-    }),
-    user: one(userTable, {
-      fields: [proposalVoteTable.userId],
-      references: [userTable.id],
-    }),
-  }),
-);
-
 // ── Table export ──────────────────────────────────────────────────────────────
 
 export const table = {
@@ -530,7 +439,5 @@ export const table = {
   fcmToken: fcmTokenTable,
   chronicle: chronicle,
   consensus: consensusTable,
-  proposal: proposalTable,
-  proposalVote: proposalVoteTable,
 } as const;
 export type Table = typeof table;

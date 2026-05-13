@@ -13,7 +13,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "db:generate": "drizzle-kit generate",
+    "db:generate": "drizzle-kit generate && bun run src/infra/db/fix-migration.ts",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:prod": "wrangler d1 migrations apply DB --remote",
     "db:seed:local": "wrangler d1 execute catarchy-db --local --file src/infra/db/seed.sql",
