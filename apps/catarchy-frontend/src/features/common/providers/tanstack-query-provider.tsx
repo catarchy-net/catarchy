@@ -1,9 +1,16 @@
+import { EdenFetchError } from "@elysiajs/eden";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry(failureCount, error) {
+        if (error instanceof EdenFetchError) {
+          return false;
+        }
+
+        return failureCount < 3;
+      },
     },
   },
 });
