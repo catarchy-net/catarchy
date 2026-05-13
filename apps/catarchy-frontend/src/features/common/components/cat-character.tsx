@@ -1,12 +1,11 @@
 import { forwardRef } from "react";
 
-import { Sprite } from "@/features/common";
-
 import { AgeGroup } from "@catarchy/shared/constants/cat";
 import catKeyframe from "../assets/sprites/cat.json";
 import catTexture from "../assets/sprites/cat.svg?url";
 import newbornKeyframe from "../assets/sprites/newborn.json";
 import newbornTexture from "../assets/sprites/newborn.svg?url";
+import { Sprite } from "./sprite";
 
 export const CAT_CHARACTER_HITBOX: Record<
   AgeGroup,

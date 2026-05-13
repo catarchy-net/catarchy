@@ -6,6 +6,7 @@ export * from "./components/alert-modal";
 export * from "./components/bastet";
 export * from "./components/bottom-sheet";
 export * from "./components/box";
+export * from "./components/cat-character";
 export * from "./components/bubble-hint";
 export * from "./components/bubble-hint-toggle";
 export * from "./components/bubble-message";
