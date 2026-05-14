@@ -25,6 +25,17 @@ export const AGE_DESCRIPTION: Record<AgeGroup, string> = {
   [AgeGroup.SENIOR]: "An elderly cat. Slow and fragile.",
 };
 
+export function getAge(growth: number) {
+  return {
+    value: parseFloat((growth / 12).toFixed(2)),
+    int: Math.floor(growth / 12),
+    fraction: {
+      numerator: growth % 12,
+      denominator: 12 as const,
+    },
+  };
+}
+
 export function getAgeGroup(growth: number): AgeGroup {
   if (growth < AGE_GROWTH_THRESHOLDS.KITTEN) return AgeGroup.NEWBORN;
   if (growth < AGE_GROWTH_THRESHOLDS.JUVENILE) return AgeGroup.KITTEN;
