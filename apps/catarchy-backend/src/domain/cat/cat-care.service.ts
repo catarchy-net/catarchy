@@ -67,9 +67,12 @@ export abstract class CatCareService {
     }
 
     // 3+4) calculate new stat with decay and care increment
-    const newGrowth = catStat.growth + growthPerCare;
+    const oldEmotion = catStat.emotion;
+    const oldGrowth = catStat.growth;
+
+    const newGrowth = oldGrowth + growthPerCare;
     const newEmotion = calculateNewEmotion({
-      currentEmotion: catStat.emotion,
+      currentEmotion: oldEmotion,
       lastCaredAt: cat.lastCaredAt,
       emotionPerCare,
       emotionDecrease,
@@ -116,15 +119,13 @@ export abstract class CatCareService {
       message = `${cat.name} enjoyed the care and purrs contentedly.`;
     }
 
-    await Promise.all([
-      this.careRecordRepository.create({
-        catId: cat.id,
-        emotionDelta: emotionPerCare,
-        growthDelta: growthPerCare,
-        servantId: userId,
-        message,
-      }),
-    ]);
+    await this.careRecordRepository.create({
+      catId: cat.id,
+      emotionDelta: newEmotion - oldEmotion,
+      growthDelta: newGrowth - oldGrowth,
+      servantId: userId,
+      message,
+    });
 
     return {
       growth: {
