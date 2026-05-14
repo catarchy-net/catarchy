@@ -1,0 +1,14 @@
+.header {
+    border-bottom: none;
+}
+
+.bottom {
+    background-color: transparent;
+}
+
+.body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

@@ -47,9 +47,6 @@ const fetchWithRefresh = async (
 
   // If token refresh failed, redirect to gate
   if (!refreshed) {
-    if (window.location.pathname !== "/") {
-      window.location.href = "/";
-    }
     return response; // for type consistency
   }
 

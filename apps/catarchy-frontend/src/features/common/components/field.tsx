@@ -1,6 +1,6 @@
 import React, { useId } from "react";
-import styles from "./field.module.css";
 import { BubbleHint } from "./bubble-hint";
+import styles from "./field.module.css";
 import { Label, LabelProps } from "./label";
 import { Text } from "./text";
 
@@ -52,9 +52,9 @@ export function Field({
       <div ref={inputContainerRef}>{processedChildren}</div>
 
       {error && (
-        <span id={errorId} role="alert" className="sr-only">
+        <Text id={errorId} role="alert" className="sr-only">
           {error}
-        </span>
+        </Text>
       )}
 
       {error && (

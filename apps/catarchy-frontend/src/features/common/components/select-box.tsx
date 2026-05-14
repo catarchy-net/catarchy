@@ -159,7 +159,7 @@ export function SelectBox<V extends string = string>({
             className={styles.triggerWrapper}
             containerClassName={cn(styles.trigger, disabled && "bg-dither-3")}
           >
-            <span className={styles.triggerLabel}>{displayLabel}</span>
+            <Text className={styles.triggerLabel}>{displayLabel}</Text>
             <SelectTriangle
               className={cn(
                 styles.triggerIcon,

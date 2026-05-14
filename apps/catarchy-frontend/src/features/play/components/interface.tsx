@@ -1,10 +1,12 @@
 import { LogClick } from "@/features/analytics";
+import { catInfoOptions } from "@/features/cat";
 import {
+  Button,
   CAT_CHARACTER_HITBOX,
   CatCharacter,
-  catInfoOptions,
-} from "@/features/cat";
-import { Button, Text, useToast } from "@/features/common";
+  Text,
+  useToast,
+} from "@/features/common";
 import { AgeGroup } from "@catarchy/shared/constants/cat";
 import { useQuery } from "@tanstack/react-query";
 import { EmotionStatus } from "./emotion-status";
@@ -13,7 +15,8 @@ import { Stage } from "./stage";
 
 export function Interface() {
   const toast = useToast();
-  const { data: catInfo } = useQuery(catInfoOptions());
+  const { data: catInfo } = useQuery({ ...catInfoOptions() });
+
   return (
     <div className={styles.root}>
       <div className={styles.toolbar}>

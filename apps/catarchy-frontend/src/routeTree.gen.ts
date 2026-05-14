@@ -11,11 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TocRouteImport } from './routes/toc'
 import { Route as PpRouteImport } from './routes/pp'
-import { Route as PlayIndexRouteImport } from './routes/play/index'
+import { Route as GuardedRouteImport } from './routes/_guarded'
 import { Route as gateIndexRouteImport } from './routes/(gate)/index'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthPasswordResetRouteImport } from './routes/auth/password-reset'
+import { Route as GuardedPlayIndexRouteImport } from './routes/_guarded/play/index'
+import { Route as GuardedCatSummonRouteImport } from './routes/_guarded/cat/summon'
 
 const TocRoute = TocRouteImport.update({
   id: '/toc',
@@ -27,9 +29,8 @@ const PpRoute = PpRouteImport.update({
   path: '/pp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayIndexRoute = PlayIndexRouteImport.update({
-  id: '/play/',
-  path: '/play/',
+const GuardedRoute = GuardedRouteImport.update({
+  id: '/_guarded',
   getParentRoute: () => rootRouteImport,
 } as any)
 const gateIndexRoute = gateIndexRouteImport.update({
@@ -52,73 +53,91 @@ const AuthPasswordResetRoute = AuthPasswordResetRouteImport.update({
   path: '/auth/password-reset',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuardedPlayIndexRoute = GuardedPlayIndexRouteImport.update({
+  id: '/play/',
+  path: '/play/',
+  getParentRoute: () => GuardedRoute,
+} as any)
+const GuardedCatSummonRoute = GuardedCatSummonRouteImport.update({
+  id: '/cat/summon',
+  path: '/cat/summon',
+  getParentRoute: () => GuardedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof gateIndexRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/': typeof gateIndexRoute
-  '/play/': typeof PlayIndexRoute
+  '/cat/summon': typeof GuardedCatSummonRoute
+  '/play/': typeof GuardedPlayIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof gateIndexRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/': typeof gateIndexRoute
-  '/play': typeof PlayIndexRoute
+  '/cat/summon': typeof GuardedCatSummonRoute
+  '/play': typeof GuardedPlayIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_guarded': typeof GuardedRouteWithChildren
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/(gate)/': typeof gateIndexRoute
-  '/play/': typeof PlayIndexRoute
+  '/_guarded/cat/summon': typeof GuardedCatSummonRoute
+  '/_guarded/play/': typeof GuardedPlayIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/pp'
     | '/toc'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
-    | '/'
+    | '/cat/summon'
     | '/play/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/pp'
     | '/toc'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
-    | '/'
+    | '/cat/summon'
     | '/play'
   id:
     | '__root__'
+    | '/_guarded'
     | '/pp'
     | '/toc'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
     | '/(gate)/'
-    | '/play/'
+    | '/_guarded/cat/summon'
+    | '/_guarded/play/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  GuardedRoute: typeof GuardedRouteWithChildren
   PpRoute: typeof PpRoute
   TocRoute: typeof TocRoute
   AuthPasswordResetRoute: typeof AuthPasswordResetRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthSignInRoute: typeof AuthSignInRoute
   gateIndexRoute: typeof gateIndexRoute
-  PlayIndexRoute: typeof PlayIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -137,11 +156,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/play/': {
-      id: '/play/'
-      path: '/play'
-      fullPath: '/play/'
-      preLoaderRoute: typeof PlayIndexRouteImport
+    '/_guarded': {
+      id: '/_guarded'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof GuardedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(gate)/': {
@@ -172,17 +191,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPasswordResetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_guarded/play/': {
+      id: '/_guarded/play/'
+      path: '/play'
+      fullPath: '/play/'
+      preLoaderRoute: typeof GuardedPlayIndexRouteImport
+      parentRoute: typeof GuardedRoute
+    }
+    '/_guarded/cat/summon': {
+      id: '/_guarded/cat/summon'
+      path: '/cat/summon'
+      fullPath: '/cat/summon'
+      preLoaderRoute: typeof GuardedCatSummonRouteImport
+      parentRoute: typeof GuardedRoute
+    }
   }
 }
 
+interface GuardedRouteChildren {
+  GuardedCatSummonRoute: typeof GuardedCatSummonRoute
+  GuardedPlayIndexRoute: typeof GuardedPlayIndexRoute
+}
+
+const GuardedRouteChildren: GuardedRouteChildren = {
+  GuardedCatSummonRoute: GuardedCatSummonRoute,
+  GuardedPlayIndexRoute: GuardedPlayIndexRoute,
+}
+
+const GuardedRouteWithChildren =
+  GuardedRoute._addFileChildren(GuardedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
+  GuardedRoute: GuardedRouteWithChildren,
   PpRoute: PpRoute,
   TocRoute: TocRoute,
   AuthPasswordResetRoute: AuthPasswordResetRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthSignInRoute: AuthSignInRoute,
   gateIndexRoute: gateIndexRoute,
-  PlayIndexRoute: PlayIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
