@@ -188,7 +188,7 @@ export const careRecord = sqliteTable(
       .references(() => userTable.id),
     growthDelta: integer("growth_delta").notNull(),
     emotionDelta: integer("emotion_delta").notNull(),
-    message: text("message").notNull(),
+    message: text("message"),
     caredAt: text("cared_at").default(sql`(CURRENT_TIMESTAMP)`),
   },
   (t) => [
