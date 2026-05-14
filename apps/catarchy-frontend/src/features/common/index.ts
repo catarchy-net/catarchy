@@ -1,4 +1,5 @@
 // Assets
+export { default as ChevronRight } from "./assets/chevron-right.svg?react";
 export { default as TextLogo } from "./assets/logo-text.svg?react";
 
 // Components
@@ -6,11 +7,11 @@ export * from "./components/alert-modal";
 export * from "./components/bastet";
 export * from "./components/bottom-sheet";
 export * from "./components/box";
-export * from "./components/cat-character";
 export * from "./components/bubble-hint";
 export * from "./components/bubble-hint-toggle";
 export * from "./components/bubble-message";
 export * from "./components/button";
+export * from "./components/cat-character";
 export * from "./components/checkbox-input";
 export * from "./components/field";
 export * from "./components/header-back-button";

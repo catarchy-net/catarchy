@@ -1,5 +1,16 @@
 .container {
-    width: fit-content;
-    height: fit-content;
-    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nameContainer {
+    padding: 4px 8px 0 8px;
+}
+
+.name {
+    word-break: break-all;
+    text-align: center;
 }

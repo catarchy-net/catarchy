@@ -1,0 +1,13 @@
+.menuList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menuItem {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+}
