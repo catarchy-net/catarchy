@@ -39,10 +39,10 @@ export abstract class AuthService {
     const expiredAt = Date.now() + ms(AuthService.emailCodeDuration);
 
     const [existingVerification, auth] = await Promise.all([
-      await AuthService.emailVerificationRepository.findRecentVerification({
+      await this.emailVerificationRepository.findRecentVerification({
         email,
       }),
-      await AuthService.authRepository.findAuthByEmail({ email }),
+      await this.authRepository.findAuthByEmail({ email }),
     ]);
 
     if (auth) {
@@ -55,7 +55,7 @@ export abstract class AuthService {
       const createdAtMs = new Date(
         `${existingVerification.createdAt}Z`,
       ).getTime();
-      const cooldownEnd = createdAtMs + ms(AuthService.emailCodeCooldown);
+      const cooldownEnd = createdAtMs + ms(this.emailCodeCooldown);
 
       if (Date.now() < cooldownEnd) {
         throw new ConflictError(
@@ -68,7 +68,7 @@ export abstract class AuthService {
     }
 
     const verification =
-      await AuthService.emailVerificationRepository.createEmailVerification({
+      await this.emailVerificationRepository.createEmailVerification({
         email,
         code,
         expiredAt,
@@ -109,7 +109,7 @@ export abstract class AuthService {
     }
 
     const updated =
-      await AuthService.emailVerificationRepository.updateVerificationAsUsed(
+      await this.emailVerificationRepository.updateVerificationAsUsed(
         record.id,
       );
 
@@ -132,8 +132,8 @@ export abstract class AuthService {
     const expiredAt = Date.now() + ms(AuthService.emailCodeDuration);
 
     const [existingVerification, auth] = await Promise.all([
-      AuthService.emailVerificationRepository.findRecentVerification({ email }),
-      AuthService.authRepository.findAuthByEmail({ email }),
+      this.emailVerificationRepository.findRecentVerification({ email }),
+      this.authRepository.findAuthByEmail({ email }),
     ]);
 
     if (!auth) {
@@ -144,7 +144,7 @@ export abstract class AuthService {
       const createdAtMs = new Date(
         `${existingVerification.createdAt}Z`,
       ).getTime();
-      const cooldownEnd = createdAtMs + ms(AuthService.emailCodeCooldown);
+      const cooldownEnd = createdAtMs + ms(this.emailCodeCooldown);
 
       if (Date.now() < cooldownEnd) {
         throw new ConflictError(
@@ -155,7 +155,7 @@ export abstract class AuthService {
     }
 
     const verification =
-      await AuthService.emailVerificationRepository.createEmailVerification({
+      await this.emailVerificationRepository.createEmailVerification({
         email,
         code,
         expiredAt,
@@ -172,7 +172,7 @@ export abstract class AuthService {
     password: string;
   }) {
     const verified =
-      await AuthService.emailVerificationRepository.findVerifiedEmailRecord({
+      await this.emailVerificationRepository.findVerifiedEmailRecord({
         email,
       });
 
@@ -182,21 +182,19 @@ export abstract class AuthService {
       );
     }
 
-    const auth = await AuthService.authRepository.findAuthByEmail({ email });
+    const auth = await this.authRepository.findAuthByEmail({ email });
 
     if (!auth) {
       throw new NotFoundError("No account found with this email address.");
     }
 
     const passwordHashed = bcrypt.hashSync(password, 10);
-    await AuthService.authRepository.updatePassword({ email, passwordHashed });
-    await AuthService.emailVerificationRepository.deleteVerificationByEmail(
-      email,
-    );
+    await this.authRepository.updatePassword({ email, passwordHashed });
+    await this.emailVerificationRepository.deleteVerificationByEmail(email);
   }
 
   static async deleteVerification(id: string) {
-    await AuthService.emailVerificationRepository.deleteVerificationById(id);
+    await this.emailVerificationRepository.deleteVerificationById(id);
   }
 
   static async signUpWithEmailAndPassword({
@@ -209,7 +207,7 @@ export abstract class AuthService {
     handle: string;
   }) {
     const verified =
-      await AuthService.emailVerificationRepository.findVerifiedEmailRecord({
+      await this.emailVerificationRepository.findVerifiedEmailRecord({
         email,
       });
 
@@ -219,7 +217,7 @@ export abstract class AuthService {
       );
     }
 
-    const existingAuth = await AuthService.authRepository.findAuthByEmail({
+    const existingAuth = await this.authRepository.findAuthByEmail({
       email,
     });
 
@@ -229,7 +227,7 @@ export abstract class AuthService {
       });
     }
 
-    const existingHandle = await AuthService.userRepository.findByHandle({
+    const existingHandle = await this.userRepository.findByHandle({
       handle,
     });
 
@@ -242,16 +240,14 @@ export abstract class AuthService {
     const passwordHashed = bcrypt.hashSync(password, 10);
     const userId = crypto.randomUUID();
 
-    await runAtomic(AuthService.db, [
-      UserRepository.create({ id: userId, handle }),
-      AuthRepository.createEmailAuth({ email, passwordHashed, userId }),
+    await runAtomic(this.db, [
+      this.userRepository.create({ id: userId, handle }),
+      this.authRepository.createEmailAuth({ email, passwordHashed, userId }),
     ]);
 
-    await AuthService.emailVerificationRepository.deleteVerificationByEmail(
-      email,
-    );
+    await this.emailVerificationRepository.deleteVerificationByEmail(email);
 
-    return { id: userId };
+    return { id: userId, handle };
   }
 
   static async signInWithEmailAndPassword({
@@ -264,7 +260,7 @@ export abstract class AuthService {
     const commonMessage =
       "Failed to sign in. Please check your email and password and try again.";
 
-    const authRecord = await AuthService.authRepository.findAuthByEmail({
+    const authRecord = await this.authRepository.findAuthByEmail({
       email,
     });
 
@@ -284,7 +280,7 @@ export abstract class AuthService {
       throw new ForbiddenError(commonMessage);
     }
 
-    const user = await AuthService.userRepository.findById({
+    const user = await this.userRepository.findById({
       id: authRecord.userId,
     });
 
@@ -292,7 +288,10 @@ export abstract class AuthService {
       throw new NotFoundError(commonMessage);
     }
 
-    return user;
+    return {
+      id: user.id,
+      handle: user.handle,
+    };
   }
 
   static generateCode() {
@@ -300,14 +299,14 @@ export abstract class AuthService {
   }
 
   static async findUserById(id: string) {
-    return AuthService.userRepository.findById({ id });
+    return this.userRepository.findById({ id });
   }
 
   static async createSession(userId: string, refreshToken: string) {
     const now = Date.now();
-    const expiredAt = now + ms(AuthService.refreshTokenExp);
-    const absoluteExpiredAt = now + ms(AuthService.absoluteSessionExp);
-    return AuthService.sessionRepository.createSession({
+    const expiredAt = now + ms(this.refreshTokenExp);
+    const absoluteExpiredAt = now + ms(this.absoluteSessionExp);
+    return this.sessionRepository.createSession({
       userId,
       refreshToken,
       expiredAt,
@@ -321,9 +320,9 @@ export abstract class AuthService {
     userId: string,
     absoluteExpiredAt: number,
   ) {
-    const expiredAt = Date.now() + ms(AuthService.refreshTokenExp);
-    await AuthService.sessionRepository.deleteByRefreshToken(oldRefreshToken);
-    return AuthService.sessionRepository.createSession({
+    const expiredAt = Date.now() + ms(this.refreshTokenExp);
+    await this.sessionRepository.deleteByRefreshToken(oldRefreshToken);
+    return this.sessionRepository.createSession({
       userId,
       refreshToken: newRefreshToken,
       expiredAt,
@@ -333,13 +332,13 @@ export abstract class AuthService {
 
   static async validateSession(refreshToken: string) {
     const session =
-      await AuthService.sessionRepository.findByRefreshToken(refreshToken);
+      await this.sessionRepository.findByRefreshToken(refreshToken);
 
     if (!session) return null;
 
     const now = Date.now();
     if (now > session.absoluteExpiredAt || now > session.expiredAt) {
-      await AuthService.sessionRepository.deleteByRefreshToken(refreshToken);
+      await this.sessionRepository.deleteByRefreshToken(refreshToken);
       return null;
     }
 
@@ -347,6 +346,6 @@ export abstract class AuthService {
   }
 
   static async deleteSession(refreshToken: string) {
-    await AuthService.sessionRepository.deleteByRefreshToken(refreshToken);
+    await this.sessionRepository.deleteByRefreshToken(refreshToken);
   }
 }

@@ -10,6 +10,10 @@ export abstract class CatService {
   private static catRepository = CatRepository;
   private static catStatRepository = CatStatRepository;
 
+  private static get db() {
+    return getDatabase();
+  }
+
   static async getCatInfo({ userId }: { userId: string }) {
     const cat = await this.catRepository.findWithStatByServantId({
       servantId: userId,
@@ -58,9 +62,13 @@ export abstract class CatService {
 
     const newCatId = crypto.randomUUID();
 
-    const [[newCat]] = await runAtomic(getDatabase(), [
+    const [[newCat]] = await runAtomic(this.db, [
       this.catRepository.create({ id: newCatId, servantId: userId, name, sex }),
-      this.catStatRepository.create({ catId: newCatId, growth: 0, emotion: 100 }),
+      this.catStatRepository.create({
+        catId: newCatId,
+        growth: 0,
+        emotion: 100,
+      }),
     ]);
 
     return {

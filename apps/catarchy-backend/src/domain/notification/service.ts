@@ -2,6 +2,8 @@ import { sendMultiplePushNotification } from "../../infra/fcm";
 import { NotificationRepository } from "./repository";
 
 export abstract class NotificationService {
+  private static notificationRepository = NotificationRepository;
+
   static async registerToken({
     userId,
     token,
@@ -9,11 +11,11 @@ export abstract class NotificationService {
     userId: string;
     token: string;
   }) {
-    return NotificationRepository.upsertFcmToken({ userId, token });
+    return this.notificationRepository.upsertFcmToken({ userId, token });
   }
 
   static async unregisterToken({ token }: { token: string }) {
-    return NotificationRepository.deleteFcmToken({ token });
+    return this.notificationRepository.deleteFcmToken({ token });
   }
 
   static async broadcastToAll({
@@ -25,7 +27,7 @@ export abstract class NotificationService {
     body: string;
     url?: string;
   }) {
-    const rows = await NotificationRepository.findAllTokens();
+    const rows = await this.notificationRepository.findAllTokens();
     const result = await sendMultiplePushNotification({
       tokens: rows.map((row) => row.token),
       title,

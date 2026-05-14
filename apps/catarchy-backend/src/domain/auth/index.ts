@@ -98,7 +98,7 @@ export const authRouter = () => {
     )
     .post(
       "/sign-up-email",
-      async ({ body, authService }) => {
+      async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
         const { email, password, handle } = body;
 
         const user = await authService.signUpWithEmailAndPassword({
@@ -107,6 +107,26 @@ export const authRouter = () => {
           handle,
         });
 
+        const [accessToken, refreshToken] = await Promise.all([
+          accessJwt.sign({ sub: user.id, handle: user.handle }),
+          refreshJwt.sign({ sub: user.id }),
+        ]);
+
+        await authService.createSession(user.id, refreshToken);
+
+        setAuthCookie(
+          cookie.accessToken,
+          accessToken,
+          ms(AuthService.accessTokenExp) / 1000,
+          isProd,
+        );
+        setAuthCookie(
+          cookie.refreshToken,
+          refreshToken,
+          ms(AuthService.refreshTokenExp) / 1000,
+          isProd,
+        );
+
         return {
           message: "Account created successfully",
           userId: user.id,
@@ -114,6 +134,10 @@ export const authRouter = () => {
       },
       {
         body: "auth.sign-up-email.body",
+        cookie: t.Cookie({
+          accessToken: t.Optional(t.String()),
+          refreshToken: t.Optional(t.String()),
+        }),
         response: withCommonError({
           [StatusMap.OK]: "auth.sign-up-email.response",
           [StatusMap.Forbidden]: "auth.sign-up-email.forbidden",

@@ -7,6 +7,7 @@ import {
   useAlert,
   useToast,
 } from "@/features/common";
+import { EdenFetchError } from "@elysiajs/eden";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
@@ -128,42 +129,36 @@ export function SignupScreen() {
         password: emailPasswordForm.getValues("password"),
         handle: handleFormData.handle,
       });
-    } catch (err: unknown) {
-      const error = err as {
-        status?: number;
-        value?: {
-          message?: string;
-          data?: { conflicted?: "email" | "handle" };
-        };
-      };
-
-      if (error?.status === 403) {
-        handleForm.setError("handle", {
-          message: error.value?.message,
-        });
-        return;
-      }
-
-      if (error?.status === 409) {
-        if (error.value?.data?.conflicted === "email") {
-          alert.open({
-            id: "signup-error",
-            title: "Error",
-            message:
-              "An account with this email already exists. Please use a different email or sign in to your existing account.",
-            confirmLabel: "OK",
-            onConfirm(close) {
-              close();
-              router.navigate({ to: "/auth/sign-in" });
-            },
+    } catch (error: unknown) {
+      if (error instanceof EdenFetchError) {
+        if (error?.status === 403) {
+          handleForm.setError("handle", {
+            message: error.value?.message,
           });
           return;
         }
 
-        handleForm.setError("handle", {
-          message: error.value?.message,
-        });
-        return;
+        if (error?.status === 409) {
+          if (error.value?.data?.conflicted === "email") {
+            alert.open({
+              id: "signup-error",
+              title: "Error",
+              message:
+                "An account with this email already exists. Please use a different email or sign in to your existing account.",
+              confirmLabel: "OK",
+              onConfirm(close) {
+                close();
+                router.navigate({ to: "/auth/sign-in" });
+              },
+            });
+            return;
+          }
+
+          handleForm.setError("handle", {
+            message: error.value?.message,
+          });
+          return;
+        }
       }
 
       alert.open({
@@ -176,7 +171,6 @@ export function SignupScreen() {
           close();
         },
       });
-      return;
     }
 
     toast.push(
@@ -185,8 +179,7 @@ export function SignupScreen() {
     );
 
     router.navigate({
-      to: "/auth/sign-in",
-      search: (s) => ({ ...s, email: emailPasswordForm.getValues("email") }),
+      to: "/play",
     });
   };
 

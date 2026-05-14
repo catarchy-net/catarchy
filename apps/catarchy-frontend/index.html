@@ -39,9 +39,55 @@
     <meta name="apple-mobile-web-app-title" content="Catarchy" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- For loading -->
+    <style id="initial-style">
+      @keyframes up_down {
+        0% {
+          transform: translateY(0%);
+        }
+        50% {
+          transform: translateY(10%);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      #loading-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        width: fit-content;
+        height: fit-content;
+      }
+
+      #loading-container img {
+        display: block;
+        animation: up_down 2s both infinite;
+        animation-timing-function: steps(4, end);
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="loading-container">
+        <img
+          fetchpriority="high"
+          id="initial-loading-bastet"
+          src="/assets/loading/bastet.svg"
+          alt="Loading..."
+          width="72"
+          height="56"
+        />
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
