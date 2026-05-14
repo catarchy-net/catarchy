@@ -1,4 +1,5 @@
 import { getDatabase } from "../../infra/db";
+import { CatSex } from "../../infra/db/schema";
 import { runAtomic } from "../../lib/atomic";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
@@ -28,6 +29,7 @@ export abstract class CatService {
     return {
       id: cat.cat.id,
       name: cat.cat.name,
+      sex: cat.cat.sex as CatSex | null,
       stat: {
         growth: {
           ageGroup: getAgeGroup(cat.stat.growth),

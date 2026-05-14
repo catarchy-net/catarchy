@@ -33,6 +33,12 @@ export const catModel = new Elysia({
       description: "The name of the cat",
       examples: ["Mochi"],
     }),
+    sex: t.Nullable(
+      t.Enum(CatSex, {
+        description: "The sex of the cat",
+        examples: ["MALE"],
+      }),
+    ),
     stat: t.Object({
       growth: t.Object({
         ageGroup: t.Enum(AgeGroup, {
