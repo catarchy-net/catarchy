@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
-import { getDatabase, table } from "../../infra/db";
-import { ConsensusValueType } from "../../infra/db/schema";
 import { cache } from "../../infra/cache";
+import { getDatabase, table } from "../../infra/db";
+
+import { ConsensusValueType } from "@catarchy/shared/constants/consensus";
 import { NotFoundError } from "../../lib/error";
 import {
   CONSENSUS_DEFINITIONS,
@@ -36,7 +37,7 @@ export abstract class ConsensusRepository {
   static async getAllValues() {
     return Promise.all(
       (Object.keys(CONSENSUS_DEFINITIONS) as ConsensusKey[]).map((key) =>
-        ConsensusRepository.getValueWithMeta(key),
+        this.getValueWithMeta(key),
       ),
     );
   }
@@ -49,7 +50,11 @@ export abstract class ConsensusRepository {
     const cachedName = cache.get(cacheKey + NAME_SUFFIX);
     const cachedPurpose = cache.get(cacheKey + PURPOSE_SUFFIX);
 
-    if (cachedValue !== undefined && cachedName !== undefined && cachedPurpose !== undefined) {
+    if (
+      cachedValue !== undefined &&
+      cachedName !== undefined &&
+      cachedPurpose !== undefined
+    ) {
       return {
         key,
         value: parseValue(cachedValue, valueType) as ConsensusValue<K>,

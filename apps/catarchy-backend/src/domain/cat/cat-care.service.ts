@@ -38,15 +38,13 @@ export abstract class CatCareService {
         emotionDecreaseFrequencyHour,
       ],
     ] = await Promise.all([
-      CatCareService.catRepository.findFullByServantId({ servantId: userId }),
+      this.catRepository.findFullByServantId({ servantId: userId }),
       Promise.all([
-        CatCareService.consensusRepository.getValue(
-          "CAT.COOLDOWN_HOUR_BETWEEN_CARE",
-        ),
-        CatCareService.consensusRepository.getValue("CAT.GROWTH_PER_CARE"),
-        CatCareService.consensusRepository.getValue("CAT.EMOTION_PER_CARE"),
-        CatCareService.consensusRepository.getValue("CAT.EMOTION_DECREASE"),
-        CatCareService.consensusRepository.getValue(
+        this.consensusRepository.getValue("CAT.COOLDOWN_HOUR_BETWEEN_CARE"),
+        this.consensusRepository.getValue("CAT.GROWTH_PER_CARE"),
+        this.consensusRepository.getValue("CAT.EMOTION_PER_CARE"),
+        this.consensusRepository.getValue("CAT.EMOTION_DECREASE"),
+        this.consensusRepository.getValue(
           "CAT.EMOTION_DECREASE_FREQUENCY_HOUR",
         ),
       ]),
@@ -59,7 +57,7 @@ export abstract class CatCareService {
     const { cat, stat: catStat, personality } = catFull;
 
     // 2) check care cooldown and atomically update last cared time. If still on cooldown, throw error
-    const updated = await CatCareService.catRepository.tryUpdateLastCaredAt({
+    const updated = await this.catRepository.tryUpdateLastCaredAt({
       catId: cat.id,
       cooldownHours: cooldownHour,
     });
@@ -77,12 +75,11 @@ export abstract class CatCareService {
       emotionDecrease,
       emotionDecreaseFrequencyHour,
     });
-    const [updatedCatStat] =
-      await CatCareService.catStatRepository.updateAfterCare({
-        catId: cat.id,
-        growth: newGrowth,
-        emotion: newEmotion,
-      });
+    const [updatedCatStat] = await this.catStatRepository.updateAfterCare({
+      catId: cat.id,
+      growth: newGrowth,
+      emotion: newEmotion,
+    });
 
     // 5) generate care message with LLM
     const emotionState = getEmotion(newEmotion);
@@ -120,7 +117,7 @@ export abstract class CatCareService {
     }
 
     await Promise.all([
-      CatCareService.careRecordRepository.create({
+      this.careRecordRepository.create({
         catId: cat.id,
         emotionDelta: emotionPerCare,
         growthDelta: growthPerCare,

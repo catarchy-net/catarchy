@@ -1,4 +1,5 @@
 import Elysia, { t } from "elysia";
+import { CatSex } from "../../infra/db/schema";
 import { AgeGroup } from "./constants/growth";
 
 export const catModel = new Elysia({
@@ -75,6 +76,10 @@ export const catModel = new Elysia({
       description: "The name for the new cat",
       examples: ["Mochi"],
       error: "Cat name must be between 1 and 50 characters",
+    }),
+    sex: t.Enum(CatSex, {
+      description: "The sex of the cat",
+      examples: ["MALE"],
     }),
   }),
 

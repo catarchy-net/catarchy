@@ -31,14 +31,16 @@ export abstract class CatRepository {
     id,
     servantId,
     name,
+    sex,
   }: {
     id: string;
     servantId: string;
     name: string;
+    sex: string;
   }) {
     return this.db
       .insert(table.cat)
-      .values({ id, servantId, name })
+      .values({ id, servantId, name, sex })
       .returning();
   }
 

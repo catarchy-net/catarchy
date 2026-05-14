@@ -2,11 +2,13 @@ import type { ConsensusKey } from "./definitions";
 import { ConsensusRepository } from "./repository";
 
 export abstract class ConsensusService {
+  private static consensusRepository = ConsensusRepository;
+
   static async getAll() {
-    return ConsensusRepository.getAllValues();
+    return this.consensusRepository.getAllValues();
   }
 
   static async getOne(key: ConsensusKey) {
-    return ConsensusRepository.getValueWithMeta(key);
+    return this.consensusRepository.getValueWithMeta(key);
   }
 }

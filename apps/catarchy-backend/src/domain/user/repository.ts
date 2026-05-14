@@ -14,7 +14,7 @@ export abstract class UserRepository {
   }
 
   static async findById({ id }: { id: string }) {
-    const [user] = await UserRepository.db
+    const [user] = await this.db
       .select()
       .from(table.user)
       .where(eq(table.user.id, id))
@@ -24,7 +24,7 @@ export abstract class UserRepository {
   }
 
   static async findByHandle({ handle }: { handle: string }) {
-    const [user] = await UserRepository.db
+    const [user] = await this.db
       .select()
       .from(table.user)
       .where(eq(table.user.handle, handle))
@@ -34,7 +34,7 @@ export abstract class UserRepository {
   }
 
   static async createUser({ handle }: { handle: string }, tx?: Client) {
-    const client = tx ?? UserRepository.db;
+    const client = tx ?? this.db;
     const [user] = await client
       .insert(table.user)
       .values({
@@ -46,6 +46,6 @@ export abstract class UserRepository {
   }
 
   static create({ id, handle }: { id: string; handle: string }) {
-    return UserRepository.db.insert(table.user).values({ id, handle });
+    return this.db.insert(table.user).values({ id, handle });
   }
 }

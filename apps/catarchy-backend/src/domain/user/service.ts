@@ -9,8 +9,8 @@ export abstract class UserService {
 
   static async getCurrentUser({ id }: { id: string }) {
     const [user, auth] = await Promise.all([
-      UserService.userRepository.findById({ id }),
-      UserService.authRepository.findAuthByUserId({ userId: id }),
+      this.userRepository.findById({ id }),
+      this.authRepository.findAuthByUserId({ userId: id }),
     ]);
 
     if (!user || !auth) {

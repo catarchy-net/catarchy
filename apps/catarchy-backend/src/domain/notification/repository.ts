@@ -13,7 +13,7 @@ export abstract class NotificationRepository {
     userId: string;
     token: string;
   }) {
-    const [row] = await NotificationRepository.db
+    const [row] = await this.db
       .insert(table.fcmToken)
       .values({ userId, token })
       .onConflictDoUpdate({
@@ -26,25 +26,23 @@ export abstract class NotificationRepository {
   }
 
   static async deleteFcmToken({ token }: { token: string }) {
-    await NotificationRepository.db
-      .delete(table.fcmToken)
-      .where(eq(table.fcmToken.token, token));
+    await this.db.delete(table.fcmToken).where(eq(table.fcmToken.token, token));
   }
 
   static async deleteFcmTokens({ tokens }: { tokens: string[] }) {
-    await NotificationRepository.db
+    await this.db
       .delete(table.fcmToken)
       .where(inArray(table.fcmToken.token, tokens));
   }
 
   static async findTokensByUserId({ userId }: { userId: string }) {
-    return NotificationRepository.db
+    return this.db
       .select()
       .from(table.fcmToken)
       .where(eq(table.fcmToken.userId, userId));
   }
 
   static async findAllTokens() {
-    return NotificationRepository.db.select().from(table.fcmToken);
+    return this.db.select().from(table.fcmToken);
   }
 }

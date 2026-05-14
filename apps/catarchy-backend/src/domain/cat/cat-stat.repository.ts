@@ -15,9 +15,7 @@ export abstract class CatStatRepository {
     growth: number;
     emotion: number;
   }) {
-    return CatStatRepository.db
-      .insert(table.catStat)
-      .values({ catId, growth, emotion });
+    return this.db.insert(table.catStat).values({ catId, growth, emotion });
   }
 
   static updateAfterCare({
@@ -29,7 +27,7 @@ export abstract class CatStatRepository {
     growth: number;
     emotion: number;
   }) {
-    return CatStatRepository.db
+    return this.db
       .update(table.catStat)
       .set({ growth, emotion })
       .where(eq(table.catStat.catId, catId))
@@ -44,7 +42,7 @@ export abstract class CatStatRepository {
     amount: number;
     frequencyHours: number;
   }) {
-    return CatStatRepository.db
+    return this.db
       .update(table.catStat)
       .set({
         emotion: sql`MAX(0, ${table.catStat.emotion} - ${amount})`,
