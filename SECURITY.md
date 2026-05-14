@@ -12,6 +12,7 @@
 **Do not open a public GitHub issue for security vulnerabilities.**
 
 Please report security issues to **admin@catarchy.net** with the subject line `[SECURITY] <brief description>`.
+If email is unavailable, submit a private report via **GitHub Security Advisories** (repository **Security** tab).
 
 Include the following in your report:
 
@@ -20,7 +21,13 @@ Include the following in your report:
 - Affected endpoint, component, or file path
 - Suggested fix (optional)
 
-You can expect an acknowledgment within **48 hours** and a resolution timeline within **7 days** for critical issues.
+You can expect an acknowledgment within **48 hours**.
+
+Estimated resolution timelines by severity:
+- **Critical**: within **7 days**
+- **High**: within **14 days**
+- **Medium**: within **30 days**
+- **Low**: best effort, typically within **60 days**
 
 ## Scope
 
@@ -31,7 +38,7 @@ The following are in scope for security reports:
 - **Data exposure** — unintended access to user data via Cloudflare D1
 - **AI prompt injection** — malicious inputs affecting AI-generated responses
 - **Wallet/blockchain integration** — vulnerabilities in viem usage or signature verification
-- **Dependency vulnerabilities** — critical CVEs in direct dependencies (`elysia`, `drizzle-orm`, `bcryptjs`, etc.)
+- **Dependency vulnerabilities** — CVEs and security issues of any severity in both direct and transitive dependencies (`elysia`, `drizzle-orm`, `bcryptjs`, etc.)
 
 ## Out of Scope
 
