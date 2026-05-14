@@ -7,7 +7,7 @@ import { NotificationRepository } from "../notification/repository";
 import { CareRecordRepository } from "./care-record.repository";
 import { CatStatRepository } from "./cat-stat.repository";
 import { calculateNewEmotion, getEmotion } from "./constants/emotion";
-import { getAgeGroup } from "./constants/growth";
+import { getAge, getAgeGroup } from "./constants/growth";
 import { buildCarePrompt } from "./prompts/care";
 import { CatRepository } from "./repository";
 
@@ -129,8 +129,9 @@ export abstract class CatCareService {
 
     return {
       growth: {
-        age: getAgeGroup(updatedCatStat.growth),
+        ageGroup: getAgeGroup(updatedCatStat.growth),
         value: updatedCatStat.growth,
+        age: getAge(updatedCatStat.growth),
       },
       emotion: {
         value: updatedCatStat.emotion,

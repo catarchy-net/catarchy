@@ -3,7 +3,7 @@ import { runAtomic } from "../../lib/atomic";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
 import { getEmotion } from "./constants/emotion";
-import { getAgeGroup } from "./constants/growth";
+import { getAge, getAgeGroup } from "./constants/growth";
 import { CatRepository } from "./repository";
 
 export abstract class CatService {
@@ -30,8 +30,9 @@ export abstract class CatService {
       name: cat.cat.name,
       stat: {
         growth: {
-          age: getAgeGroup(cat.stat.growth),
+          ageGroup: getAgeGroup(cat.stat.growth),
           value: cat.stat.growth,
+          age: getAge(cat.stat.growth),
         },
         emotion: {
           value: cat.stat.emotion,

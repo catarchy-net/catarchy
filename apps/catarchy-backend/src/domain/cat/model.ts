@@ -35,13 +35,30 @@ export const catModel = new Elysia({
     }),
     stat: t.Object({
       growth: t.Object({
-        age: t.Enum(AgeGroup, {
+        ageGroup: t.Enum(AgeGroup, {
           description: "Age group of the cat",
           examples: ["KITTEN"],
         }),
         value: t.Number({
           description: "Current growth points",
           examples: [120],
+        }),
+        age: t.Object({
+          value: t.Number({
+            description: "Growth divided by 12, rounded to 2 decimal places",
+            examples: [10.0],
+          }),
+          int: t.Number({
+            description: "Integer part of growth / 12",
+            examples: [10],
+          }),
+          fraction: t.Object({
+            numerator: t.Number({
+              description: "Remainder of growth divided by 12",
+              examples: [0],
+            }),
+            denominator: t.Literal(12),
+          }),
         }),
       }),
       emotion: t.Object({
@@ -111,13 +128,30 @@ export const catModel = new Elysia({
 
   "cat.care.response": t.Object({
     growth: t.Object({
-      age: t.Enum(AgeGroup, {
+      ageGroup: t.Enum(AgeGroup, {
         description: "Age group of the cat after care",
         examples: ["KITTEN"],
       }),
       value: t.Number({
         description: "Updated growth points after care",
         examples: [130],
+      }),
+      age: t.Object({
+        value: t.Number({
+          description: "Growth divided by 12, rounded to 2 decimal places",
+          examples: [10.83],
+        }),
+        int: t.Number({
+          description: "Integer part of growth / 12",
+          examples: [10],
+        }),
+        fraction: t.Object({
+          numerator: t.Number({
+            description: "Remainder of growth divided by 12",
+            examples: [10],
+          }),
+          denominator: t.Literal(12),
+        }),
       }),
     }),
     emotion: t.Object({
