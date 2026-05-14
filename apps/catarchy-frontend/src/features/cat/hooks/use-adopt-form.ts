@@ -3,8 +3,8 @@ import { useForm, useFormContext } from "react-hook-form";
 import z from "zod";
 
 export enum CatSex {
-  Male = "MALE",
-  Female = "FEMALE",
+  MALE = "MALE",
+  FEMALE = "FEMALE",
 }
 
 export const summonFormSchema = z.object({

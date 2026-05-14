@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CareButton } from "../components/care-button";
 import { CatLoading } from "../components/cat-loading";
 import { Interface } from "../components/interface";
+import { PlayMenu } from "../components/play-menu";
 import styles from "./play-screen.module.css";
 
 export function PlayScreen() {
@@ -26,6 +27,7 @@ export function PlayScreen() {
             {isLoading && <CatLoading />}
             {!isLoading && <Interface />}
           </div>
+          <PlayMenu />
         </div>
       </Scaffold.Body>
       {!isLoading && (

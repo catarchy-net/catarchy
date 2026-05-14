@@ -25,7 +25,7 @@ export function SummonForm() {
             <RadioInput
               {...form.register("sex")}
               id="sex-male"
-              value={CatSex.Male}
+              value={CatSex.MALE}
             />
             <Text className={styles.radioLabel}>♂ MALE</Text>
           </Box>
@@ -38,7 +38,7 @@ export function SummonForm() {
             <RadioInput
               {...form.register("sex")}
               id="sex-female"
-              value={CatSex.Female}
+              value={CatSex.FEMALE}
             />
             <Text className={styles.radioLabel}>♀ FEMALE</Text>
           </Box>
