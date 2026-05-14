@@ -4,8 +4,6 @@ import { randomInt } from "node:crypto";
 import { getDatabase } from "../../infra/db";
 import { runAtomic } from "../../lib/atomic";
 import { ConflictError, ForbiddenError, NotFoundError } from "../../lib/error";
-import { CatRepository } from "../cat/repository";
-import { CatStatRepository } from "../cat/cat-stat.repository";
 import { UserRepository } from "../user/repository";
 import { EmailVerificationRepository } from "./email-verification.repository";
 import { AuthRepository } from "./repository";
@@ -243,12 +241,9 @@ export abstract class AuthService {
 
     const passwordHashed = bcrypt.hashSync(password, 10);
     const userId = crypto.randomUUID();
-    const catId = crypto.randomUUID();
 
     await runAtomic(AuthService.db, [
       UserRepository.create({ id: userId, handle }),
-      CatRepository.create({ id: catId, name: handle, servantId: userId }),
-      CatStatRepository.create({ catId, growth: 0, emotion: 100 }),
       AuthRepository.createEmailAuth({ email, passwordHashed, userId }),
     ]);
 
