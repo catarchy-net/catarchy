@@ -1,3 +1,5 @@
+import { getDatabase } from "../../infra/db";
+import { runAtomic } from "../../lib/atomic";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
 import { getEmotion } from "./constants/emotion";
@@ -9,7 +11,7 @@ export abstract class CatService {
   private static catStatRepository = CatStatRepository;
 
   static async getCatInfo({ userId }: { userId: string }) {
-    const cat = await CatService.catRepository.findWithStatByServantId({
+    const cat = await this.catRepository.findWithStatByServantId({
       servantId: userId,
     });
 
@@ -37,8 +39,16 @@ export abstract class CatService {
     };
   }
 
-  static async summonCat({ userId, name }: { userId: string; name: string }) {
-    const existingCat = await CatService.catRepository.findByServantId({
+  static async summonCat({
+    userId,
+    name,
+    sex,
+  }: {
+    userId: string;
+    name: string;
+    sex: string;
+  }) {
+    const existingCat = await this.catRepository.findByServantId({
       servantId: userId,
     });
 
@@ -46,20 +56,12 @@ export abstract class CatService {
       throw new ConflictError("You already have a cat.");
     }
 
-    // 고양이 생성
     const newCatId = crypto.randomUUID();
 
-    // D1 batch does not support RETURNING, so run separately
-    const [newCat] = await CatService.catRepository.create({
-      id: newCatId,
-      servantId: userId,
-      name,
-    });
-    await CatService.catStatRepository.create({
-      catId: newCatId,
-      growth: 0,
-      emotion: 100,
-    });
+    const [[newCat]] = await runAtomic(getDatabase(), [
+      this.catRepository.create({ id: newCatId, servantId: userId, name, sex }),
+      this.catStatRepository.create({ catId: newCatId, growth: 0, emotion: 100 }),
+    ]);
 
     return {
       id: newCat.id,

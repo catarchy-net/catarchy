@@ -32,6 +32,7 @@ export const catRouter = () => {
         return await catService.summonCat({
           userId: user.id,
           name: body.name,
+          sex: body.sex,
         });
       },
       {
