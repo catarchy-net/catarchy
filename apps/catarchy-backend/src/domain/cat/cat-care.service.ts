@@ -2,6 +2,7 @@ import { ai } from "../../infra/ai";
 import { sendPushNotification } from "../../infra/fcm";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { logger } from "../../lib/logger";
+import { CursorQuery } from "../../lib/pagination";
 import { ConsensusRepository } from "../consensus/repository";
 import { NotificationRepository } from "../notification/repository";
 import { CareRecordRepository } from "./care-record.repository";
@@ -139,6 +140,32 @@ export abstract class CatCareService {
         level: emotionState.level,
       },
       message,
+    };
+  }
+
+  static async getCareRecords({
+    userId,
+    catId,
+    ...pagination
+  }: { userId: string; catId: string } & CursorQuery) {
+    const limit = pagination.limit;
+    const cursor = pagination.cursor;
+
+    const careRecords = await this.careRecordRepository.findByCursor({
+      userId,
+      catId,
+      cursor,
+      limit,
+    });
+
+    const hasMore = careRecords.length > limit;
+    const items = careRecords.slice(0, limit);
+    const nextCursor = hasMore ? items[items.length - 1].id : undefined;
+
+    return {
+      items,
+      nextCursor,
+      hasMore,
     };
   }
 
