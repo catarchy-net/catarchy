@@ -1,3 +1,4 @@
+import { uuidv7 } from "uuidv7";
 import { getDatabase } from "../../infra/db";
 import { CatSex } from "../../infra/db/schema";
 import { runAtomic } from "../../lib/atomic";
@@ -63,7 +64,7 @@ export abstract class CatService {
       throw new ConflictError("You already have a cat.");
     }
 
-    const newCatId = crypto.randomUUID();
+    const newCatId = uuidv7();
 
     const [[newCat]] = await runAtomic(this.db, [
       this.catRepository.create({ id: newCatId, servantId: userId, name, sex }),

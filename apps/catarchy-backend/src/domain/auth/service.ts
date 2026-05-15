@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import ms from "ms";
 import { randomInt } from "node:crypto";
+import { uuidv7 } from "uuidv7";
 import { getDatabase } from "../../infra/db";
 import { runAtomic } from "../../lib/atomic";
 import { ConflictError, ForbiddenError, NotFoundError } from "../../lib/error";
@@ -238,7 +239,7 @@ export abstract class AuthService {
     }
 
     const passwordHashed = bcrypt.hashSync(password, 10);
-    const userId = crypto.randomUUID();
+    const userId = uuidv7();
 
     await runAtomic(this.db, [
       this.userRepository.create({ id: userId, handle }),

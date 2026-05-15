@@ -8,13 +8,14 @@ import {
   text,
   unique,
 } from "drizzle-orm/sqlite-core";
+import { uuidv7 } from "uuidv7";
 
 // ── User ──────────────────────────────────────────────────────────────────────
 
 /** Registered users of the cat world */
 export const userTable = sqliteTable("user", {
   id: text("id")
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => uuidv7())
     .primaryKey(),
   handle: text("handle").unique().notNull(),
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -28,7 +29,7 @@ export enum UserAuthProvider {
 /** Authentication credentials per provider (user : auth = 1 : N) */
 export const authTable = sqliteTable("auth", {
   id: text("id")
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => uuidv7())
     .primaryKey(),
   provider: text("provider", {
     enum: Object.values(UserAuthProvider) as [string, ...string[]],
@@ -47,7 +48,7 @@ export const emailVerificationTable = sqliteTable(
   "email_verification",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     email: text("email").notNull(),
     code: text("code").notNull(),
@@ -64,7 +65,7 @@ export const sessionTable = sqliteTable(
   "session",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     userId: text("user_id")
       .notNull()
@@ -82,7 +83,7 @@ export const sessionTable = sqliteTable(
 /** EVM wallet addresses; userId is nullable to support pre-registration SIWE flows (user : wallet = 1 : 1) */
 export const walletTable = sqliteTable("wallet", {
   id: text("id")
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => uuidv7())
     .primaryKey(),
   address: text("address").unique().notNull(),
   userId: text("user_id")
@@ -97,7 +98,7 @@ export const nonceTable = sqliteTable(
   "nonce",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     walletId: text("wallet_id")
       .notNull()
@@ -116,7 +117,7 @@ export const fcmTokenTable = sqliteTable(
   "fcm_token",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     userId: text("user_id")
       .notNull()
@@ -140,7 +141,7 @@ export const cat = sqliteTable(
   "cat",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     name: text("name").notNull(),
     sex: text("sex", {
@@ -178,7 +179,7 @@ export const careRecord = sqliteTable(
   "cat_care_record",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     catId: text("cat_id")
       .notNull()
@@ -193,7 +194,11 @@ export const careRecord = sqliteTable(
   },
   (t) => [
     index("care_record_cat_id_idx").on(t.catId),
-    index("care_record_servant_id_idx").on(t.servantId),
+    index("care_record_servant_id_cared_at_idx").on(
+      t.servantId,
+      t.catId,
+      t.caredAt,
+    ),
   ],
 );
 
@@ -235,7 +240,7 @@ export const catPersonality = sqliteTable(
 /** Raw answer records from personality tests taken for a cat (cat : personalityTest = 1 : N) */
 export const personalityTest = sqliteTable("personality_test", {
   id: text("id")
-    .$defaultFn(() => crypto.randomUUID())
+    .$defaultFn(() => uuidv7())
     .primaryKey(),
   catId: text("cat_id")
     .notNull()
@@ -258,7 +263,7 @@ export const catRelationship = sqliteTable(
   "cat_relationship",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     catId1: text("cat_id_1")
       .notNull()
@@ -299,7 +304,7 @@ export const chronicle = sqliteTable(
   "chronicle",
   {
     id: text("id")
-      .$defaultFn(() => crypto.randomUUID())
+      .$defaultFn(() => uuidv7())
       .primaryKey(),
     body: text("body").notNull(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
