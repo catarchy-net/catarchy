@@ -2,6 +2,41 @@ import Elysia, { t } from "elysia";
 import { CatSex } from "../../infra/db/schema";
 import { AgeGroup } from "./constants/growth";
 
+export const careRecordItemSchema = t.Object({
+  id: t.String({
+    description: "UUIDv7 identifier of the care record",
+    examples: ["01970f3a-2b4c-7e8f-9abc-def012345678"],
+  }),
+  catId: t.String({
+    description: "ID of the cat",
+    examples: ["01970f3a-2b4c-7e8f-9abc-def012345678"],
+  }),
+  servantId: t.String({
+    description: "ID of the servant who cared",
+    examples: ["01970f3a-2b4c-7e8f-9abc-def012345678"],
+  }),
+  growthDelta: t.Number({
+    description: "Growth points gained from this care",
+    examples: [10],
+  }),
+  emotionDelta: t.Number({
+    description: "Emotion points changed from this care",
+    examples: [5],
+  }),
+  message: t.Nullable(
+    t.String({
+      description: "AI-generated care message",
+      examples: ["Mochi purrs softly."],
+    }),
+  ),
+  caredAt: t.Nullable(
+    t.String({
+      description: "ISO timestamp of when the care occurred",
+      examples: ["2026-05-15T12:00:00.000Z"],
+    }),
+  ),
+});
+
 export const catModel = new Elysia({
   name: "model.cat",
 }).model({
@@ -120,6 +155,10 @@ export const catModel = new Elysia({
       examples: ["123e4567-e89b-12d3-a456-426614174000"],
     }),
   }),
+
+  // ── GET /cat/care-records ──────────────────────────────────────────────────
+
+  "cat.care-records.item": careRecordItemSchema,
 
   // ── POST /cat/care ─────────────────────────────────────────────────────────
 

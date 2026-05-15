@@ -3,7 +3,7 @@ import { cursorQueryType, cursorResultType } from "../../lib/pagination";
 import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
 import { CatCareService } from "./cat-care.service";
-import { catModel } from "./model";
+import { careRecordItemSchema, catModel } from "./model";
 import { CatService } from "./service";
 
 export const catRouter = () => {
@@ -89,7 +89,7 @@ export const catRouter = () => {
             description: "ID of the cat to retrieve care records for",
           }),
         }),
-        response: withCommonError(cursorResultType(t.Unknown())),
+        response: withCommonError(cursorResultType(careRecordItemSchema)),
       },
     );
 };
