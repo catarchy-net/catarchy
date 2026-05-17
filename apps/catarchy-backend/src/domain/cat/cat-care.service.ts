@@ -122,7 +122,9 @@ export abstract class CatCareService {
 
     await this.careRecordRepository.create({
       catId: cat.id,
+      emotion: newEmotion,
       emotionDelta: newEmotion - oldEmotion,
+      growth: newGrowth,
       growthDelta: newGrowth - oldGrowth,
       servantId: userId,
       message,
@@ -151,19 +153,32 @@ export abstract class CatCareService {
     const limit = pagination.limit;
     const cursor = pagination.cursor;
 
-    const careRecords = await this.careRecordRepository.findByCursor({
-      userId,
-      catId,
-      cursor,
-      limit,
-    });
+    const { hasMore, items, nextCursor } =
+      await this.careRecordRepository.findByCursor({
+        userId,
+        catId,
+        cursor,
+        limit,
+      });
 
-    const hasMore = careRecords.length > limit;
-    const items = careRecords.slice(0, limit);
-    const nextCursor = hasMore ? items[items.length - 1].id : undefined;
+    const populatedItems = items.map((record) => ({
+      ...record,
+      growth: {
+        value: record.growth,
+        age: getAge(record.growth),
+        ageGroup: getAgeGroup(record.growth),
+        delta: record.growthDelta,
+      },
+      emotion: {
+        value: record.emotion,
+        emoji: getEmotion(record.emotion).emoji,
+        level: getEmotion(record.emotion).level,
+        delta: record.emotionDelta,
+      },
+    }));
 
     return {
-      items,
+      items: populatedItems,
       nextCursor,
       hasMore,
     };

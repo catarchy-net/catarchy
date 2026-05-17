@@ -15,9 +15,28 @@ export const careRecordItemSchema = t.Object({
     description: "ID of the servant who cared",
     examples: ["01970f3a-2b4c-7e8f-9abc-def012345678"],
   }),
+  growth: t.Object({
+    value: t.Number({ examples: [120] }),
+    age: t.Object({
+      value: t.Number({ examples: [10] }),
+      int: t.Number({ examples: [10] }),
+      fraction: t.Object({
+        numerator: t.Number({ examples: [0] }),
+        denominator: t.Literal(12),
+      }),
+    }),
+    ageGroup: t.Enum(AgeGroup),
+    delta: t.Number({ examples: [10] }),
+  }),
   growthDelta: t.Number({
     description: "Growth points gained from this care",
     examples: [10],
+  }),
+  emotion: t.Object({
+    value: t.Number({ examples: [75] }),
+    emoji: t.String({ examples: ["😄"] }),
+    level: t.String({ examples: ["happy"] }),
+    delta: t.Number({ examples: [5] }),
   }),
   emotionDelta: t.Number({
     description: "Emotion points changed from this care",
