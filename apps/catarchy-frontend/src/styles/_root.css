@@ -11,3 +11,11 @@
 @import "./reset.css";
 @import "./sprite.css";
 @import "./transitions.css";
+
+/* #root {
+    filter: invert(100%);
+}
+
+dialog {
+    filter: invert(100%);
+} */

@@ -12,6 +12,7 @@ export * from "./components/bubble-hint-toggle";
 export * from "./components/bubble-message";
 export * from "./components/button";
 export * from "./components/cat-character";
+export * from "./components/cat-loading";
 export * from "./components/checkbox-input";
 export * from "./components/field";
 export * from "./components/header-back-button";

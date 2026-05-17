@@ -1,4 +1,5 @@
-import { CatCharacter, Text } from "@/features/common";
+import { CatCharacter } from "./cat-character";
+import { Text } from "./text";
 import { AgeGroup } from "@catarchy/shared/constants/cat";
 import styles from "./cat-loading.module.css";
 

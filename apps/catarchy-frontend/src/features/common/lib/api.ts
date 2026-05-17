@@ -55,6 +55,7 @@ const fetchWithRefresh = async (
 
 export const api = treaty<App>(`${window.location.origin}/api`, {
   fetcher: fetchWithRefresh as typeof fetch,
+  parseDate: false,
 });
 
 async function refreshToken(): Promise<boolean> {

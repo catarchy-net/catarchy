@@ -6,11 +6,3 @@
     gap: 4px;
 }
 
-.nameContainer {
-    padding: 4px 8px 0 8px;
-}
-
-.name {
-    word-break: break-all;
-    text-align: center;
-}

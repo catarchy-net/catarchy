@@ -3,3 +3,8 @@
   display: flex;
   flex-direction: column;   
 }
+
+.name {
+    word-break: break-all;
+    text-align: center;
+}

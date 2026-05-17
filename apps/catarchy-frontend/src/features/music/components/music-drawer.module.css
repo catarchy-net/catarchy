@@ -13,6 +13,7 @@
   transition-property: transform;
   transition-duration: 300ms;
   transition-timing-function: steps(8, jump-end);
+  z-index: 50;
 }
 
 .drawerOpen {

@@ -21,8 +21,11 @@ export const CAT_CHARACTER_HITBOX: Record<
 
 export const CatCharacter = forwardRef<
   HTMLDivElement,
-  { age?: AgeGroup; tag?: "default" | "walk" }
->(function CatCharacter({ age = AgeGroup.NEWBORN, tag = "default" }, ref) {
+  { age?: AgeGroup; tag?: "default" | "walk"; scale?: number }
+>(function CatCharacter(
+  { age = AgeGroup.NEWBORN, tag = "default", scale = 2 },
+  ref,
+) {
   const isNewborn = age === AgeGroup.NEWBORN;
   const texture = isNewborn ? newbornTexture : catTexture;
   const keyframes = isNewborn ? newbornKeyframe : catKeyframe;
@@ -31,8 +34,8 @@ export const CatCharacter = forwardRef<
     <Sprite
       ref={ref}
       tag={tag}
-      width={32 * 2}
-      height={32 * 2}
+      width={32 * scale}
+      height={32 * scale}
       texture={texture}
       keyframes={keyframes}
     />

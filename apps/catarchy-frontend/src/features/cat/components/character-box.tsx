@@ -1,4 +1,4 @@
-import { Box, CatCharacter, Text } from "@/features/common";
+import { Box, CatCharacter } from "@/features/common";
 import { useQuery } from "@tanstack/react-query";
 import { catInfoOptions } from "../services/cat-info";
 
@@ -23,11 +23,6 @@ export function CharacterBox() {
           tag={tagToggled ? "walk" : "default"}
         />
       </Box>
-      <div className={styles.nameContainer}>
-        <Text className={styles.name}>
-          {data?.name} {sex}
-        </Text>
-      </div>
     </div>
   );
 }
