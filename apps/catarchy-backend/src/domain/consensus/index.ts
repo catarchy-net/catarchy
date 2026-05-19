@@ -10,12 +10,13 @@ export const consensusRouter = () => {
     prefix: "/consensus",
     tags: ["Consensus"],
   })
+    .decorate("consensusService", ConsensusService)
     .use(consensusModel)
     .use(authGuard())
     .get(
       "/",
-      async () => {
-        return await ConsensusService.getAll();
+      async ({ consensusService }) => {
+        return await consensusService.getAll();
       },
       {
         response: withCommonError({
@@ -25,8 +26,8 @@ export const consensusRouter = () => {
     )
     .get(
       "/:key",
-      async ({ params }) => {
-        return await ConsensusService.getOne(params.key as ConsensusKey);
+      async ({ params, consensusService }) => {
+        return await consensusService.getOne(params.key as ConsensusKey);
       },
       {
         params: "consensus.one.params",
