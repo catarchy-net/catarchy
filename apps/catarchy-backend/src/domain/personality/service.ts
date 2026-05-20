@@ -7,6 +7,27 @@ export abstract class PersonalityService {
   private static personalityRepository = PersonalityRepository;
   private static catRepository = CatRepository;
 
+  static async getCatPersonality({
+    userId,
+    catId,
+  }: {
+    userId: string;
+    catId: string;
+  }) {
+    const cat = await this.catRepository.findByServantId({
+      servantId: userId,
+      catId,
+    });
+
+    if (!cat) {
+      throw new ForbiddenError(
+        "Can't get personality for a cat that doesn't belong to you",
+      );
+    }
+
+    return this.personalityRepository.getCatPersonality({ catId });
+  }
+
   static async getProgress({
     userId,
     catId,

@@ -14,6 +14,29 @@ export const personalityRouter = () => {
     .use(personalityModel)
     .use(authGuard())
     .get(
+      "/",
+      async ({ user, query, personalityService }) => {
+        const result = await personalityService.getCatPersonality({
+          userId: user.id,
+          catId: query.catId,
+        });
+
+        if (!result) {
+          throw new NotFoundError("Personality not found.");
+        }
+
+        return result;
+      },
+      {
+        query: "personality.get.query",
+        response: withCommonError({
+          [StatusMap.OK]: "personality.get.response",
+          [StatusMap["Not Found"]]: "personality.not-found",
+          [StatusMap.Forbidden]: "personality.forbidden",
+        }),
+      },
+    )
+    .get(
       "/progress",
       async ({ user, query, personalityService }) => {
         return await personalityService.getProgress({

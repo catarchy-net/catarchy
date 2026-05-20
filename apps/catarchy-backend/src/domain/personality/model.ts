@@ -3,6 +3,23 @@ import Elysia, { t } from "elysia";
 export const personalityModel = new Elysia({
   name: "model.personality",
 }).model({
+  // ── GET /personality ──────────────────────────────────────────────────────
+
+  "personality.get.query": t.Object({
+    catId: t.String({
+      description: "ID of the cat",
+      examples: ["01970f3a-2b4c-7e8f-9abc-def012345678"],
+    }),
+  }),
+
+  "personality.get.response": t.Object({
+    openness: t.Number({ minimum: 0, maximum: 10, examples: [7] }),
+    conscientiousness: t.Number({ minimum: 0, maximum: 10, examples: [6] }),
+    extraversion: t.Number({ minimum: 0, maximum: 10, examples: [5] }),
+    agreeableness: t.Number({ minimum: 0, maximum: 10, examples: [8] }),
+    neuroticism: t.Number({ minimum: 0, maximum: 10, examples: [3] }),
+  }),
+
   // ── GET /personality/progress ──────────────────────────────────────────────
 
   "personality.progress.query": t.Object({
@@ -41,9 +58,10 @@ export const personalityModel = new Elysia({
       description: "Question text",
       examples: ["Am the life of the party."],
     }),
-    descriptions: t.Array(t.String(), {
-      description: "Answer level descriptions indexed 0–4 (Very Inaccurate to Very Accurate)",
-    }),
+    descriptions: t.Tuple(
+      [t.String(), t.String(), t.String(), t.String(), t.String()],
+      { description: "Answer level descriptions indexed 0–4 (Very Inaccurate to Very Accurate)" },
+    ),
   }),
 
   // ── POST /personality/answer ───────────────────────────────────────────────

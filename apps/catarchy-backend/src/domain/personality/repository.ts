@@ -6,6 +6,16 @@ export abstract class PersonalityRepository {
     return getDatabase();
   }
 
+  static async getCatPersonality({ catId }: { catId: string }) {
+    const [result] = await this.db
+      .select()
+      .from(table.catPersonality)
+      .where(eq(table.catPersonality.catId, catId))
+      .limit(1);
+
+    return result;
+  }
+
   static async getQuestionCount() {
     const [result] = await this.db
       .select({ count: count() })
@@ -77,7 +87,7 @@ export abstract class PersonalityRepository {
         result.descriptionLevel3,
         result.descriptionLevel4,
         result.descriptionLevel5,
-      ],
+      ] as [string, string, string, string, string],
     };
   }
 
