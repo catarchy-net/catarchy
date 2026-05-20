@@ -4,6 +4,7 @@ import {
   check,
   index,
   integer,
+  primaryKey,
   sqliteTable,
   text,
   unique,
@@ -210,21 +211,27 @@ export const catPersonality = sqliteTable(
   ],
 );
 
-/** Personality test question bank seeded from IPIP-NEO-PI-R 120-item inventory */
+export enum PersonalityQuestionKeyed {
+  PLUS = "plus",
+  MINUS = "minus",
+}
+
+export enum personalityDomain {
+  OPENNESS = "openness",
+  CONSCIENTIOUSNESS = "conscientiousness",
+  EXTRAVERSION = "extraversion",
+  AGREEABLENESS = "agreeableness",
+  NEUROTICISM = "neuroticism",
+}
+
 export const personalityQuestion = sqliteTable("personality_question", {
   id: text("id").primaryKey(),
   text: text("text").notNull(),
   keyed: text("keyed", {
-    enum: ["plus", "minus"] as [string, ...string[]],
+    enum: Object.values(PersonalityQuestionKeyed) as [PersonalityQuestionKeyed, ...PersonalityQuestionKeyed[]],
   }).notNull(),
   domain: text("domain", {
-    enum: [
-      "openness",
-      "conscientiousness",
-      "extraversion",
-      "agreeableness",
-      "neuroticism",
-    ] as [string, ...string[]],
+    enum: Object.values(personalityDomain) as [personalityDomain, ...personalityDomain[]],
   }).notNull(),
   descriptionLevel1: text("description_level_1").notNull(),
   descriptionLevel2: text("description_level_2").notNull(),
@@ -246,7 +253,7 @@ export const personalityTestAnswer = sqliteTable(
     answer: integer("answer").notNull(),
   },
   (t) => [
-    unique("personality_test_answer_unique").on(t.catId, t.questionId),
+    primaryKey({ columns: [t.catId, t.questionId] }),
     check("answer_range", sql`${t.answer} >= 1 AND ${t.answer} <= 5`),
     index("personality_test_answer_cat_id_idx").on(t.catId),
   ],

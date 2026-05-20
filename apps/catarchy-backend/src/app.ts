@@ -3,6 +3,7 @@ import { authRouter } from "./domain/auth";
 import { catRouter } from "./domain/cat";
 import { consensusRouter } from "./domain/consensus";
 import { notificationRouter } from "./domain/notification";
+import { personalityRouter } from "./domain/personality";
 import { userRouter } from "./domain/user";
 import { emailRouter } from "./infra/email";
 import { healthRouter } from "./infra/health";
@@ -27,7 +28,8 @@ export const createApp = ({ adapter }: CreateAppConfig = {}) => {
     .use(emailRouter())
     .use(userRouter())
     .use(notificationRouter())
-    .use(consensusRouter());
+    .use(consensusRouter())
+    .use(personalityRouter());
 };
 
 export type App = ReturnType<typeof createApp>;

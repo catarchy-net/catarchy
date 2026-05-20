@@ -6,11 +6,22 @@ export abstract class CatRepository {
     return getDatabase();
   }
 
-  static async findByServantId({ servantId }: { servantId: string }) {
+  static async findByServantId({
+    servantId,
+    catId,
+  }: {
+    servantId: string;
+    catId?: string;
+  }) {
     const [cat] = await this.db
       .select()
       .from(table.cat)
-      .where(eq(table.cat.servantId, servantId))
+      .where(
+        and(
+          eq(table.cat.servantId, servantId),
+          catId ? eq(table.cat.id, catId) : undefined,
+        ),
+      )
       .limit(1);
 
     return cat;

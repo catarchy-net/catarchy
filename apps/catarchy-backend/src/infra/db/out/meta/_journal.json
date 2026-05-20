@@ -50,6 +50,13 @@
       "when": 1779164461569,
       "tag": "0006_real_saracen",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1779250643613,
+      "tag": "0007_natural_roland_deschain",
+      "breakpoints": true
     }
   ]
 }
