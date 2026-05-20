@@ -41,7 +41,11 @@ export const personalityRouter = () => {
           throw new NotFoundError("No questions remaining.");
         }
 
-        return result;
+        return {
+          id: result.id,
+          text: result.text,
+          descriptions: result.descriptions,
+        };
       },
       {
         query: "personality.question.query",

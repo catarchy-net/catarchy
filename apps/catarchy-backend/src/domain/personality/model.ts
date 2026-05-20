@@ -1,5 +1,4 @@
 import Elysia, { t } from "elysia";
-import { PersonalityQuestionKeyed, personalityDomain } from "../../infra/db/schema";
 
 export const personalityModel = new Elysia({
   name: "model.personality",
@@ -41,12 +40,6 @@ export const personalityModel = new Elysia({
     text: t.String({
       description: "Question text",
       examples: ["Am the life of the party."],
-    }),
-    keyed: t.Enum(PersonalityQuestionKeyed, {
-      description: "Scoring direction (plus = higher answer = higher trait)",
-    }),
-    domain: t.Enum(personalityDomain, {
-      description: "Big Five personality domain this question measures",
     }),
     descriptions: t.Array(t.String(), {
       description: "Answer level descriptions indexed 0–4 (Very Inaccurate to Very Accurate)",
