@@ -8,6 +8,7 @@ import {
 } from "@/features/common";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { TestNudge } from "../components/test-nudge";
 import { TestResult } from "../components/test-result";
 import { usePersonalityTestModal } from "../hooks/use-personality-test-modal";
@@ -45,11 +46,15 @@ export function PersonalityTestScreen({ catId }: { catId: string }) {
       />
       <Scaffold.Body className={cn("bg-pattern-cat", styles.body)}>
         {hasCompletedTest && <TestResult catId={catId} />}
-        {!hasCompletedTest && <TestNudge catId={catId} />}
+        {!hasCompletedTest && (
+          <Suspense>
+            <TestNudge catId={catId} />
+          </Suspense>
+        )}
       </Scaffold.Body>
       {!hasCompletedTest && (
         <Scaffold.Bottom sticky>
-          <Button size="big" onClick={start}>
+          <Button size="big" onClick={() => start()}>
             <Text>Start Test</Text>
           </Button>
         </Scaffold.Bottom>
