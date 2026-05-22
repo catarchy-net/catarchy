@@ -70,6 +70,8 @@
 
 .description {
     padding: 16px;
+    text-align: center;
+    text-wrap: balance;
 }
 
 .descriptionContainer {
@@ -82,10 +84,6 @@
     line-height: 1.5;
 }
 
-.description {
-    text-align: center;
-    text-wrap: balance;
-}
 
 .action {
     padding: 8px;
