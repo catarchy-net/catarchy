@@ -196,7 +196,7 @@ export enum PersonalityQuestionKeyed {
   MINUS = "minus",
 }
 
-export enum personalityDomain {
+export enum PersonalityDomain {
   OPENNESS = "openness",
   CONSCIENTIOUSNESS = "conscientiousness",
   EXTRAVERSION = "extraversion",
@@ -208,10 +208,16 @@ export const personalityQuestion = sqliteTable("personality_question", {
   id: text("id").primaryKey(),
   text: text("text").notNull(),
   keyed: text("keyed", {
-    enum: Object.values(PersonalityQuestionKeyed) as [PersonalityQuestionKeyed, ...PersonalityQuestionKeyed[]],
+    enum: Object.values(PersonalityQuestionKeyed) as [
+      PersonalityQuestionKeyed,
+      ...PersonalityQuestionKeyed[],
+    ],
   }).notNull(),
   domain: text("domain", {
-    enum: Object.values(personalityDomain) as [personalityDomain, ...personalityDomain[]],
+    enum: Object.values(PersonalityDomain) as [
+      PersonalityDomain,
+      ...PersonalityDomain[],
+    ],
   }).notNull(),
   descriptionLevel1: text("description_level_1").notNull(),
   descriptionLevel2: text("description_level_2").notNull(),
@@ -219,7 +225,6 @@ export const personalityQuestion = sqliteTable("personality_question", {
   descriptionLevel4: text("description_level_4").notNull(),
   descriptionLevel5: text("description_level_5").notNull(),
 });
-
 
 export enum CatRelationshipType {
   FRIEND = "FRIEND",
@@ -354,7 +359,6 @@ export const careRecordRelations = relations(careRecord, ({ one }) => ({
 export const catPersonalityRelations = relations(catPersonality, ({ one }) => ({
   cat: one(cat, { fields: [catPersonality.catId], references: [cat.id] }),
 }));
-
 
 export const catRelationshipRelations = relations(
   catRelationship,
