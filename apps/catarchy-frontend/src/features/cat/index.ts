@@ -1,3 +1,7 @@
+// Components
+export * from "./components/cat-name";
+export * from "./components/character-box";
+
 // Services
 export * from "./services/care";
 export * from "./services/cat-info";

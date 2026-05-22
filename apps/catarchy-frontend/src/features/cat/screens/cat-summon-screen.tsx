@@ -1,5 +1,6 @@
 import { Button, LogoText, Scaffold, useToast } from "@/features/common";
-import { useMutation } from "@tanstack/react-query";
+import { catListOptions } from "../services/cat-info";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
@@ -10,6 +11,7 @@ import styles from "./cat-summon-screen.module.css";
 
 export function CatSummonScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const toast = useToast();
   const { form } = useSummonForm();
 
@@ -34,8 +36,11 @@ export function CatSummonScreen() {
       id: "summon-success",
     });
 
+    await queryClient.invalidateQueries(catListOptions());
+
     await router.navigate({
-      to: "/play",
+      to: "/$catId/play",
+      params: { catId: result.id },
     });
   };
 

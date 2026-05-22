@@ -7,8 +7,9 @@ import { catInfoOptions } from "./cat-info";
 type CareForCatResponse = Awaited<ReturnType<typeof api.cat.care.post>>["data"];
 type CareForCatError = Awaited<ReturnType<typeof api.cat.care.post>>["error"];
 
-export async function careForCat() {
+export async function careForCat(catId: string) {
   const { data, error } = await api.cat.care.post({
+    catId,
     localDateTime: new Date().toLocaleString("sv"),
   });
 
@@ -19,15 +20,15 @@ export async function careForCat() {
   return data;
 }
 
-export function careForCatOptions() {
+export function careForCatOptions(catId: string) {
   return mutationOptions<CareForCatResponse, CareForCatError>({
     mutationKey: ["cat", "care"],
-    mutationFn: careForCat,
+    mutationFn: () => careForCat(catId),
   });
 }
 
-export function useCareCooldown() {
-  const { data: catData, error: catError } = useQuery(catInfoOptions());
+export function useCareCooldown({ catId }: { catId: string }) {
+  const { data: catData, error: catError } = useQuery(catInfoOptions(catId));
   const { data: cooldownData, error: cooldownError } = useQuery(
     consensusOptions("CAT.COOLDOWN_HOUR_BETWEEN_CARE"),
   );

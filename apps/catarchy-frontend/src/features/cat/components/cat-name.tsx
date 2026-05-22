@@ -5,17 +5,23 @@ import { CatSex } from "../hooks/use-adopt-form";
 import { catInfoOptions } from "../services/cat-info";
 import styles from "./cat-name.module.css";
 
-export function CatName({ className }: { className?: string }) {
-  const { data } = useQuery(catInfoOptions());
+export function CatName({
+  catId,
+  className,
+}: {
+  catId: string;
+  className?: string;
+}) {
+  const { data: cat } = useQuery(catInfoOptions(catId));
 
   const sex = useMemo(() => {
-    if (data?.sex === CatSex.MALE) return "♂";
+    if (cat?.sex === CatSex.MALE) return "♂";
     return "♀";
-  }, [data?.sex]);
+  }, [cat?.sex]);
 
   return (
     <Text className={cn(styles.name, className)}>
-      {data?.name} {sex}
+      {cat?.name} {sex}
     </Text>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Button, CatCharacter, cn, Text } from "@/features/common";
+import { Button, CatCharacter, cn, InfoTable, Text } from "@/features/common";
 import { AgeGroup } from "@catarchy/shared/constants/cat";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -23,23 +23,18 @@ export function CareHistoryList({ catId }: { catId: string }) {
       <div className={cn([styles.list, hasNoRecords && styles.emptyList])}>
         {hasNoRecords && (
           <div className={styles.empty}>
-            <CharacterBox />
+            <CharacterBox catId={catId} />
             <Text as="p" className={styles.emptyText}>
               Your cat need attention to grow healthy and happy
             </Text>
-            <Link to="/play">
+            <Link to="/$catId/play" params={{ catId }}>
               <Button variant="outline">Take Care of Your Cat</Button>
             </Link>
           </div>
         )}
         {data?.pages.map((page) =>
           page?.items.map((record) => (
-            <Box
-              as="table"
-              rounded
-              key={record.id}
-              containerClassName={styles.table}
-            >
+            <InfoTable key={record.id} containerClassName={styles.table}>
               <tbody>
                 <tr>
                   <td colSpan={3}>
@@ -104,7 +99,7 @@ export function CareHistoryList({ catId }: { catId: string }) {
                   </td>
                 </tr>
               </tbody>
-            </Box>
+            </InfoTable>
           )),
         )}
         {hasNextPage && (

@@ -1,47 +1,46 @@
-import { Box, Text } from "@/features/common";
-
+import { InfoTable, Text } from "@/features/common";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { formatAge } from "../lib/format-age";
 import { catInfoOptions } from "../services/cat-info";
-import styles from "./stat-info-table.module.css";
 
-export function StatInfoTable() {
-  const { data, status } = useQuery(catInfoOptions());
+export function StatInfoTable({ catId }: { catId: string }) {
+  const { data: cat } = useQuery(catInfoOptions(catId));
 
-  const age = useMemo(() => {
-    if (status === "pending") return "Loading...";
-    if (status === "error") return "!Error";
-
-    const ageData = data?.stat.growth.age ?? {
-      int: 0,
-      fraction: { numerator: 0, denominator: 12 },
-    };
-    return formatAge(ageData, data?.stat.growth.ageGroup);
-  }, [data, status]);
+  const age = useMemo(
+    () =>
+      cat
+        ? formatAge(cat.stat.growth.age, cat.stat.growth.ageGroup)
+        : undefined,
+    [cat],
+  );
 
   return (
-    <Box as="table" rounded tight className={styles.table}>
-      <tbody>
-        <tr>
-          <th align="left">
-            <Text>🌱 GROWTH</Text>
-          </th>
-          <td align="right">{data?.stat.growth.value}</td>
-        </tr>
-        <tr>
-          <th align="left">
-            <Text>🎂 AGE</Text>
-          </th>
-          <td align="right">{age}</td>
-        </tr>
-        <tr>
-          <th align="left">
-            <Text>{data?.stat.emotion.emoji} MOOD</Text>
-          </th>
-          <td align="right">{data?.stat.emotion.level.toUpperCase()}</td>
-        </tr>
-      </tbody>
-    </Box>
+    <InfoTable>
+      <tr>
+        <th align="left">
+          <Text>🌱 GROWTH</Text>
+        </th>
+        <td align="right">
+          <Text>{cat?.stat.growth.value}</Text>
+        </td>
+      </tr>
+      <tr>
+        <th align="left">
+          <Text>🎂 AGE</Text>
+        </th>
+        <td align="right">
+          <Text>{age}</Text>
+        </td>
+      </tr>
+      <tr>
+        <th align="left">
+          <Text>{cat?.stat.emotion.emoji} MOOD</Text>
+        </th>
+        <td align="right">
+          <Text>{cat?.stat.emotion.level.toUpperCase()}</Text>
+        </td>
+      </tr>
+    </InfoTable>
   );
 }
