@@ -1,5 +1,5 @@
 import { PersonalityQuestionKeyed } from "../../infra/db/schema";
-import { ForbiddenError, NotFoundError } from "../../lib/error";
+import { BadRequestError, ForbiddenError, NotFoundError } from "../../lib/error";
 import { CatRepository } from "../cat/repository";
 import { PersonalityRepository } from "./repository";
 
@@ -110,6 +110,15 @@ export abstract class PersonalityService {
 
     const progress = await this.personalityRepository.getCatPersonalityProgress({ catId });
     if (!progress) throw new Error("Failed to initialize personality record");
+
+    if (progress.remainingCount <= 0) {
+      throw new ForbiddenError("Personality test is already completed");
+    }
+
+    const nextQuestion = await this.personalityRepository.getNextQuestion({ catId });
+    if (!nextQuestion || nextQuestion.id !== questionId) {
+      throw new BadRequestError("Submitted question does not match the next expected question");
+    }
 
     const delta =
       question.keyed === PersonalityQuestionKeyed.MINUS ? 6 - answer : answer;

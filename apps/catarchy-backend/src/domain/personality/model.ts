@@ -100,8 +100,15 @@ export const personalityModel = new Elysia({
 
   "personality.forbidden": t.Object({
     message: t.String({
-      description: "Cat does not belong to the authenticated user",
+      description: "Cat does not belong to the authenticated user, or the personality test is already completed",
       examples: ["Can't get question for a cat that doesn't belong to you"],
+    }),
+  }),
+
+  "personality.bad-request": t.Object({
+    message: t.String({
+      description: "Submitted questionId does not match the next expected question",
+      examples: ["Submitted question does not match the next expected question"],
     }),
   }),
 });

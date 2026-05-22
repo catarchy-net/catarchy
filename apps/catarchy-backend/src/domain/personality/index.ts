@@ -93,6 +93,7 @@ export const personalityRouter = () => {
         body: "personality.answer.body",
         response: withCommonError({
           [StatusMap.OK]: "personality.answer.response",
+          [StatusMap["Bad Request"]]: "personality.bad-request",
           [StatusMap.Forbidden]: "personality.forbidden",
         }),
       },
