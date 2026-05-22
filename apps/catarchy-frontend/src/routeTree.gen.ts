@@ -16,11 +16,15 @@ import { Route as gateIndexRouteImport } from './routes/(gate)/index'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthPasswordResetRouteImport } from './routes/auth/password-reset'
-import { Route as GuardedPlayIndexRouteImport } from './routes/_guarded/play/index'
+import { Route as GuardedPlayRouteImport } from './routes/_guarded/play'
+import { Route as GuardedCatIdRouteImport } from './routes/_guarded/$catId'
 import { Route as GuardedConfigIndexRouteImport } from './routes/_guarded/config/index'
 import { Route as GuardedCatSummonRouteImport } from './routes/_guarded/cat/summon'
-import { Route as GuardedCatStatusRouteImport } from './routes/_guarded/cat/status'
-import { Route as GuardedCatCareHistoryRouteImport } from './routes/_guarded/cat/care-history'
+import { Route as GuardedCatIdPlayIndexRouteImport } from './routes/_guarded/$catId/play/index'
+import { Route as GuardedCatIdCatStatusRouteImport } from './routes/_guarded/$catId/cat/status'
+import { Route as GuardedCatIdCatCareHistoryRouteImport } from './routes/_guarded/$catId/cat/care-history'
+import { Route as GuardedCatIdCatPersonalityIndexRouteImport } from './routes/_guarded/$catId/cat/personality/index'
+import { Route as GuardedCatIdCatPersonalityIntroductionRouteImport } from './routes/_guarded/$catId/cat/personality/introduction'
 
 const TocRoute = TocRouteImport.update({
   id: '/toc',
@@ -56,9 +60,14 @@ const AuthPasswordResetRoute = AuthPasswordResetRouteImport.update({
   path: '/auth/password-reset',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuardedPlayIndexRoute = GuardedPlayIndexRouteImport.update({
-  id: '/play/',
-  path: '/play/',
+const GuardedPlayRoute = GuardedPlayRouteImport.update({
+  id: '/play',
+  path: '/play',
+  getParentRoute: () => GuardedRoute,
+} as any)
+const GuardedCatIdRoute = GuardedCatIdRouteImport.update({
+  id: '/$catId',
+  path: '/$catId',
   getParentRoute: () => GuardedRoute,
 } as any)
 const GuardedConfigIndexRoute = GuardedConfigIndexRouteImport.update({
@@ -71,57 +80,87 @@ const GuardedCatSummonRoute = GuardedCatSummonRouteImport.update({
   path: '/cat/summon',
   getParentRoute: () => GuardedRoute,
 } as any)
-const GuardedCatStatusRoute = GuardedCatStatusRouteImport.update({
+const GuardedCatIdPlayIndexRoute = GuardedCatIdPlayIndexRouteImport.update({
+  id: '/play/',
+  path: '/play/',
+  getParentRoute: () => GuardedCatIdRoute,
+} as any)
+const GuardedCatIdCatStatusRoute = GuardedCatIdCatStatusRouteImport.update({
   id: '/cat/status',
   path: '/cat/status',
-  getParentRoute: () => GuardedRoute,
+  getParentRoute: () => GuardedCatIdRoute,
 } as any)
-const GuardedCatCareHistoryRoute = GuardedCatCareHistoryRouteImport.update({
-  id: '/cat/care-history',
-  path: '/cat/care-history',
-  getParentRoute: () => GuardedRoute,
-} as any)
+const GuardedCatIdCatCareHistoryRoute =
+  GuardedCatIdCatCareHistoryRouteImport.update({
+    id: '/cat/care-history',
+    path: '/cat/care-history',
+    getParentRoute: () => GuardedCatIdRoute,
+  } as any)
+const GuardedCatIdCatPersonalityIndexRoute =
+  GuardedCatIdCatPersonalityIndexRouteImport.update({
+    id: '/cat/personality/',
+    path: '/cat/personality/',
+    getParentRoute: () => GuardedCatIdRoute,
+  } as any)
+const GuardedCatIdCatPersonalityIntroductionRoute =
+  GuardedCatIdCatPersonalityIntroductionRouteImport.update({
+    id: '/cat/personality/introduction',
+    path: '/cat/personality/introduction',
+    getParentRoute: () => GuardedCatIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof gateIndexRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
+  '/$catId': typeof GuardedCatIdRouteWithChildren
+  '/play': typeof GuardedPlayRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/cat/care-history': typeof GuardedCatCareHistoryRoute
-  '/cat/status': typeof GuardedCatStatusRoute
   '/cat/summon': typeof GuardedCatSummonRoute
   '/config/': typeof GuardedConfigIndexRoute
-  '/play/': typeof GuardedPlayIndexRoute
+  '/$catId/cat/care-history': typeof GuardedCatIdCatCareHistoryRoute
+  '/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
+  '/$catId/play/': typeof GuardedCatIdPlayIndexRoute
+  '/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/$catId/cat/personality/': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof gateIndexRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
+  '/$catId': typeof GuardedCatIdRouteWithChildren
+  '/play': typeof GuardedPlayRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
-  '/cat/care-history': typeof GuardedCatCareHistoryRoute
-  '/cat/status': typeof GuardedCatStatusRoute
   '/cat/summon': typeof GuardedCatSummonRoute
   '/config': typeof GuardedConfigIndexRoute
-  '/play': typeof GuardedPlayIndexRoute
+  '/$catId/cat/care-history': typeof GuardedCatIdCatCareHistoryRoute
+  '/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
+  '/$catId/play': typeof GuardedCatIdPlayIndexRoute
+  '/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/$catId/cat/personality': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_guarded': typeof GuardedRouteWithChildren
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
+  '/_guarded/$catId': typeof GuardedCatIdRouteWithChildren
+  '/_guarded/play': typeof GuardedPlayRoute
   '/auth/password-reset': typeof AuthPasswordResetRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/(gate)/': typeof gateIndexRoute
-  '/_guarded/cat/care-history': typeof GuardedCatCareHistoryRoute
-  '/_guarded/cat/status': typeof GuardedCatStatusRoute
   '/_guarded/cat/summon': typeof GuardedCatSummonRoute
   '/_guarded/config/': typeof GuardedConfigIndexRoute
-  '/_guarded/play/': typeof GuardedPlayIndexRoute
+  '/_guarded/$catId/cat/care-history': typeof GuardedCatIdCatCareHistoryRoute
+  '/_guarded/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
+  '/_guarded/$catId/play/': typeof GuardedCatIdPlayIndexRoute
+  '/_guarded/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/_guarded/$catId/cat/personality/': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,41 +168,53 @@ export interface FileRouteTypes {
     | '/'
     | '/pp'
     | '/toc'
+    | '/$catId'
+    | '/play'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
-    | '/cat/care-history'
-    | '/cat/status'
     | '/cat/summon'
     | '/config/'
-    | '/play/'
+    | '/$catId/cat/care-history'
+    | '/$catId/cat/status'
+    | '/$catId/play/'
+    | '/$catId/cat/personality/introduction'
+    | '/$catId/cat/personality/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/pp'
     | '/toc'
+    | '/$catId'
+    | '/play'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
-    | '/cat/care-history'
-    | '/cat/status'
     | '/cat/summon'
     | '/config'
-    | '/play'
+    | '/$catId/cat/care-history'
+    | '/$catId/cat/status'
+    | '/$catId/play'
+    | '/$catId/cat/personality/introduction'
+    | '/$catId/cat/personality'
   id:
     | '__root__'
     | '/_guarded'
     | '/pp'
     | '/toc'
+    | '/_guarded/$catId'
+    | '/_guarded/play'
     | '/auth/password-reset'
     | '/auth/register'
     | '/auth/sign-in'
     | '/(gate)/'
-    | '/_guarded/cat/care-history'
-    | '/_guarded/cat/status'
     | '/_guarded/cat/summon'
     | '/_guarded/config/'
-    | '/_guarded/play/'
+    | '/_guarded/$catId/cat/care-history'
+    | '/_guarded/$catId/cat/status'
+    | '/_guarded/$catId/play/'
+    | '/_guarded/$catId/cat/personality/introduction'
+    | '/_guarded/$catId/cat/personality/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -227,11 +278,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPasswordResetRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_guarded/play/': {
-      id: '/_guarded/play/'
+    '/_guarded/play': {
+      id: '/_guarded/play'
       path: '/play'
-      fullPath: '/play/'
-      preLoaderRoute: typeof GuardedPlayIndexRouteImport
+      fullPath: '/play'
+      preLoaderRoute: typeof GuardedPlayRouteImport
+      parentRoute: typeof GuardedRoute
+    }
+    '/_guarded/$catId': {
+      id: '/_guarded/$catId'
+      path: '/$catId'
+      fullPath: '/$catId'
+      preLoaderRoute: typeof GuardedCatIdRouteImport
       parentRoute: typeof GuardedRoute
     }
     '/_guarded/config/': {
@@ -248,37 +306,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuardedCatSummonRouteImport
       parentRoute: typeof GuardedRoute
     }
-    '/_guarded/cat/status': {
-      id: '/_guarded/cat/status'
-      path: '/cat/status'
-      fullPath: '/cat/status'
-      preLoaderRoute: typeof GuardedCatStatusRouteImport
-      parentRoute: typeof GuardedRoute
+    '/_guarded/$catId/play/': {
+      id: '/_guarded/$catId/play/'
+      path: '/play'
+      fullPath: '/$catId/play/'
+      preLoaderRoute: typeof GuardedCatIdPlayIndexRouteImport
+      parentRoute: typeof GuardedCatIdRoute
     }
-    '/_guarded/cat/care-history': {
-      id: '/_guarded/cat/care-history'
+    '/_guarded/$catId/cat/status': {
+      id: '/_guarded/$catId/cat/status'
+      path: '/cat/status'
+      fullPath: '/$catId/cat/status'
+      preLoaderRoute: typeof GuardedCatIdCatStatusRouteImport
+      parentRoute: typeof GuardedCatIdRoute
+    }
+    '/_guarded/$catId/cat/care-history': {
+      id: '/_guarded/$catId/cat/care-history'
       path: '/cat/care-history'
-      fullPath: '/cat/care-history'
-      preLoaderRoute: typeof GuardedCatCareHistoryRouteImport
-      parentRoute: typeof GuardedRoute
+      fullPath: '/$catId/cat/care-history'
+      preLoaderRoute: typeof GuardedCatIdCatCareHistoryRouteImport
+      parentRoute: typeof GuardedCatIdRoute
+    }
+    '/_guarded/$catId/cat/personality/': {
+      id: '/_guarded/$catId/cat/personality/'
+      path: '/cat/personality'
+      fullPath: '/$catId/cat/personality/'
+      preLoaderRoute: typeof GuardedCatIdCatPersonalityIndexRouteImport
+      parentRoute: typeof GuardedCatIdRoute
+    }
+    '/_guarded/$catId/cat/personality/introduction': {
+      id: '/_guarded/$catId/cat/personality/introduction'
+      path: '/cat/personality/introduction'
+      fullPath: '/$catId/cat/personality/introduction'
+      preLoaderRoute: typeof GuardedCatIdCatPersonalityIntroductionRouteImport
+      parentRoute: typeof GuardedCatIdRoute
     }
   }
 }
 
+interface GuardedCatIdRouteChildren {
+  GuardedCatIdCatCareHistoryRoute: typeof GuardedCatIdCatCareHistoryRoute
+  GuardedCatIdCatStatusRoute: typeof GuardedCatIdCatStatusRoute
+  GuardedCatIdPlayIndexRoute: typeof GuardedCatIdPlayIndexRoute
+  GuardedCatIdCatPersonalityIntroductionRoute: typeof GuardedCatIdCatPersonalityIntroductionRoute
+  GuardedCatIdCatPersonalityIndexRoute: typeof GuardedCatIdCatPersonalityIndexRoute
+}
+
+const GuardedCatIdRouteChildren: GuardedCatIdRouteChildren = {
+  GuardedCatIdCatCareHistoryRoute: GuardedCatIdCatCareHistoryRoute,
+  GuardedCatIdCatStatusRoute: GuardedCatIdCatStatusRoute,
+  GuardedCatIdPlayIndexRoute: GuardedCatIdPlayIndexRoute,
+  GuardedCatIdCatPersonalityIntroductionRoute:
+    GuardedCatIdCatPersonalityIntroductionRoute,
+  GuardedCatIdCatPersonalityIndexRoute: GuardedCatIdCatPersonalityIndexRoute,
+}
+
+const GuardedCatIdRouteWithChildren = GuardedCatIdRoute._addFileChildren(
+  GuardedCatIdRouteChildren,
+)
+
 interface GuardedRouteChildren {
-  GuardedCatCareHistoryRoute: typeof GuardedCatCareHistoryRoute
-  GuardedCatStatusRoute: typeof GuardedCatStatusRoute
+  GuardedCatIdRoute: typeof GuardedCatIdRouteWithChildren
+  GuardedPlayRoute: typeof GuardedPlayRoute
   GuardedCatSummonRoute: typeof GuardedCatSummonRoute
   GuardedConfigIndexRoute: typeof GuardedConfigIndexRoute
-  GuardedPlayIndexRoute: typeof GuardedPlayIndexRoute
 }
 
 const GuardedRouteChildren: GuardedRouteChildren = {
-  GuardedCatCareHistoryRoute: GuardedCatCareHistoryRoute,
-  GuardedCatStatusRoute: GuardedCatStatusRoute,
+  GuardedCatIdRoute: GuardedCatIdRouteWithChildren,
+  GuardedPlayRoute: GuardedPlayRoute,
   GuardedCatSummonRoute: GuardedCatSummonRoute,
   GuardedConfigIndexRoute: GuardedConfigIndexRoute,
-  GuardedPlayIndexRoute: GuardedPlayIndexRoute,
 }
 
 const GuardedRouteWithChildren =
