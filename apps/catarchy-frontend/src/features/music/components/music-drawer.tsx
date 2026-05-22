@@ -39,7 +39,7 @@ export function MusicDrawer() {
             ♩ ♪ ♫ Music Box ♫ ♪ ♩
           </Text>
         </header>
-        <div className={cn(styles.embedWrapper, "no-invert")}>
+        <div className={styles.embedWrapper}>
           <SoundCloudEmbed
             url="https://api.soundcloud.com/playlists/2224108670"
             height="100%"
