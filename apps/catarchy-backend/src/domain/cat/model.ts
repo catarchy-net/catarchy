@@ -78,6 +78,27 @@ export const catModel = new Elysia({
 
   // ── GET /cat ───────────────────────────────────────────────────────────────
 
+  "cat.list.response": t.Array(
+    t.Object({
+      id: t.String({
+        description: "The unique identifier of the cat",
+        examples: ["123e4567-e89b-12d3-a456-426614174000"],
+      }),
+      name: t.String({
+        description: "The name of the cat",
+        examples: ["Mochi"],
+      }),
+      sex: t.Nullable(
+        t.Enum(CatSex, {
+          description: "The sex of the cat",
+          examples: ["MALE"],
+        }),
+      ),
+    }),
+  ),
+
+  // ── GET /cat/:catId ────────────────────────────────────────────────────────
+
   "cat.info.response": t.Object({
     id: t.String({
       description: "The unique identifier of the cat",
@@ -182,6 +203,10 @@ export const catModel = new Elysia({
   // ── POST /cat/care ─────────────────────────────────────────────────────────
 
   "cat.care.body": t.Object({
+    catId: t.String({
+      description: "ID of the cat to care for",
+      examples: ["123e4567-e89b-12d3-a456-426614174000"],
+    }),
     localDateTime: t.Optional(
       t.String({
         description: "User's local datetime",

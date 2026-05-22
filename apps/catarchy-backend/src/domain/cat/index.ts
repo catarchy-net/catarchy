@@ -18,7 +18,21 @@ export const catRouter = () => {
     .get(
       "/",
       async ({ user, catService }) => {
-        return await catService.getCatInfo({ userId: user.id });
+        return await catService.getCatList({ userId: user.id });
+      },
+      {
+        response: withCommonError({
+          [StatusMap.OK]: "cat.list.response",
+        }),
+      },
+    )
+    .get(
+      "/:catId",
+      async ({ user, catService, params }) => {
+        return await catService.getCatInfo({
+          userId: user.id,
+          catId: params.catId,
+        });
       },
       {
         response: withCommonError({
@@ -49,6 +63,7 @@ export const catRouter = () => {
       async ({ user, catCareService, body }) => {
         return await catCareService.careForCat({
           userId: user.id,
+          catId: body.catId,
           promptConfig: { localDateTime: body.localDateTime },
         });
       },

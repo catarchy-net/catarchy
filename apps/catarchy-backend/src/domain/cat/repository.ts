@@ -27,12 +27,25 @@ export abstract class CatRepository {
     return cat;
   }
 
-  static async findWithStatByServantId({ servantId }: { servantId: string }) {
+  static async findAllByServantId({ servantId }: { servantId: string }) {
+    return this.db
+      .select()
+      .from(table.cat)
+      .where(eq(table.cat.servantId, servantId));
+  }
+
+  static async findWithStatById({
+    catId,
+    servantId,
+  }: {
+    catId: string;
+    servantId: string;
+  }) {
     const [result] = await this.db
       .select({ cat: table.cat, stat: table.catStat })
       .from(table.cat)
       .innerJoin(table.catStat, eq(table.cat.id, table.catStat.catId))
-      .where(eq(table.cat.servantId, servantId))
+      .where(and(eq(table.cat.id, catId), eq(table.cat.servantId, servantId)))
       .limit(1);
 
     return result;
@@ -78,7 +91,13 @@ export abstract class CatRepository {
       .returning({ id: table.cat.id });
   }
 
-  static async findFullByServantId({ servantId }: { servantId: string }) {
+  static async findFullById({
+    catId,
+    servantId,
+  }: {
+    catId: string;
+    servantId: string;
+  }) {
     const [result] = await this.db
       .select({
         cat: table.cat,
@@ -91,7 +110,7 @@ export abstract class CatRepository {
         table.catPersonality,
         eq(table.cat.id, table.catPersonality.catId),
       )
-      .where(eq(table.cat.servantId, servantId))
+      .where(and(eq(table.cat.id, catId), eq(table.cat.servantId, servantId)))
       .limit(1);
 
     return result;

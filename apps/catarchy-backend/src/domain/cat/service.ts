@@ -16,8 +16,27 @@ export abstract class CatService {
     return getDatabase();
   }
 
-  static async getCatInfo({ userId }: { userId: string }) {
-    const cat = await this.catRepository.findWithStatByServantId({
+  static async getCatList({ userId }: { userId: string }) {
+    const cats = await this.catRepository.findAllByServantId({
+      servantId: userId,
+    });
+
+    return cats.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      sex: cat.sex as CatSex | null,
+    }));
+  }
+
+  static async getCatInfo({
+    userId,
+    catId,
+  }: {
+    userId: string;
+    catId: string;
+  }) {
+    const cat = await this.catRepository.findWithStatById({
+      catId,
       servantId: userId,
     });
 

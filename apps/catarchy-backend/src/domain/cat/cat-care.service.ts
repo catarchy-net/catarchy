@@ -21,9 +21,11 @@ export abstract class CatCareService {
 
   static async careForCat({
     userId,
+    catId,
     promptConfig,
   }: {
     userId: string;
+    catId: string;
     promptConfig?: {
       localDateTime?: string;
     };
@@ -39,7 +41,7 @@ export abstract class CatCareService {
         emotionDecreaseFrequencyHour,
       ],
     ] = await Promise.all([
-      this.catRepository.findFullByServantId({ servantId: userId }),
+      this.catRepository.findFullById({ catId, servantId: userId }),
       Promise.all([
         this.consensusRepository.getValue("CAT.COOLDOWN_HOUR_BETWEEN_CARE"),
         this.consensusRepository.getValue("CAT.GROWTH_PER_CARE"),
@@ -108,8 +110,8 @@ export abstract class CatCareService {
         // "deepseek/deepseek-v4-flash",
         // "google/gemini-2.5-flash",
         {
-          maxOutputTokens: 40,
-          temperature: 1.5,
+          maxOutputTokens: 50,
+          temperature: 0.2,
           ...carePrompt,
         },
       );
