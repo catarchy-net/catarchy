@@ -172,7 +172,12 @@ export const careRecord = sqliteTable(
   ],
 );
 
-/** Big Five personality trait scores for a cat, derived from personality tests (cat : catPersonality = 1 : 0~1) */
+/**
+ * Big Five personality trait scores for a cat (cat : catPersonality = 1 : 0~1).
+ * Two-phase values: while remainingCount > 0 the trait columns hold raw answer sums
+ * (unbounded integers); once remainingCount reaches 0 they are normalized to 0–10.
+ * Do not treat trait values as final scores until remainingCount === 0.
+ */
 export const catPersonality = sqliteTable("cat_personality", {
   catId: text("cat_id")
     .primaryKey()
