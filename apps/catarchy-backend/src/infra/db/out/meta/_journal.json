@@ -57,6 +57,13 @@
       "when": 1779250643613,
       "tag": "0007_natural_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1779450747904,
+      "tag": "0008_worried_micromacro",
+      "breakpoints": true
     }
   ]
 }
