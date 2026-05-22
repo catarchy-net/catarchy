@@ -1,5 +1,5 @@
 import { PersonalityQuestionKeyed } from "../../infra/db/schema";
-import { ForbiddenError } from "../../lib/error";
+import { ForbiddenError, NotFoundError } from "../../lib/error";
 import { CatRepository } from "../cat/repository";
 import { PersonalityRepository } from "./repository";
 
@@ -48,18 +48,13 @@ export abstract class PersonalityService {
 
     const [totalCount, remainingCount] = await Promise.all([
       this.personalityRepository.getQuestionCount(),
-      this.personalityRepository.getRemainingQuestionCount({
-        catId,
-      }),
+      this.personalityRepository.getRemainingQuestionCount({ catId }),
     ]);
 
-    return {
-      totalCount,
-      remainingCount,
-    };
+    return { totalCount, remainingCount };
   }
 
-  static async getOneRandomQuestion({
+  static async getNextQuestion({
     userId,
     catId,
   }: {
@@ -77,9 +72,7 @@ export abstract class PersonalityService {
       );
     }
 
-    return this.personalityRepository.getOneRandomQuestion({
-      catId,
-    });
+    return this.personalityRepository.getNextQuestion({ catId });
   }
 
   static async submitAnswer({
@@ -104,62 +97,63 @@ export abstract class PersonalityService {
       );
     }
 
-    await this.personalityRepository.saveAnswer({
-      catId,
-      answer,
-      questionId,
-    });
+    const [question, totalCount] = await Promise.all([
+      this.personalityRepository.getQuestion({ questionId }),
+      this.personalityRepository.getQuestionCount(),
+    ]);
 
-    const remainingCount =
-      await this.personalityRepository.getRemainingQuestionCount({
-        catId,
-      });
-
-    if (remainingCount > 0) {
-      return {
-        isCompleted: false,
-      };
+    if (!question) {
+      throw new NotFoundError("Question not found");
     }
 
-    const results = await this.personalityRepository.getAllResult({ catId });
-    const scores = this.calculatePersonality(results);
+    await this.personalityRepository.initCatPersonality({ catId, totalCount });
 
-    await this.personalityRepository.createCatPersonality({
-      catId,
-      ...scores,
-    });
+    const progress = await this.personalityRepository.getCatPersonalityProgress({ catId });
+    if (!progress) throw new Error("Failed to initialize personality record");
 
-    return {
-      isCompleted: true,
+    const delta =
+      question.keyed === PersonalityQuestionKeyed.MINUS ? 6 - answer : answer;
+
+    const updated = {
+      openness: progress.openness,
+      conscientiousness: progress.conscientiousness,
+      extraversion: progress.extraversion,
+      agreeableness: progress.agreeableness,
+      neuroticism: progress.neuroticism,
+      remainingCount: progress.remainingCount - 1,
     };
+    updated[question.domain as keyof typeof updated] += delta;
+
+    const isCompleted = updated.remainingCount === 0;
+
+    if (isCompleted) {
+      const normalized = this.normalizeScores(updated, totalCount);
+      await this.personalityRepository.updateCatPersonality({
+        catId,
+        ...normalized,
+        remainingCount: 0,
+      });
+    } else {
+      await this.personalityRepository.updateCatPersonality({ catId, ...updated });
+    }
+
+    return { isCompleted };
   }
 
-  private static calculatePersonality(
-    results: { keyed: string; domain: string; answer: number }[],
+  private static normalizeScores(
+    rawSums: Record<string, number>,
+    totalCount: number,
   ) {
-    const rawSums = {
-      openness: 0,
-      conscientiousness: 0,
-      extraversion: 0,
-      agreeableness: 0,
-      neuroticism: 0,
+    const questionsPerDomain = totalCount / 5;
+    const toScale = (raw: number) =>
+      Math.round(((raw / questionsPerDomain) - 1) * 2.5);
+
+    return {
+      openness: toScale(rawSums.openness),
+      conscientiousness: toScale(rawSums.conscientiousness),
+      extraversion: toScale(rawSums.extraversion),
+      agreeableness: toScale(rawSums.agreeableness),
+      neuroticism: toScale(rawSums.neuroticism),
     };
-    const counts = { ...rawSums };
-
-    for (const { keyed, domain, answer } of results) {
-      const value =
-        keyed === PersonalityQuestionKeyed.MINUS ? 6 - answer : answer;
-      rawSums[domain as keyof typeof rawSums] += value;
-      counts[domain as keyof typeof counts]++;
-    }
-
-    const normalized = {} as typeof rawSums;
-    for (const domain of Object.keys(rawSums) as (keyof typeof rawSums)[]) {
-      const n = counts[domain];
-      const avg = n === 0 ? 1 : rawSums[domain] / n; // average keyed score, range [1, 5]
-      normalized[domain] = Math.round((avg - 1) * 2.5); // scale to [0, 10]
-    }
-
-    return normalized;
   }
 }

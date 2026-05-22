@@ -1,4 +1,4 @@
-import { and, count, eq, isNull, sql } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { getDatabase, table } from "../../infra/db";
 
 export abstract class PersonalityRepository {
@@ -8,12 +8,40 @@ export abstract class PersonalityRepository {
 
   static async getCatPersonality({ catId }: { catId: string }) {
     const [result] = await this.db
-      .select()
+      .select({
+        openness: table.catPersonality.openness,
+        conscientiousness: table.catPersonality.conscientiousness,
+        extraversion: table.catPersonality.extraversion,
+        agreeableness: table.catPersonality.agreeableness,
+        neuroticism: table.catPersonality.neuroticism,
+      })
+      .from(table.catPersonality)
+      .where(
+        and(
+          eq(table.catPersonality.catId, catId),
+          eq(table.catPersonality.remainingCount, 0),
+        ),
+      )
+      .limit(1);
+
+    return result;
+  }
+
+  static async getCatPersonalityProgress({ catId }: { catId: string }) {
+    const [result] = await this.db
+      .select({
+        openness: table.catPersonality.openness,
+        conscientiousness: table.catPersonality.conscientiousness,
+        extraversion: table.catPersonality.extraversion,
+        agreeableness: table.catPersonality.agreeableness,
+        neuroticism: table.catPersonality.neuroticism,
+        remainingCount: table.catPersonality.remainingCount,
+      })
       .from(table.catPersonality)
       .where(eq(table.catPersonality.catId, catId))
       .limit(1);
 
-    return result;
+    return result ?? null;
   }
 
   static async getQuestionCount() {
@@ -25,27 +53,23 @@ export abstract class PersonalityRepository {
   }
 
   static async getRemainingQuestionCount({ catId }: { catId: string }) {
-    const [result] = await this.db
-      .select({
-        count: count(table.personalityQuestion.id),
-      })
-      .from(table.personalityQuestion)
-      .leftJoin(
-        table.personalityTestAnswer,
-        and(
-          eq(
-            table.personalityTestAnswer.questionId,
-            table.personalityQuestion.id,
-          ),
-          eq(table.personalityTestAnswer.catId, catId),
-        ),
-      )
-      .where(isNull(table.personalityTestAnswer.catId));
-
-    return result.count;
+    const progress = await this.getCatPersonalityProgress({ catId });
+    if (!progress) {
+      return await this.getQuestionCount();
+    }
+    return progress.remainingCount;
   }
 
-  static async getOneRandomQuestion({ catId }: { catId: string }) {
+  static async getNextQuestion({ catId }: { catId: string }) {
+    const [totalCount, progress] = await Promise.all([
+      this.getQuestionCount(),
+      this.getCatPersonalityProgress({ catId }),
+    ]);
+
+    if (progress?.remainingCount === 0) return null;
+
+    const answeredCount = progress ? totalCount - progress.remainingCount : 0;
+
     const [result] = await this.db
       .select({
         id: table.personalityQuestion.id,
@@ -59,21 +83,10 @@ export abstract class PersonalityRepository {
         descriptionLevel5: table.personalityQuestion.descriptionLevel5,
       })
       .from(table.personalityQuestion)
-      .leftJoin(
-        table.personalityTestAnswer,
-        and(
-          eq(
-            table.personalityTestAnswer.questionId,
-            table.personalityQuestion.id,
-          ),
-          eq(table.personalityTestAnswer.catId, catId),
-        ),
-      )
-      .where(isNull(table.personalityTestAnswer.catId))
-      .orderBy(sql`RANDOM()`)
-      .limit(1);
+      .orderBy(table.personalityQuestion.id)
+      .limit(1)
+      .offset(answeredCount);
 
-    // descriptionLevelN -> arraify
     if (!result) return null;
 
     return {
@@ -91,104 +104,68 @@ export abstract class PersonalityRepository {
     };
   }
 
-  static async saveAnswer({
-    catId,
-    questionId,
-    answer,
-  }: {
-    catId: string;
-    questionId: string;
-    answer: number;
-  }) {
-    return await this.db.insert(table.personalityTestAnswer).values({
-      catId,
-      questionId,
-      answer,
-    });
+  static async getQuestion({ questionId }: { questionId: string }) {
+    const [result] = await this.db
+      .select({
+        id: table.personalityQuestion.id,
+        keyed: table.personalityQuestion.keyed,
+        domain: table.personalityQuestion.domain,
+      })
+      .from(table.personalityQuestion)
+      .where(eq(table.personalityQuestion.id, questionId))
+      .limit(1);
+
+    return result ?? null;
   }
 
-  static async createCatPersonality({
+  static async initCatPersonality({
     catId,
-    agreeableness,
-    conscientiousness,
-    extraversion,
-    neuroticism,
-    openness,
+    totalCount,
   }: {
     catId: string;
-    agreeableness: number;
-    conscientiousness: number;
-    extraversion: number;
-    neuroticism: number;
-    openness: number;
+    totalCount: number;
   }) {
-    const [data] = await this.db
+    await this.db
       .insert(table.catPersonality)
       .values({
         catId,
-        agreeableness,
-        conscientiousness,
-        extraversion,
-        neuroticism,
-        openness,
+        openness: 0,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 0,
+        remainingCount: totalCount,
       })
-      .returning({
-        catId: table.catPersonality.catId,
-      });
-
-    return data;
+      .onConflictDoNothing();
   }
 
   static async updateCatPersonality({
     catId,
-    agreeableness,
+    openness,
     conscientiousness,
     extraversion,
+    agreeableness,
     neuroticism,
-    openness,
+    remainingCount,
   }: {
     catId: string;
-    agreeableness: number;
+    openness: number;
     conscientiousness: number;
     extraversion: number;
+    agreeableness: number;
     neuroticism: number;
-    openness: number;
+    remainingCount: number;
   }) {
-    const [data] = await this.db
+    await this.db
       .update(table.catPersonality)
       .set({
-        agreeableness,
+        openness,
         conscientiousness,
         extraversion,
+        agreeableness,
         neuroticism,
-        openness,
+        remainingCount,
       })
-      .where(eq(table.catPersonality.catId, catId))
-      .returning({
-        catId: table.catPersonality.catId,
-      });
-
-    return data;
-  }
-
-  static async getAllResult({ catId }: { catId: string }) {
-    const results = await this.db
-      .select({
-        questionId: table.personalityTestAnswer.questionId,
-        keyed: table.personalityQuestion.keyed,
-        domain: table.personalityQuestion.domain,
-        answer: table.personalityTestAnswer.answer,
-      })
-      .from(table.personalityTestAnswer)
-      .innerJoin(
-        table.personalityQuestion,
-        eq(
-          table.personalityQuestion.id,
-          table.personalityTestAnswer.questionId,
-        ),
-      )
-      .where(eq(table.personalityTestAnswer.catId, catId));
-
-    return results;
+      .where(eq(table.catPersonality.catId, catId));
   }
 }

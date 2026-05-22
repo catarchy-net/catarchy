@@ -55,7 +55,7 @@ export const personalityRouter = () => {
     .get(
       "/question",
       async ({ user, query, personalityService }) => {
-        const result = await personalityService.getOneRandomQuestion({
+        const result = await personalityService.getNextQuestion({
           userId: user.id,
           catId: query.catId,
         });
