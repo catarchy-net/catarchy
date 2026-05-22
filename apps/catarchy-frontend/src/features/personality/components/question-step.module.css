@@ -1,0 +1,92 @@
+.container {
+    
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+}
+
+.questionBox {
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.questionContainer {
+    padding: 4px 8px;
+}
+
+.question {
+    text-align: center;
+    line-height: 1.5;
+    text-wrap: balance;
+}
+
+.guide {
+    text-align: center;
+    text-wrap: balance;
+}
+
+.progress {
+    text-align: center;
+}
+
+.selectContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    margin: 0 auto;
+    gap: 8px;
+}
+
+.radioGroup {
+    position: relative;
+    display: flex;
+    width: fit-content;
+    margin: 0 auto;
+    align-items: center;
+    gap: var(--answer-gap);
+}
+
+.radioItem {
+    position: relative;
+}
+
+.radioItem:not(:last-child)::after {
+    content: ""; 
+    display: block;
+    position: absolute;
+    right: calc(-1 * var(--answer-gap));
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--answer-gap);
+    height: 1px;
+    background-color: var(--color-black);
+    z-index: 0;
+}
+
+.description {
+    padding: 16px;
+}
+
+.descriptionContainer {
+    padding: 12px;
+}
+
+.descriptionText {
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.5;
+}
+
+.description {
+    text-align: center;
+    text-wrap: balance;
+}
+
+.action {
+    padding: 8px;
+}

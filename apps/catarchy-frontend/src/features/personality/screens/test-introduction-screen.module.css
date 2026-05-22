@@ -1,0 +1,47 @@
+.body {
+    padding: 16px;
+}
+
+.article {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    
+}
+
+.title {
+    display: block;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.paragraph {
+    display: block;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.definitionList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.definitionTerm {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    margin-bottom: 6px;
+}
+
+.definitionDescription {
+    font-size: 12px;
+}
+
+.link {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.citation {
+    font-style: italic;
+}
