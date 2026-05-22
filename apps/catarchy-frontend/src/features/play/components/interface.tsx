@@ -13,16 +13,16 @@ import { EmotionStatus } from "./emotion-status";
 import styles from "./interface.module.css";
 import { Stage } from "./stage";
 
-export function Interface() {
+export function Interface({ catId }: { catId: string }) {
   const toast = useToast();
-  const { data: catInfo } = useQuery({ ...catInfoOptions() });
+  const { data: catInfo } = useQuery(catInfoOptions(catId));
 
   return (
     <div className={styles.root}>
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
           <div className={styles.emojiBtn}>
-            <EmotionStatus />
+            <EmotionStatus catId={catId} />
           </div>
         </div>
         <LogClick eventName="game_settings">

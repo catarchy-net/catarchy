@@ -10,14 +10,14 @@ function formatCountdown(seconds: number) {
   return [h, m, s].map((v) => String(v).padStart(2, "0")).join(":");
 }
 
-export function CareCooldown() {
+export function CareCooldown({ catId }: { catId: string }) {
   const queryClient = useQueryClient();
-  const cooldown = useCareCooldown();
+  const cooldown = useCareCooldown({ catId });
 
   const remainSeconds = useCountDown({
     target: cooldown.endTime ?? new Date(),
     onEnd() {
-      queryClient.invalidateQueries(catInfoOptions());
+      queryClient.invalidateQueries(catInfoOptions(catId));
     },
   });
 

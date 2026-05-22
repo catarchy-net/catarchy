@@ -6,10 +6,10 @@ import EducationIcon from "../assets/menu/education.svg?react";
 import ForumIcon from "../assets/menu/forum.svg?react";
 import styles from "./play-menu.module.css";
 
-export function PlayMenu() {
+export function PlayMenu({ catId }: { catId: string }) {
   return (
     <div className={styles.container}>
-      <Link to="/cat/status">
+      <Link to="/$catId/cat/status" params={{ catId }}>
         <Box rounded containerClassName={styles.box}>
           <CatInfoIcon />
         </Box>

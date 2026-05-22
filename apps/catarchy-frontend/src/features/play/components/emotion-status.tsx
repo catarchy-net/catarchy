@@ -3,8 +3,8 @@ import { BubbleHintToggle } from "@/features/common";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./emotion-status.module.css";
 
-export function EmotionStatus() {
-  const { data: catInfo } = useQuery(catInfoOptions());
+export function EmotionStatus({ catId }: { catId: string }) {
+  const { data: catInfo } = useQuery(catInfoOptions(catId));
 
   return (
     <div className={styles.container}>

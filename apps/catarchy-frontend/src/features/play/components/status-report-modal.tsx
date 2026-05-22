@@ -5,10 +5,12 @@ import styles from "./status-report-modal.module.css";
 export function StatusReportModal({
   mood,
   message,
+  closeText,
   onClose,
 }: {
   mood?: string;
   message?: string;
+  closeText?: string;
   onClose?: () => void;
 }) {
   const [streamEnd, setStreamEnd] = useState<boolean>(false);
@@ -30,7 +32,7 @@ export function StatusReportModal({
       </div>
       <div className={styles.footer}>
         <Button variant="secondary" disabled={!streamEnd} onClick={onClose}>
-          Close
+          {closeText || "Close"}
         </Button>
       </div>
     </div>
