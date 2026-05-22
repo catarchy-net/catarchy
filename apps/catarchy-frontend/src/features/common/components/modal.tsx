@@ -47,9 +47,7 @@ export function Modal({
               <header className={styles.header}>
                 <div className={styles.headerInner}>
                   <div className={styles.headerIcon}>{header.left}</div>
-                  <Text as="h2" className="font-bold">
-                    {header.title}
-                  </Text>
+                  <Text as="h2">{header.title}</Text>
                   <div className={styles.headerIcon}>{header.right}</div>
                 </div>
               </header>

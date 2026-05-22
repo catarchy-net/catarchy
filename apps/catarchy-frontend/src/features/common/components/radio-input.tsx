@@ -4,8 +4,10 @@ import { cn } from "../lib/cn";
 import styles from "./radio-input.module.css";
 import { Text } from "./text";
 
-export interface RadioInputProps
-  extends Omit<React.ComponentPropsWithoutRef<"input">, "type" | "children"> {
+export interface RadioInputProps extends Omit<
+  React.ComponentPropsWithoutRef<"input">,
+  "type" | "children"
+> {
   label?: React.ReactNode;
   checkedIndicator?: React.ReactNode;
   uncheckedIndicator?: React.ReactNode;

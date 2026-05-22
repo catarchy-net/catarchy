@@ -16,6 +16,7 @@ export * from "./components/cat-loading";
 export * from "./components/checkbox-input";
 export * from "./components/field";
 export * from "./components/header-back-button";
+export * from "./components/info-table";
 export * from "./components/label";
 export * from "./components/layout";
 export * from "./components/logo";

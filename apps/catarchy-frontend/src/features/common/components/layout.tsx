@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { useKeyboard } from "../hooks/use-keyboard";
 import { cn } from "../lib/cn";
 import styles from "./layout.module.css";
+import { Text } from "./text";
 
 interface ScaffoldRootProps {
   children?: React.ReactNode;
@@ -48,7 +49,9 @@ function ScaffoldHeader({
 
       {title &&
         (isTitleString ? (
-          <h1 className={styles.headerTitle}>{title}</h1>
+          <Text as="h1" className={styles.headerTitle}>
+            {title}
+          </Text>
         ) : (
           <div className={styles.headerTitle}>{title}</div>
         ))}

@@ -1,4 +1,4 @@
 {
   "typescript.tsserver.pluginPaths": ["./node_modules"],
-  "typescript.preferences.includePackageJsonAutoImports": "on"
+  "typescript.preferences.includePackageJsonAutoImports": "on",
 }
