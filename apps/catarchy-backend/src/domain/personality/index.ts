@@ -94,6 +94,7 @@ export const personalityRouter = () => {
         response: withCommonError({
           [StatusMap.OK]: "personality.answer.response",
           [StatusMap["Bad Request"]]: "personality.bad-request",
+          [StatusMap["Not Found"]]: "personality.not-found",
           [StatusMap.Forbidden]: "personality.forbidden",
         }),
       },
