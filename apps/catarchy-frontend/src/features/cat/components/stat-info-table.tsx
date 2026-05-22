@@ -17,30 +17,32 @@ export function StatInfoTable({ catId }: { catId: string }) {
 
   return (
     <InfoTable>
-      <tr>
-        <th align="left">
-          <Text>🌱 GROWTH</Text>
-        </th>
-        <td align="right">
-          <Text>{cat?.stat.growth.value}</Text>
-        </td>
-      </tr>
-      <tr>
-        <th align="left">
-          <Text>🎂 AGE</Text>
-        </th>
-        <td align="right">
-          <Text>{age}</Text>
-        </td>
-      </tr>
-      <tr>
-        <th align="left">
-          <Text>{cat?.stat.emotion.emoji} MOOD</Text>
-        </th>
-        <td align="right">
-          <Text>{cat?.stat.emotion.level.toUpperCase()}</Text>
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <th align="left">
+            <Text>🌱 GROWTH</Text>
+          </th>
+          <td align="right">
+            <Text>{cat?.stat.growth.value}</Text>
+          </td>
+        </tr>
+        <tr>
+          <th align="left">
+            <Text>🎂 AGE</Text>
+          </th>
+          <td align="right">
+            <Text>{age}</Text>
+          </td>
+        </tr>
+        <tr>
+          <th align="left">
+            <Text>{cat?.stat.emotion.emoji} MOOD</Text>
+          </th>
+          <td align="right">
+            <Text>{cat?.stat.emotion.level.toUpperCase()}</Text>
+          </td>
+        </tr>
+      </tbody>
     </InfoTable>
   );
 }
