@@ -7,6 +7,8 @@ export function runInBackground(fn: () => Promise<unknown>): void {
     waitUntil(fn());
   } catch (error) {
     logger.error("Error running background task", { error });
-    fn();
+    fn().catch((error) => {
+      logger.error("Error running background task (second attempt)", { error });
+    });
   }
 }
