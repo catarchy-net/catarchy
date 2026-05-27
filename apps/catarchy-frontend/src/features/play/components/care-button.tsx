@@ -60,7 +60,7 @@ export function CareButton({ catId }: { catId: string }) {
       },
       component: (
         <StatusReportModal
-          catId={catId}
+          careRecordId={data.careRecordId}
           mood={data?.emotion.emoji}
           closeText={hasPersonalityTestRemaining ? "Next" : "Close"}
           onClose={() => {
@@ -77,7 +77,6 @@ export function CareButton({ catId }: { catId: string }) {
       dimClosable: false,
     });
   }, [
-    catId,
     careForCat,
     modal,
     hasPersonalityTestRemaining,

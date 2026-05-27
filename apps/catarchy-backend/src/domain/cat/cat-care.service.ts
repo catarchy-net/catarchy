@@ -157,6 +157,39 @@ export abstract class CatCareService {
     };
   }
 
+  static async getCareRecord({
+    userId,
+    careRecordId,
+  }: {
+    userId: string;
+    careRecordId: string;
+  }) {
+    const record = await this.careRecordRepository.findById({
+      id: careRecordId,
+      userId,
+    });
+
+    if (!record) {
+      throw new NotFoundError("Care record not found.");
+    }
+
+    return {
+      ...record,
+      growth: {
+        value: record.growth,
+        age: getAge(record.growth),
+        ageGroup: getAgeGroup(record.growth),
+        delta: record.growthDelta,
+      },
+      emotion: {
+        value: record.emotion,
+        emoji: getEmotion(record.emotion).emoji,
+        level: getEmotion(record.emotion).level,
+        delta: record.emotionDelta,
+      },
+    };
+  }
+
   /**
    * *Only for cron job
    */

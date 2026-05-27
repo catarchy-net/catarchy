@@ -82,6 +82,7 @@ export const catRouter = () => {
         );
 
         return {
+          careRecordId: careRecord.id,
           emotion,
           growth,
         };
@@ -92,6 +93,21 @@ export const catRouter = () => {
           [StatusMap.OK]: "cat.care.response",
           [StatusMap["Not Found"]]: "cat.not-found",
           [StatusMap.Conflict]: "cat.conflict",
+        }),
+      },
+    )
+    .get(
+      "/care-records/:careRecordId",
+      async ({ user, catCareService, params }) => {
+        return await catCareService.getCareRecord({
+          userId: user.id,
+          careRecordId: params.careRecordId,
+        });
+      },
+      {
+        response: withCommonError({
+          [StatusMap.OK]: "cat.care-records.item",
+          [StatusMap["Not Found"]]: "cat.not-found",
         }),
       },
     )

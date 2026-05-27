@@ -66,6 +66,36 @@ export abstract class CareRecordRepository {
       .returning();
   }
 
+  static async findById({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }) {
+    const [record] = await CareRecordRepository.db
+      .select({
+        id: table.careRecord.id,
+        catId: table.careRecord.catId,
+        servantId: table.careRecord.servantId,
+        growth: table.careRecord.growth,
+        growthDelta: table.careRecord.growthDelta,
+        emotion: table.careRecord.emotion,
+        emotionDelta: table.careRecord.emotionDelta,
+        message: table.careRecord.message,
+        caredAt: table.careRecord.caredAt,
+      })
+      .from(table.careRecord)
+      .where(
+        and(
+          eq(table.careRecord.id, id),
+          eq(table.careRecord.servantId, userId),
+        ),
+      )
+      .limit(1);
+    return record;
+  }
+
   static updateCareMessage({ id, message }: { id: string; message: string }) {
     return CareRecordRepository.db
       .update(table.careRecord)

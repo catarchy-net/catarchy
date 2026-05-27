@@ -44,21 +44,30 @@ export function careRecordsOptions(payload: GetCareRecordsPayload) {
   });
 }
 
-export async function getLatestCareRecord({ catId }: { catId: string }) {
-  const { data, error } = await api.cat["care-records"].get({
-    query: { catId, limit: 1 },
-  });
+export async function getCareRecord({
+  careRecordId,
+}: {
+  careRecordId: string;
+}) {
+  const { data, error } = await api.cat["care-records"]({ careRecordId }).get();
 
   if (error) {
     throw error;
   }
 
-  return data?.items[0];
+  return data;
 }
 
-export function latestCareRecordOptions({ catId }: { catId: string }) {
-  return queryOptions({
-    queryKey: ["cat", "care-records", catId, "latest"],
-    queryFn: () => getLatestCareRecord({ catId }),
+export function careRecordOptions({ careRecordId }: { careRecordId: string }) {
+  return queryOptions<
+    Awaited<
+      ReturnType<ReturnType<(typeof api.cat)["care-records"]>["get"]>
+    >["data"],
+    Awaited<
+      ReturnType<ReturnType<(typeof api.cat)["care-records"]>["get"]>
+    >["error"]
+  >({
+    queryKey: ["cat", "care-records", careRecordId, "message"],
+    queryFn: () => getCareRecord({ careRecordId }),
   });
 }
