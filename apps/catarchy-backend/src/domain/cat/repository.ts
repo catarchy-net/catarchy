@@ -73,13 +73,15 @@ export abstract class CatRepository {
   static tryUpdateLastCaredAt({
     catId,
     cooldownHours,
+    lastCaredAt,
   }: {
     catId: string;
     cooldownHours: number;
+    lastCaredAt?: string | null;
   }) {
     return this.db
       .update(table.cat)
-      .set({ lastCaredAt: new Date().toISOString() })
+      .set({ lastCaredAt: lastCaredAt || new Date().toISOString() })
       .where(
         and(
           eq(table.cat.id, catId),

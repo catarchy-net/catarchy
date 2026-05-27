@@ -1,4 +1,3 @@
-import { ai } from "../../infra/ai";
 import { sendPushNotification } from "../../infra/fcm";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { logger } from "../../lib/logger";
@@ -9,7 +8,6 @@ import { CareRecordRepository } from "./care-record.repository";
 import { CatStatRepository } from "./cat-stat.repository";
 import { calculateNewEmotion, getEmotion } from "./constants/emotion";
 import { getAge, getAgeGroup } from "./constants/growth";
-import { buildCarePrompt } from "./prompts/care";
 import { CatRepository } from "./repository";
 
 export abstract class CatCareService {
@@ -22,13 +20,9 @@ export abstract class CatCareService {
   static async careForCat({
     userId,
     catId,
-    promptConfig,
   }: {
     userId: string;
     catId: string;
-    promptConfig?: {
-      localDateTime?: string;
-    };
   }) {
     // 1) get cat, cat stat, and consensus values needed for care logic in parallel
     const [
@@ -57,12 +51,15 @@ export abstract class CatCareService {
       throw new NotFoundError("You don't have a cat to care for.");
     }
 
-    const { cat, stat: catStat, personality } = catFull;
+    const { cat, stat: catStat } = catFull;
 
     // 2) check care cooldown and atomically update last cared time. If still on cooldown, throw error
+    const lastCaredAt = new Date().toISOString();
+
     const updated = await this.catRepository.tryUpdateLastCaredAt({
       catId: cat.id,
       cooldownHours: cooldownHour,
+      lastCaredAt,
     });
 
     if (updated.length === 0) {
@@ -81,69 +78,43 @@ export abstract class CatCareService {
       emotionDecrease,
       emotionDecreaseFrequencyHour,
     });
-    const [updatedCatStat] = await this.catStatRepository.updateAfterCare({
+
+    await this.catStatRepository.updateAfterCare({
       catId: cat.id,
       growth: newGrowth,
       emotion: newEmotion,
     });
 
-    // 5) generate care message with LLM
-    const emotionState = getEmotion(newEmotion);
-    const ageGroup = getAgeGroup(newGrowth);
-
-    const carePrompt = buildCarePrompt({
-      catName: cat.name,
-      mood: emotionState.level,
-      ageGroup,
-      personality,
-      ...promptConfig,
-    });
-
-    let message = "";
-
-    try {
-      const { text } = await ai.ask(
-        // "anthropic/claude-haiku-4-5",
-        // "xai/grok-4-fast-non-reasoning",
-        // "xai/grok-4.3",
-        "openai/gpt-4.1-nano",
-        // "deepseek/deepseek-v4-flash",
-        // "google/gemini-2.5-flash",
-        {
-          maxOutputTokens: 50,
-          temperature: 0.2,
-          ...carePrompt,
-        },
-      );
-
-      message = text.trim();
-    } catch (error) {
-      console.error("Error generating care message:", error);
-      message = `${cat.name} enjoyed the care and purrs contentedly.`;
-    }
-
-    await this.careRecordRepository.create({
+    const [careRecord] = await this.careRecordRepository.create({
       catId: cat.id,
       emotion: newEmotion,
       emotionDelta: newEmotion - oldEmotion,
       growth: newGrowth,
       growthDelta: newGrowth - oldGrowth,
       servantId: userId,
-      message,
     });
 
     return {
       growth: {
-        ageGroup: getAgeGroup(updatedCatStat.growth),
-        value: updatedCatStat.growth,
-        age: getAge(updatedCatStat.growth),
+        ageGroup: getAgeGroup(newGrowth),
+        age: getAge(newGrowth),
+        value: newGrowth,
       },
       emotion: {
-        value: updatedCatStat.emotion,
-        emoji: emotionState.emoji,
-        level: emotionState.level,
+        value: newEmotion,
+        emoji: getEmotion(newEmotion).emoji,
+        level: getEmotion(newEmotion).level,
       },
-      message,
+      cat: {
+        ...cat,
+        lastCaredAt,
+      },
+      catStat: {
+        ...catStat,
+        growth: newGrowth,
+        emotion: newEmotion,
+      },
+      careRecord: careRecord,
     };
   }
 

@@ -19,7 +19,7 @@ export function CareCooldown({ catId }: { catId: string }) {
   const remainSeconds = useCountDown({
     target: cooldown.endTime ?? new Date(),
     onEnd() {
-      queryClient.invalidateQueries(catInfoOptions(catId));
+      queryClient.refetchQueries(catInfoOptions(catId));
     },
   });
 

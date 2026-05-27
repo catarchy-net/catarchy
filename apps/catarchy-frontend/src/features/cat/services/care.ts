@@ -1,5 +1,5 @@
 import { mutationOptions, useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { api } from "@/features/common";
 import { consensusOptions } from "@/features/consensus";
@@ -30,19 +30,10 @@ export function careForCatOptions(catId: string) {
 }
 
 export function useCareCooldown({ catId }: { catId: string }) {
-  const { data: catData, error: catError } = useQuery(catInfoOptions(catId));
-  const { data: cooldownData, error: cooldownError } = useQuery(
+  const { data: catData } = useQuery(catInfoOptions(catId));
+  const { data: cooldownData } = useQuery(
     consensusOptions("CAT.COOLDOWN_HOUR_BETWEEN_CARE"),
   );
-
-  const activated = useMemo(() => {
-    if (catError || cooldownError) return false;
-    if (!catData?.lastCaredAt || !cooldownData) return false;
-
-    const lastCaredAt = new Date(catData.lastCaredAt).getTime();
-    const cooldownMs = (cooldownData.value as number) * 3_600_000;
-    return Date.now() < lastCaredAt + cooldownMs;
-  }, [catData, cooldownData, catError, cooldownError]);
 
   const endTime = useMemo(() => {
     if (!catData?.lastCaredAt || !cooldownData) return null;
@@ -50,6 +41,23 @@ export function useCareCooldown({ catId }: { catId: string }) {
     const cooldownMs = (cooldownData.value as number) * 3_600_000;
     return new Date(lastCaredAt + cooldownMs);
   }, [catData, cooldownData]);
+
+  const [activated, setActivated] = useState(false);
+
+  useEffect(() => {
+    if (!endTime) {
+      setActivated(false);
+      return;
+    }
+    const remaining = endTime.getTime() - Date.now();
+    if (remaining <= 0) {
+      setActivated(false);
+      return;
+    }
+    setActivated(true);
+    const timer = setTimeout(() => setActivated(false), remaining);
+    return () => clearTimeout(timer);
+  }, [endTime]);
 
   return {
     activated,

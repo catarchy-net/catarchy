@@ -55,11 +55,22 @@ export abstract class CareRecordRepository {
     emotionDelta: number;
     growth: number;
     emotion: number;
-    message: string;
+    message?: string;
   }) {
-    return CareRecordRepository.db.insert(table.careRecord).values({
-      ...params,
-      caredAt: new Date().toISOString(),
-    });
+    return CareRecordRepository.db
+      .insert(table.careRecord)
+      .values({
+        ...params,
+        caredAt: new Date().toISOString(),
+      })
+      .returning();
+  }
+
+  static updateCareMessage({ id, message }: { id: string; message: string }) {
+    return CareRecordRepository.db
+      .update(table.careRecord)
+      .set({ message })
+      .where(eq(table.careRecord.id, id))
+      .returning();
   }
 }

@@ -1,4 +1,8 @@
-import { InfiniteData, infiniteQueryOptions } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  infiniteQueryOptions,
+  queryOptions,
+} from "@tanstack/react-query";
 
 import { api } from "@/features/common";
 
@@ -37,5 +41,24 @@ export function careRecordsOptions(payload: GetCareRecordsPayload) {
     queryFn: ({ pageParam }) =>
       getCareRecords({ catId: payload.catId, limit, cursor: pageParam }),
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
+  });
+}
+
+export async function getLatestCareRecord({ catId }: { catId: string }) {
+  const { data, error } = await api.cat["care-records"].get({
+    query: { catId, limit: 1 },
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.items[0];
+}
+
+export function latestCareRecordOptions({ catId }: { catId: string }) {
+  return queryOptions({
+    queryKey: ["cat", "care-records", catId, "latest"],
+    queryFn: () => getLatestCareRecord({ catId }),
   });
 }

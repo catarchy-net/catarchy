@@ -258,9 +258,5 @@ export const catModel = new Elysia({
         examples: ["happy"],
       }),
     }),
-    message: t.String({
-      description: "AI-generated description of the cat's reaction",
-      examples: ["Mochi purrs softly and nuzzles against your hand."],
-    }),
   }),
 });

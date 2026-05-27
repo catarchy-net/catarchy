@@ -4,6 +4,7 @@ export * from "./components/character-box";
 
 // Services
 export * from "./services/care";
+export * from "./services/care-record";
 export * from "./services/cat-info";
 
 // Screens
