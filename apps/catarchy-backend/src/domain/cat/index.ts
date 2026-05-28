@@ -4,6 +4,7 @@ import { runInBackground } from "../../infra/background";
 import { cursorQueryType, cursorResultType } from "../../lib/pagination";
 import { withCommonError } from "../../lib/response";
 import { authGuard } from "../auth/guard";
+import { RelationshipHandler } from "../relationship/handler";
 import { CareReportHandler } from "./care-message.handler";
 import { CatCareService } from "./cat-care.service";
 import { careRecordItemSchema, catModel } from "./model";
@@ -17,6 +18,7 @@ export const catRouter = () => {
     .decorate("catService", CatService)
     .decorate("catCareService", CatCareService)
     .decorate("careMessageHandler", CareReportHandler)
+    .decorate("relationshipHandler", RelationshipHandler)
     .use(catModel)
     .use(authGuard())
     .get(
@@ -64,22 +66,29 @@ export const catRouter = () => {
     )
     .post(
       "/care",
-      async ({ user, catCareService, body, careMessageHandler }) => {
-        const { cat, catStat, emotion, growth, careRecord } =
+      async ({
+        user,
+        catCareService,
+        body,
+        careMessageHandler,
+        relationshipHandler,
+      }) => {
+        const { catId, emotion, growth, careRecord } =
           await catCareService.careForCat({
             userId: user.id,
             catId: body.catId,
           });
 
-        runInBackground(() =>
-          Promise.all([
+        if (careRecord) {
+          runInBackground(() => relationshipHandler.match({ catId }));
+
+          runInBackground(() =>
             careMessageHandler.handleCareReport({
               catRecordId: careRecord.id,
-              cat: cat,
-              catStat: catStat,
+              catId,
             }),
-          ]),
-        );
+          );
+        }
 
         return {
           careRecordId: careRecord.id,

@@ -112,7 +112,7 @@ export abstract class PersonalityService {
 
     await this.personalityRepository.initCatPersonality({ catId, totalCount });
 
-    const progress = await this.personalityRepository.findCatPersonalityProgress(
+    const progress = await this.personalityRepository.findCatPersonalityRecord(
       { catId },
     );
     if (!progress) throw new Error("Failed to initialize personality record");

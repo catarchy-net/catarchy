@@ -7,6 +7,15 @@ export abstract class CatRepository {
     return getDatabase();
   }
 
+  static async findById({ catId }: { catId: string }) {
+    const [cat] = await this.db
+      .select()
+      .from(table.cat)
+      .where(eq(table.cat.id, catId))
+      .limit(1);
+    return cat;
+  }
+
   static async findByServantId({
     servantId,
     catId,
@@ -133,4 +142,5 @@ export abstract class CatRepository {
         or(isNull(table.cat.lastCaredAt), lt(table.cat.lastCaredAt, threshold)),
       );
   }
+
 }

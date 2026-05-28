@@ -5,7 +5,11 @@ INSERT OR IGNORE INTO consensus (key, value, value_type, name, purpose) VALUES
   ('CAT.EMOTION_PER_CARE',    '5',  'NUMBER', 'Emotion stat gained per care', 'Emotion stat gained when caring for your cat'),
   ('CAT.EMOTION_DECREASE',    '10', 'NUMBER', 'Emotion decrease per cycle', 'Emotion stat lost per cycle when you do not care for your cat'),
   ('CAT.EMOTION_DECREASE_FREQUENCY_HOUR', '12', 'NUMBER', 'Emotion decrease frequency (hours)', 'How often (in hours) emotion decreases if cat was not cared for'),
-  ('CAT.MAX_GROWTH',          '100', 'NUMBER', 'Maximum growth stat', 'Maximum growth stat your cat can have')
+  ('CAT.MAX_GROWTH',          '100', 'NUMBER', 'Maximum growth stat', 'Maximum growth stat your cat can have'),
+  ('RELATIONSHIP.UNFRIENDED_SCORE_PENALTY',             '10',   'NUMBER', 'Unfriended score penalty',              'Score penalty applied when matching with a previously unfriended cat'),
+  ('RELATIONSHIP.FRIEND_MATCH_PROBABILITY_SAME_SEX',    '0.4',  'NUMBER', 'Friend match probability (same sex)',   'Probability of forming a friendship with a same-sex cat candidate'),
+  ('RELATIONSHIP.FRIEND_MATCH_PROBABILITY_DIFF_SEX',    '0.35', 'NUMBER', 'Friend match probability (diff sex)',   'Probability of forming a friendship with a different-sex cat candidate'),
+  ('RELATIONSHIP.LOVE_MATCH_PROBABILITY',               '0.01', 'NUMBER', 'Love match probability',               'Probability of forming a romantic relationship with a love candidate')
 ;
 
 -- ── Big5 Personality Traits ────────────────────────────────────

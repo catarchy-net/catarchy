@@ -7,6 +7,15 @@ export abstract class CatStatRepository {
     return getDatabase();
   }
 
+  static async findByCatId({ catId }: { catId: string }) {
+    const [stat] = await this.db
+      .select()
+      .from(table.catStat)
+      .where(eq(table.catStat.catId, catId))
+      .limit(1);
+    return stat;
+  }
+
   static create({
     catId,
     growth,

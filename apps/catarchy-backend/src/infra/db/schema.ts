@@ -7,6 +7,7 @@ import {
   sqliteTable,
   text,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { uuidv7 } from "uuidv7";
 
@@ -263,6 +264,36 @@ export const catRelationship = sqliteTable(
     unique("cat_relationship_unique").on(t.catId1, t.catId2),
     check("cat_relationship_order", sql`${t.catId1} < ${t.catId2}`),
     index("cat_relationship_cat_id_2_idx").on(t.catId2),
+    index("cat_relationship_updated_at_idx").on(t.updatedAt),
+    uniqueIndex("cat_relationship_romance_cat1_idx")
+      .on(t.catId1)
+      .where(sql`${t.type} IN ('COUPLE', 'MARRIED')`),
+    uniqueIndex("cat_relationship_romance_cat2_idx")
+      .on(t.catId2)
+      .where(sql`${t.type} IN ('COUPLE', 'MARRIED')`),
+  ],
+);
+
+export const catRelationshipHistory = sqliteTable(
+  "cat_relationship_history",
+  {
+    id: text("id")
+      .$defaultFn(() => uuidv7())
+      .primaryKey(),
+    catId: text("cat_id")
+      .notNull()
+      .references(() => cat.id),
+    targetCatId: text("target_cat_id")
+      .notNull()
+      .references(() => cat.id),
+    type: text("type", {
+      enum: Object.values(CatRelationshipType) as [string, ...string[]],
+    }).notNull(),
+    createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+  },
+  (t) => [
+    index("cat_relationship_history_initiator_cursor_idx").on(t.catId, t.id),
+    index("cat_relationship_history_target_cursor_idx").on(t.targetCatId, t.id),
   ],
 );
 
@@ -394,6 +425,7 @@ export const table = {
   catPersonality: catPersonality,
   personalityQuestion: personalityQuestion,
   catRelationship: catRelationship,
+  catRelationshipHistory: catRelationshipHistory,
   fcmToken: fcmTokenTable,
   chronicle: chronicle,
   consensus: consensusTable,

@@ -1,0 +1,1 @@
+CREATE INDEX `cat_relationship_updated_at_idx` ON `cat_relationship` (`updated_at`);

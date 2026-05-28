@@ -1,3 +1,8 @@
+import { ENVIRONMENT, getEnv } from "./env";
+
+const blue = (s: string) =>
+  getEnv().ENVIRONMENT === ENVIRONMENT.LOCAL ? `\x1b[34m${s}\x1b[0m` : s;
+
 export const logger = {
   request(requestId: string, method: string, path: string) {
     console.log(`[REQ] ${requestId} ${method} ${path}`);
@@ -14,6 +19,6 @@ export const logger = {
     }
   },
   info(message: string, ...args: unknown[]) {
-    console.log(`[INF] ${message}`, ...args);
+    console.log(blue(`[INF] ${message}`), ...args);
   },
 };

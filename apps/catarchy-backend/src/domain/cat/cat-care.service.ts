@@ -1,3 +1,4 @@
+import { ai } from "../../infra/ai";
 import { sendPushNotification } from "../../infra/fcm";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { logger } from "../../lib/logger";
@@ -6,8 +7,8 @@ import { ConsensusRepository } from "../consensus/repository";
 import { NotificationRepository } from "../notification/repository";
 import { CareRecordRepository } from "./care-record.repository";
 import { CatStatRepository } from "./cat-stat.repository";
-import { calculateNewEmotion, getEmotion } from "./constants/emotion";
-import { getAge, getAgeGroup } from "./constants/growth";
+import { calculateNewEmotion, getEmotion } from "./lib/emotion";
+import { getAge, getAgeGroup } from "./lib/growth";
 import { CatRepository } from "./repository";
 
 export abstract class CatCareService {
@@ -95,6 +96,7 @@ export abstract class CatCareService {
     });
 
     return {
+      catId: cat.id,
       growth: {
         ageGroup: getAgeGroup(newGrowth),
         age: getAge(newGrowth),
@@ -105,16 +107,7 @@ export abstract class CatCareService {
         emoji: getEmotion(newEmotion).emoji,
         level: getEmotion(newEmotion).level,
       },
-      cat: {
-        ...cat,
-        lastCaredAt,
-      },
-      catStat: {
-        ...catStat,
-        growth: newGrowth,
-        emotion: newEmotion,
-      },
-      careRecord: careRecord,
+      careRecord,
     };
   }
 
@@ -188,6 +181,51 @@ export abstract class CatCareService {
         delta: record.emotionDelta,
       },
     };
+  }
+
+  static async saveCareMessage({
+    catRecordId,
+    catId,
+  }: {
+    catRecordId: string;
+    catId: string;
+  }) {
+    const [cat, catStat] = await Promise.all([
+      this.catRepository.findById({ catId }),
+      this.catStatRepository.findByCatId({ catId }),
+    ]);
+
+    if (!cat || !catStat) return;
+
+    const hour = new Date().getUTCHours();
+    const timePeriod =
+      hour >= 5 && hour < 12 ? "morning"
+      : hour >= 12 && hour < 18 ? "afternoon"
+      : hour >= 18 && hour < 22 ? "evening"
+      : "night";
+
+    let message = "";
+    try {
+      const { text } = await ai.ask(
+        // "anthropic/claude-haiku-4-5",
+        // "xai/grok-4-fast-non-reasoning",
+        // "xai/grok-4.3",
+        "openai/gpt-4.1-nano",
+        {
+        maxOutputTokens: 50,
+        temperature: 0.8,
+        system: `Describe a cat's behavior/Lang: en-US/Pattern: "[Name(no-capitalize)] verb object [adverb/adjective phrase]."/1~2 sentences/Plain text only/Reflect time of day in behavior`,
+        prompt: `${cat.name}, mood:${getEmotion(catStat.emotion).level}, age:${getAgeGroup(catStat.growth)}, time:${timePeriod}`,
+      });
+      message = text.trim();
+    } catch {
+      message = `${cat.name} enjoyed the care and purrs contentedly.`;
+    }
+
+    await this.careRecordRepository.updateCareMessage({
+      id: catRecordId,
+      message,
+    });
   }
 
   /**

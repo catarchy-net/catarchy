@@ -96,6 +96,15 @@ export abstract class CareRecordRepository {
     return record;
   }
 
+  static async findLatestByCatId({ catId, limit }: { catId: string; limit: number }) {
+    return CareRecordRepository.db
+      .select({ id: table.careRecord.id })
+      .from(table.careRecord)
+      .where(eq(table.careRecord.catId, catId))
+      .orderBy(desc(table.careRecord.id))
+      .limit(limit);
+  }
+
   static updateCareMessage({ id, message }: { id: string; message: string }) {
     return CareRecordRepository.db
       .update(table.careRecord)

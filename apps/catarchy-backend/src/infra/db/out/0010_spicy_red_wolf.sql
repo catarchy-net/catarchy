@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX `cat_relationship_romance_cat1_idx` ON `cat_relationship` (`cat_id_1`) WHERE "cat_relationship"."type" IN ('COUPLE', 'MARRIED');--> statement-breakpoint
+CREATE UNIQUE INDEX `cat_relationship_romance_cat2_idx` ON `cat_relationship` (`cat_id_2`) WHERE "cat_relationship"."type" IN ('COUPLE', 'MARRIED');

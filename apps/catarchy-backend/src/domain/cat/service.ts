@@ -5,8 +5,8 @@ import { CatSex } from "../../infra/db/schema";
 import { runAtomic } from "../../lib/atomic";
 import { ConflictError, NotFoundError } from "../../lib/error";
 import { CatStatRepository } from "./cat-stat.repository";
-import { getEmotion } from "./constants/emotion";
-import { getAge, getAgeGroup } from "./constants/growth";
+import { getEmotion } from "./lib/emotion";
+import { getAge, getAgeGroup } from "./lib/growth";
 import { CatRepository } from "./repository";
 
 export abstract class CatService {

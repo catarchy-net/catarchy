@@ -28,7 +28,7 @@ export abstract class PersonalityRepository {
     return result;
   }
 
-  static async findCatPersonalityProgress({ catId }: { catId: string }) {
+  static async findCatPersonalityRecord({ catId }: { catId: string }) {
     const [result] = await this.db
       .select({
         openness: table.catPersonality.openness,
@@ -54,7 +54,7 @@ export abstract class PersonalityRepository {
   }
 
   static async findRemainingQuestionCount({ catId }: { catId: string }) {
-    const progress = await this.findCatPersonalityProgress({ catId });
+    const progress = await this.findCatPersonalityRecord({ catId });
     if (!progress) {
       return await this.findQuestionCount();
     }
@@ -64,7 +64,7 @@ export abstract class PersonalityRepository {
   static async findNextQuestion({ catId }: { catId: string }) {
     const [totalCount, progress] = await Promise.all([
       this.findQuestionCount(),
-      this.findCatPersonalityProgress({ catId }),
+      this.findCatPersonalityRecord({ catId }),
     ]);
 
     if (progress?.remainingCount === 0) return null;

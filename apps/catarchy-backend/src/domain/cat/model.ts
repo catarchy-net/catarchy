@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 
 import { CatSex } from "../../infra/db/schema";
-import { AgeGroup } from "./constants/growth";
+import { AgeGroup } from "./lib/growth";
 
 export const careRecordItemSchema = t.Object({
   id: t.String({

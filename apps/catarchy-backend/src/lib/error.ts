@@ -33,6 +33,12 @@ export class NotFoundError extends AppError {
   }
 }
 
+export class PreconditionFailedError extends AppError {
+  constructor(message?: string, data?: unknown) {
+    super(message ?? "Precondition Failed", 412, data);
+  }
+}
+
 export class ConflictError extends AppError {
   constructor(message?: string, data?: unknown) {
     super(message ?? "Conflict", 409, data);
