@@ -13,7 +13,7 @@ function base64url(buffer: ArrayBuffer): string {
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
   const b64 = pem
-    .replace(/\\n/g, "\n") // literal \n → actual newline (env var에서 올 때)
+    .replace(/\\n/g, "\n") // literal \n → actual newline (when coming from env var)
     .replace(/-----BEGIN PRIVATE KEY-----/, "")
     .replace(/-----END PRIVATE KEY-----/, "")
     .replace(/\s+/g, "");

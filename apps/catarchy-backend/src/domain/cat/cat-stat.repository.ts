@@ -44,7 +44,7 @@ export abstract class CatStatRepository {
       .returning();
   }
 
-  /** 마지막 케어가 frequencyHours 이상 지난 고양이의 감정을 amount만큼 감소 (최소 0) */
+  /** Decreases emotion by amount for cats whose last care was more than frequencyHours ago (minimum 0) */
   static decayEmotionForNeglectedCats({
     amount,
     frequencyHours,

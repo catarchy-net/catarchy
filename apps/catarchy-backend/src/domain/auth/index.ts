@@ -204,13 +204,13 @@ export const authRouter = () => {
           return status(401, { message: "Invalid or expired refresh token" });
         }
 
-        // 1. JWT 서명 검증
+        // 1. Verify JWT signature
         const payload = await refreshJwt.verify(oldRefreshToken);
         if (!payload || !payload.sub) {
           return status(401, { message: "Invalid or expired refresh token" });
         }
 
-        // 2. DB에서 세션 존재 여부 + 만료 검증
+        // 2. Validate session existence and expiry in DB
         const session = await authService.validateSession(oldRefreshToken);
         if (!session) {
           return status(401, { message: "Invalid or expired refresh token" });
