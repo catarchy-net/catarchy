@@ -37,6 +37,10 @@ export abstract class RelationshipRepository {
     const [relationship] = await this.db
       .insert(table.catRelationship)
       .values({ catId1, catId2, type })
+      .onConflictDoUpdate({
+        target: [table.catRelationship.catId1, table.catRelationship.catId2],
+        set: { type, updatedAt: sql`(CURRENT_TIMESTAMP)` },
+      })
       .returning();
     await this.db
       .insert(table.catRelationshipHistory)
