@@ -22,6 +22,8 @@ export function StatInfoTable({ catId }: { catId: string }) {
     currentRelationshipOptions({ catId }),
   );
 
+  const haveNoFriends = relationship?.friendCount === 0;
+
   const age = useMemo(
     () =>
       cat
@@ -100,7 +102,7 @@ export function StatInfoTable({ catId }: { catId: string }) {
             </td>
           </tr>
         )}
-        {relationship?.friendCount && (
+        {!haveNoFriends && (
           <tr>
             <th align="left" className={styles.verticalTop}>
               <Text>🐈 FRIENDS</Text>
@@ -119,7 +121,7 @@ export function StatInfoTable({ catId }: { catId: string }) {
                     <TextMarquee maxWidth={180}>{friend.catName}</TextMarquee>
                   </div>
                 ))}
-                {hasMoreThanThreeFriends && (
+                {!haveNoFriends && !hasMoreThanThreeFriends && (
                   <Link
                     to={"/$catId/cat/friend"}
                     params={{
@@ -127,7 +129,7 @@ export function StatInfoTable({ catId }: { catId: string }) {
                     }}
                     className={styles.moreFriends}
                   >
-                    <Text>+ {relationship?.friendCount - 3} more friends</Text>
+                    <Text>+ {relationship!.friendCount - 3} more friends</Text>
                   </Link>
                 )}
               </div>
