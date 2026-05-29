@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { CatSex } from "@catarchy/shared/constants/cat";
 import { useMemo } from "react";
 
 import { cn, Text } from "@/features/common";
 
-import { CatSex } from "../hooks/use-adopt-form";
 import { catInfoOptions } from "../services/cat-info";
 import styles from "./cat-name.module.css";
 

@@ -1,11 +1,7 @@
+import { CatSex } from "@catarchy/shared/constants/cat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFormContext } from "react-hook-form";
 import z from "zod";
-
-export enum CatSex {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
 
 export const summonFormSchema = z.object({
   name: z

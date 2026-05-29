@@ -21,23 +21,49 @@ export const CAT_CHARACTER_HITBOX: Record<
 
 export const CatCharacter = forwardRef<
   HTMLDivElement,
-  { age?: AgeGroup; tag?: "default" | "walk"; scale?: number }
+  { age?: AgeGroup; tag?: "default" | "walk"; scale?: number; clip?: boolean }
 >(function CatCharacter(
-  { age = AgeGroup.NEWBORN, tag = "default", scale = 2 },
+  { age = AgeGroup.NEWBORN, tag = "default", scale = 2, clip = false },
   ref,
 ) {
   const isNewborn = age === AgeGroup.NEWBORN;
   const texture = isNewborn ? newbornTexture : catTexture;
   const keyframes = isNewborn ? newbornKeyframe : catKeyframe;
+  const renderedSize = 32 * scale;
+
+  if (!clip) {
+    return (
+      <Sprite
+        ref={ref}
+        tag={tag}
+        width={renderedSize}
+        height={renderedSize}
+        texture={texture}
+        keyframes={keyframes}
+      />
+    );
+  }
+
+  const { x, y, w, h } = CAT_CHARACTER_HITBOX[age];
+  const hitboxScale = renderedSize / 64;
+  const clipX = x * hitboxScale;
+  const clipY = y * hitboxScale;
+  const clipW = w * hitboxScale;
+  const clipH = h * hitboxScale;
 
   return (
-    <Sprite
+    <div
       ref={ref}
-      tag={tag}
-      width={32 * scale}
-      height={32 * scale}
-      texture={texture}
-      keyframes={keyframes}
-    />
+      style={{ width: clipW, height: clipH, overflow: "hidden", position: "relative" }}
+    >
+      <Sprite
+        tag={tag}
+        width={renderedSize}
+        height={renderedSize}
+        texture={texture}
+        keyframes={keyframes}
+        style={{ position: "absolute", left: -clipX, top: -clipY }}
+      />
+    </div>
   );
 });

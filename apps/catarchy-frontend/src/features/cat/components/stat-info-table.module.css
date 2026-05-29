@@ -1,0 +1,25 @@
+.verticalTop {
+  vertical-align: top;
+}
+
+.catInfoItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.catIcon {
+  flex-shrink: 0;
+}
+
+.friendList {
+  display: flex;
+  flex-direction: column;
+  padding-top: 2px;
+  padding-bottom: 6px;
+}
+
+.moreFriends:hover {
+  text-decoration: underline;
+}

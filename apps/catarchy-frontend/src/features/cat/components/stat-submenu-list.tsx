@@ -27,6 +27,16 @@ export function StatSubmenuList({ catId }: { catId: string }) {
           </Button>
         </Link>
       </li>
+      <li>
+        <Link to="/$catId/cat/friend" params={{ catId }}>
+          <Button variant="outline" className={styles.menuItem}>
+            <div className={styles.menuItem}>
+              <Text>Friends</Text>
+              <ChevronRight />
+            </div>
+          </Button>
+        </Link>
+      </li>
     </menu>
   );
 }

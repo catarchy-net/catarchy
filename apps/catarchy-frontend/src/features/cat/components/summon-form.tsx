@@ -1,6 +1,8 @@
+import { CatSex } from "@catarchy/shared/constants/cat";
+
 import { Box, Field, RadioInput, Text, TextInput } from "@/features/common";
 
-import { CatSex, useSummonFormContext } from "../hooks/use-adopt-form";
+import { useSummonFormContext } from "../hooks/use-adopt-form";
 import styles from "./summon-form.module.css";
 
 export function SummonForm() {

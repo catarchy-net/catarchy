@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
 import { BubbleHint, type BubbleHintProps } from "./bubble-hint";
+import { Text } from "./text";
 
 interface BubbleHintToggleProps extends Omit<
   BubbleHintProps,
@@ -18,7 +19,7 @@ interface BubbleHintToggleProps extends Omit<
 
 export function BubbleHintToggle({
   hint,
-  duration = 2000,
+  duration = 3000,
   children,
   disabled,
   ...bubbleProps
@@ -41,7 +42,7 @@ export function BubbleHintToggle({
     <>
       {isVisible && (
         <BubbleHint targetRef={targetRef} {...bubbleProps}>
-          {hint}
+          {typeof hint === "string" ? <Text>{hint}</Text> : hint}
         </BubbleHint>
       )}
       {children({ ref: targetRef, onClick: handleToggle })}
