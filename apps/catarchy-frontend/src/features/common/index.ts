@@ -67,5 +67,5 @@ export * from "./lib/api";
 export * from "./lib/cn";
 export * from "./lib/env";
 export * from "./lib/haptic";
-export * from "./lib/sound-effect";
 export * from "./lib/sleep";
+export * from "./lib/sound-effect";
