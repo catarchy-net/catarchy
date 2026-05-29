@@ -30,6 +30,7 @@ export * from "./components/stream-text";
 export * from "./components/text";
 export * from "./components/text-area";
 export * from "./components/text-input";
+export * from "./components/text-marquee";
 export * from "./components/toast";
 
 // Renderers
@@ -43,6 +44,7 @@ export * from "../config/hooks/use-pwa-update";
 export * from "./hooks/use-alert";
 export * from "./hooks/use-bottom-sheet";
 export * from "./hooks/use-count-down";
+export * from "./hooks/use-infinite-scroll";
 export * from "./hooks/use-keyboard";
 export * from "./hooks/use-modal";
 export * from "./hooks/use-platform";

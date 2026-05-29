@@ -1,0 +1,21 @@
+.container {
+  overflow: hidden;
+}
+
+.track {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.active {
+  animation: marquee var(--marquee-duration) linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--marquee-offset));
+  }
+}
