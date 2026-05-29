@@ -28,7 +28,7 @@
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "tailwindCSS.experimental.classRegex": [],
     "files.associations": {
-      "*.css": "tailwindcss",
+      "*.css": "css",
     },
     "liveServer.settings.multiRootWorkspaceName": "frontend",
   },
