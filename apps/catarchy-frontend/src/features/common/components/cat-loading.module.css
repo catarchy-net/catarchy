@@ -4,3 +4,9 @@
   align-items: center;
   gap: 12px;
 }
+
+.loadingText {
+  text-align: center;
+  text-wrap: balance;
+  white-space: pre-line;
+}

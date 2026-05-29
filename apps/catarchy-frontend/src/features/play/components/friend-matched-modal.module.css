@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.character {
+  display: flex;
+  justify-content: center;
+}
+
+.reportText {
+  line-height: 1.5;
+}
+
+.noMatchText {
+  text-align: center;
+  line-height: 1.5;
+}
+
+.footer {
+  padding: 8px;
+}
