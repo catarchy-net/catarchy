@@ -24,6 +24,7 @@ import { Route as GuardedCatIdPlayIndexRouteImport } from './routes/_guarded/$ca
 import { Route as GuardedCatIdCatStatusRouteImport } from './routes/_guarded/$catId/cat/status'
 import { Route as GuardedCatIdCatCareHistoryRouteImport } from './routes/_guarded/$catId/cat/care-history'
 import { Route as GuardedCatIdCatPersonalityIndexRouteImport } from './routes/_guarded/$catId/cat/personality/index'
+import { Route as GuardedCatIdCatFriendIndexRouteImport } from './routes/_guarded/$catId/cat/friend/index'
 import { Route as GuardedCatIdCatPersonalityIntroductionRouteImport } from './routes/_guarded/$catId/cat/personality/introduction'
 
 const TocRoute = TocRouteImport.update({
@@ -102,6 +103,12 @@ const GuardedCatIdCatPersonalityIndexRoute =
     path: '/cat/personality/',
     getParentRoute: () => GuardedCatIdRoute,
   } as any)
+const GuardedCatIdCatFriendIndexRoute =
+  GuardedCatIdCatFriendIndexRouteImport.update({
+    id: '/cat/friend/',
+    path: '/cat/friend/',
+    getParentRoute: () => GuardedCatIdRoute,
+  } as any)
 const GuardedCatIdCatPersonalityIntroductionRoute =
   GuardedCatIdCatPersonalityIntroductionRouteImport.update({
     id: '/cat/personality/introduction',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
   '/$catId/play/': typeof GuardedCatIdPlayIndexRoute
   '/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/$catId/cat/friend/': typeof GuardedCatIdCatFriendIndexRoute
   '/$catId/cat/personality/': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
   '/$catId/play': typeof GuardedCatIdPlayIndexRoute
   '/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/$catId/cat/friend': typeof GuardedCatIdCatFriendIndexRoute
   '/$catId/cat/personality': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRoutesById {
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/_guarded/$catId/cat/status': typeof GuardedCatIdCatStatusRoute
   '/_guarded/$catId/play/': typeof GuardedCatIdPlayIndexRoute
   '/_guarded/$catId/cat/personality/introduction': typeof GuardedCatIdCatPersonalityIntroductionRoute
+  '/_guarded/$catId/cat/friend/': typeof GuardedCatIdCatFriendIndexRoute
   '/_guarded/$catId/cat/personality/': typeof GuardedCatIdCatPersonalityIndexRoute
 }
 export interface FileRouteTypes {
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/$catId/cat/status'
     | '/$catId/play/'
     | '/$catId/cat/personality/introduction'
+    | '/$catId/cat/friend/'
     | '/$catId/cat/personality/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/$catId/cat/status'
     | '/$catId/play'
     | '/$catId/cat/personality/introduction'
+    | '/$catId/cat/friend'
     | '/$catId/cat/personality'
   id:
     | '__root__'
@@ -214,6 +226,7 @@ export interface FileRouteTypes {
     | '/_guarded/$catId/cat/status'
     | '/_guarded/$catId/play/'
     | '/_guarded/$catId/cat/personality/introduction'
+    | '/_guarded/$catId/cat/friend/'
     | '/_guarded/$catId/cat/personality/'
   fileRoutesById: FileRoutesById
 }
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuardedCatIdCatPersonalityIndexRouteImport
       parentRoute: typeof GuardedCatIdRoute
     }
+    '/_guarded/$catId/cat/friend/': {
+      id: '/_guarded/$catId/cat/friend/'
+      path: '/cat/friend'
+      fullPath: '/$catId/cat/friend/'
+      preLoaderRoute: typeof GuardedCatIdCatFriendIndexRouteImport
+      parentRoute: typeof GuardedCatIdRoute
+    }
     '/_guarded/$catId/cat/personality/introduction': {
       id: '/_guarded/$catId/cat/personality/introduction'
       path: '/cat/personality/introduction'
@@ -349,6 +369,7 @@ interface GuardedCatIdRouteChildren {
   GuardedCatIdCatStatusRoute: typeof GuardedCatIdCatStatusRoute
   GuardedCatIdPlayIndexRoute: typeof GuardedCatIdPlayIndexRoute
   GuardedCatIdCatPersonalityIntroductionRoute: typeof GuardedCatIdCatPersonalityIntroductionRoute
+  GuardedCatIdCatFriendIndexRoute: typeof GuardedCatIdCatFriendIndexRoute
   GuardedCatIdCatPersonalityIndexRoute: typeof GuardedCatIdCatPersonalityIndexRoute
 }
 
@@ -358,6 +379,7 @@ const GuardedCatIdRouteChildren: GuardedCatIdRouteChildren = {
   GuardedCatIdPlayIndexRoute: GuardedCatIdPlayIndexRoute,
   GuardedCatIdCatPersonalityIntroductionRoute:
     GuardedCatIdCatPersonalityIntroductionRoute,
+  GuardedCatIdCatFriendIndexRoute: GuardedCatIdCatFriendIndexRoute,
   GuardedCatIdCatPersonalityIndexRoute: GuardedCatIdCatPersonalityIndexRoute,
 }
 

@@ -1,0 +1,32 @@
+.body {
+  padding: 16px;
+}
+
+.listContainer {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.table {
+  margin-bottom: 16px;
+}
+
+.catCharacter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.catNameCell {
+  padding: 4px 16px;
+}
+
+.catName {
+  font-weight: bold;
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
