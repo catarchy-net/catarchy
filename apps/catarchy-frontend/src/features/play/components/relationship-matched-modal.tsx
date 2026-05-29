@@ -10,11 +10,12 @@ import {
   StreamText,
   Text,
 } from "@/features/common";
+import { CatRelationshipType } from "@/features/relationship";
 
 import { useFriendMatchPolling } from "../hooks/use-friend-match-polling";
-import styles from "./friend-matched-modal.module.css";
+import styles from "./relationship-matched-modal.module.css";
 
-export function FriendMatchedModal({
+export function RelationshipMatchedModal({
   catId,
   startedAt,
   closeText,
@@ -58,15 +59,40 @@ export function FriendMatchedModal({
     const isDepressed = friend.emotion.level === EmotionLevel.Depressed;
 
     if (isHappy) {
-      return `${friend.catSex === CatSex.MALE ? "He" : "She"} is happy!`;
+      return "is feeling happy";
     } else if (isSad) {
-      return `${friend.catSex === CatSex.MALE ? "He" : "She"} is in a bad mood`;
+      return "is in a bad mood";
     } else if (isDepressed) {
-      return `${friend.catSex === CatSex.MALE ? "He" : "She"} is in a very bad mood... I hope ${friend.catSex === CatSex.MALE ? "he" : "she"} feels better soon!`;
+      return "is in a very bad mood";
     } else {
-      return `${friend.catSex === CatSex.MALE ? "He" : "She"} is in a neutral mood`;
+      return "is in a neutral mood";
     }
   }, [friend]);
+
+  const isCouple = friend?.type === CatRelationshipType.COUPLE;
+
+  const matchText = useMemo(() => {
+    if (!friend) {
+      return "";
+    }
+
+    const isMale = friend.catSex === CatSex.MALE;
+    const subject = isMale ? "he" : "she";
+    const possessive = isMale ? "His" : "Her";
+    const relation = isCouple
+      ? isMale
+        ? "boyfriend"
+        : "girlfriend"
+      : "friend";
+
+    const intro = `${catInfo?.name} has a new ${relation}! \n${possessive} name is ${friend.catName} and ${subject} is ${ageText}. \nRight now your ${relation} ${emotionText}.`;
+
+    if (isCouple) {
+      return `${intro} \nCongratulations on the new romance! May the two of you be happy together! 💕`;
+    }
+
+    return intro;
+  }, [friend, isCouple, catInfo?.name, ageText, emotionText]);
 
   return (
     <div className={styles.container}>
@@ -81,10 +107,7 @@ export function FriendMatchedModal({
               <CatCharacter age={friend.growth.ageGroup} clip />
             </div>
 
-            <StreamText
-              className={styles.reportText}
-              text={`A new friend has appeared nearby! \n${friend.catSex === CatSex.MALE ? "His" : "Her"} name is ${friend.catName} and ${friend.catSex === CatSex.MALE ? "he" : "she"} is ${ageText}. ${emotionText}`}
-            />
+            <StreamText className={styles.reportText} text={matchText} />
           </>
         ) : (
           <Text as="p" className={styles.noMatchText}>

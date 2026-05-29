@@ -16,7 +16,7 @@ import {
   usePersonalityTestModal,
 } from "@/features/personality";
 
-import { FriendMatchedModal } from "../components/friend-matched-modal";
+import { RelationshipMatchedModal } from "../components/relationship-matched-modal";
 import { StatusReportModal } from "../components/status-report-modal";
 import { useFriendMatchPolling } from "./use-friend-match-polling";
 import type { ModalStep } from "./use-modal-sequence";
@@ -87,7 +87,7 @@ export function useCareAction({ catId }: { catId: string }) {
         dimClosable: false,
         skip: hasPersonalityTestRemaining,
         render: ({ next, done }) => (
-          <FriendMatchedModal
+          <RelationshipMatchedModal
             catId={catId}
             startedAt={startedAt}
             closeText={hasPersonalityTestRemaining ? "Next" : "Close"}
