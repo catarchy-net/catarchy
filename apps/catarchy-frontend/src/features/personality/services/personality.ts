@@ -43,6 +43,7 @@ export function getCatPersonalityOptions({ catId }: { catId: string }) {
   return queryOptions<CatPersonalityResponse, CatPersonalityError>({
     queryKey: ["personality", catId],
     queryFn: () => getCatPersonality({ catId }),
+    staleTime: 1 * 60 * 1000, // 1 minutes
   });
 }
 
@@ -65,6 +66,7 @@ export function getPersonalityTestProgressOptions({
   return queryOptions<PersonalityProgressResponse, PersonalityProgressError>({
     queryKey: ["personality", "progress", catId],
     queryFn: () => getPersonalityTestProgress({ catId }),
+    staleTime: 30 * 1000, // 30 seconds
   });
 }
 

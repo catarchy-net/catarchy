@@ -15,7 +15,7 @@ export function ScoreTable({ catId }: { catId: string }) {
   const formatscore = (score?: number | null) => {
     if (isLoading) return "Loading...";
     if (score == null) return "??????????";
-    return "█".repeat(score) + "▒".repeat(10 - score) + ` ${score}/10`;
+    return `${score}/10 ` + "█".repeat(score) + "▒".repeat(10 - score);
   };
 
   return (
@@ -25,31 +25,41 @@ export function ScoreTable({ catId }: { catId: string }) {
           <th align="left">
             <Text>Openness</Text>
           </th>
-          <td align="right">{formatscore(data?.openness)}</td>
+          <td align="right">
+            <Text>{formatscore(data?.openness)}</Text>
+          </td>
         </tr>
         <tr>
           <th align="left">
             <Text>Conscientiousness</Text>
           </th>
-          <td align="right">{formatscore(data?.conscientiousness)}</td>
+          <td align="right">
+            <Text>{formatscore(data?.conscientiousness)}</Text>
+          </td>
         </tr>
         <tr>
           <th align="left">
             <Text>Extraversion</Text>
           </th>
-          <td align="right">{formatscore(data?.extraversion)}</td>
+          <td align="right">
+            <Text>{formatscore(data?.extraversion)}</Text>
+          </td>
         </tr>
         <tr>
           <th align="left">
             <Text>Agreeableness</Text>
           </th>
-          <td align="right">{formatscore(data?.agreeableness)}</td>
+          <td align="right">
+            <Text>{formatscore(data?.agreeableness)}</Text>
+          </td>
         </tr>
         <tr>
           <th align="left">
             <Text>Neuroticism</Text>
           </th>
-          <td align="right">{formatscore(data?.neuroticism)}</td>
+          <td align="right">
+            <Text>{formatscore(data?.neuroticism)}</Text>
+          </td>
         </tr>
       </tbody>
     </InfoTable>
