@@ -19,6 +19,12 @@
   border-bottom: 1px dashed var(--color-gray-100);
 }
 
+html[data-theme="inverted"] .table tr:not(:last-child) th,
+html[data-theme="inverted"] .table tr:not(:last-child) td {
+  /* border-bottom-color: var(--color-gray-500); */
+  border-bottom-color: var(--color-black);
+}
+
 .table th {
   font-weight: normal;
   padding-left: 6px;

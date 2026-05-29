@@ -13,14 +13,12 @@ interface ScaffoldRootProps {
 
 const ScaffoldRoot = forwardRef<HTMLDivElement, ScaffoldRootProps>(
   ({ children, avoidKeyboard = false, className }, ref) => {
-    const keyboard = useKeyboard();
-
     return (
       <div
         ref={ref}
         className={cn(styles.root, className)}
         style={{
-          height: avoidKeyboard ? keyboard.viewportHeight : "100dvh",
+          height: avoidKeyboard ? "var(--viewport-height, 100dvh)" : "100dvh",
         }}
       >
         {children}

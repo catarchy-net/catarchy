@@ -1,10 +1,8 @@
-import { createContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 interface KeyboardContextValue {
   isOpen: boolean;
   height: number;
-  viewportHeight: number;
-  viewportOffsetTop: number;
 }
 
 export const KeyboardContext = createContext<KeyboardContextValue | undefined>(
@@ -16,13 +14,9 @@ interface KeyboardProviderProps {
 }
 
 export function KeyboardProvider({ children }: KeyboardProviderProps) {
-  const [state, setState] = useState(() => {
-    const vv = typeof window !== "undefined" ? window.visualViewport : null;
-    return {
-      viewportHeight:
-        vv?.height ?? (typeof window !== "undefined" ? window.innerHeight : 0),
-      viewportOffsetTop: vv?.offsetTop ?? 0,
-    };
+  const [keyboardState, setKeyboardState] = useState<KeyboardContextValue>({
+    isOpen: false,
+    height: 0,
   });
 
   const maxHeightRef = useRef<number>(
@@ -31,9 +25,18 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
       : 0,
   );
   const lastHeightRef = useRef<number>(maxHeightRef.current);
+  const rafRef = useRef<number | null>(null);
+  const pendingHeightRef = useRef<number | null>(null);
+  const isInputFocusedRef = useRef<boolean>(false);
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const vv = window.visualViewport;
+
+    document.documentElement.style.setProperty(
+      "--viewport-height",
+      `${vv?.height ?? window.innerHeight}px`,
+    );
 
     const preventScroll = () => {
       window.scrollTo(0, 0);
@@ -43,22 +46,55 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
 
     const handleViewportChange = () => {
       const height = vv?.height ?? window.innerHeight;
-      const offsetTop = vv?.offsetTop ?? 0;
 
-      if (height > maxHeightRef.current) {
+      if (isInputFocusedRef.current) {
+        if (height > maxHeightRef.current) {
+          maxHeightRef.current = height;
+        }
+      } else {
         maxHeightRef.current = height;
       }
 
       lastHeightRef.current = height;
-      setState({ viewportHeight: height, viewportOffsetTop: offsetTop });
+      pendingHeightRef.current = height;
+
+      document.documentElement.style.setProperty(
+        "--viewport-height",
+        `${height}px`,
+      );
+
+      if (rafRef.current === null) {
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null;
+          const latestHeight = pendingHeightRef.current;
+          if (latestHeight === null) return;
+          const keyboardHeight = maxHeightRef.current - latestHeight;
+          const nextIsOpen = keyboardHeight > 100;
+          const nextHeight = Math.max(0, keyboardHeight);
+          setKeyboardState((prev) => {
+            if (prev.isOpen === nextIsOpen && prev.height === nextHeight)
+              return prev;
+            return { isOpen: nextIsOpen, height: nextHeight };
+          });
+        });
+      }
     };
 
-    if (vv) vv.addEventListener("resize", handleViewportChange);
-    window.addEventListener("resize", handleViewportChange);
+    if (vv) {
+      vv.addEventListener("resize", handleViewportChange);
+    } else {
+      window.addEventListener("resize", handleViewportChange);
+    }
     window.addEventListener("scroll", preventScroll);
 
     const handleFocus = (e: FocusEvent) => {
+      if (blurTimerRef.current !== null) {
+        clearTimeout(blurTimerRef.current);
+        blurTimerRef.current = null;
+      }
+      isInputFocusedRef.current = true;
       preventScroll();
+
       const target = e.target as HTMLElement;
       if (!target) return;
 
@@ -78,6 +114,11 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
     };
 
     const handleBlur = () => {
+      // 입력 간 포커스 이동 시 false로 튀는 것을 방지하기 위해 약간 지연
+      blurTimerRef.current = setTimeout(() => {
+        isInputFocusedRef.current = false;
+        blurTimerRef.current = null;
+      }, 100);
       preventScroll();
     };
 
@@ -85,26 +126,27 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
     document.addEventListener("focusout", handleBlur);
 
     return () => {
-      if (vv) vv.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("resize", handleViewportChange);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      if (blurTimerRef.current !== null) {
+        clearTimeout(blurTimerRef.current);
+        blurTimerRef.current = null;
+      }
+      if (vv) {
+        vv.removeEventListener("resize", handleViewportChange);
+      } else {
+        window.removeEventListener("resize", handleViewportChange);
+      }
       window.removeEventListener("scroll", preventScroll);
       document.removeEventListener("focusin", handleFocus);
       document.removeEventListener("focusout", handleBlur);
     };
   }, []);
 
-  const value = useMemo<KeyboardContextValue>(() => {
-    const keyboardHeight = maxHeightRef.current - state.viewportHeight;
-    return {
-      isOpen: keyboardHeight > 100,
-      height: Math.max(0, keyboardHeight),
-      viewportHeight: state.viewportHeight,
-      viewportOffsetTop: state.viewportOffsetTop,
-    };
-  }, [state]);
-
   return (
-    <KeyboardContext.Provider value={value}>
+    <KeyboardContext.Provider value={keyboardState}>
       {children}
     </KeyboardContext.Provider>
   );
