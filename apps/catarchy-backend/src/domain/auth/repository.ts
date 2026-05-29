@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 
-import { getDatabase, table } from "../../infra/db";
+import { getDatabase, table, UserAuthProvider } from "../../infra/db";
 
 export abstract class AuthRepository {
   private static get db() {
@@ -17,7 +17,7 @@ export abstract class AuthRepository {
     userId: string;
   }) {
     return AuthRepository.db.insert(table.auth).values({
-      provider: "email_password",
+      provider: UserAuthProvider.EMAIL_PASSWORD,
       email,
       password: passwordHashed,
       userId,

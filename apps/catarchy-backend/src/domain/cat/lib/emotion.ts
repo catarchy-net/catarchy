@@ -1,9 +1,6 @@
-export enum EmotionLevel {
-  Depressed = "depressed",
-  Down = "down",
-  Meh = "meh",
-  Happy = "happy",
-}
+import { EmotionLevel } from "@catarchy/shared/constants/cat";
+
+export { EmotionLevel };
 
 export const EMOTION_THRESHOLDS = {
   DOWN: 40,

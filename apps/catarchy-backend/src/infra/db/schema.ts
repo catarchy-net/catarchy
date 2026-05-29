@@ -1,3 +1,4 @@
+import { CatSex } from "@catarchy/shared/constants/cat";
 import { ConsensusValueType } from "@catarchy/shared/constants/consensus";
 import { relations, sql } from "drizzle-orm";
 import {
@@ -33,7 +34,10 @@ export const authTable = sqliteTable("auth", {
     .$defaultFn(() => uuidv7())
     .primaryKey(),
   provider: text("provider", {
-    enum: Object.values(UserAuthProvider) as [string, ...string[]],
+    enum: Object.values(UserAuthProvider) as [
+      UserAuthProvider,
+      ...UserAuthProvider[],
+    ],
   }).notNull(),
   email: text("email").unique(),
   password: text("password"),
@@ -100,10 +104,7 @@ export const fcmTokenTable = sqliteTable(
 
 // ── Cat ───────────────────────────────────────────────────────────────────────
 
-export enum CatSex {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
+export { CatSex };
 
 /** Cats living in the world, each owned by a user (user : cat = 1 : N) */
 export const cat = sqliteTable(
@@ -114,7 +115,7 @@ export const cat = sqliteTable(
       .primaryKey(),
     name: text("name").notNull(),
     sex: text("sex", {
-      enum: Object.values(CatSex) as [string, ...string[]],
+      enum: Object.values(CatSex) as [CatSex, ...CatSex[]],
     }),
     servantId: text("servant_id")
       .notNull()
@@ -255,7 +256,10 @@ export const catRelationship = sqliteTable(
       .notNull()
       .references(() => cat.id),
     type: text("type", {
-      enum: Object.values(CatRelationshipType) as [string, ...string[]],
+      enum: Object.values(CatRelationshipType) as [
+        CatRelationshipType,
+        ...CatRelationshipType[],
+      ],
     }).notNull(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
     updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
@@ -287,7 +291,10 @@ export const catRelationshipHistory = sqliteTable(
       .notNull()
       .references(() => cat.id),
     type: text("type", {
-      enum: Object.values(CatRelationshipType) as [string, ...string[]],
+      enum: Object.values(CatRelationshipType) as [
+        CatRelationshipType,
+        ...CatRelationshipType[],
+      ],
     }).notNull(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
   },
@@ -302,7 +309,10 @@ export const consensusTable = sqliteTable("consensus", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
   valueType: text("value_type", {
-    enum: Object.values(ConsensusValueType) as [string, ...string[]],
+    enum: Object.values(ConsensusValueType) as [
+      ConsensusValueType,
+      ...ConsensusValueType[],
+    ],
   }).notNull(),
   name: text("name").notNull(),
   purpose: text("purpose").notNull(),

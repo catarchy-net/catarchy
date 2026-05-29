@@ -74,7 +74,7 @@ export abstract class CatService {
   }: {
     userId: string;
     name: string;
-    sex: string;
+    sex: CatSex;
   }) {
     const existingCat = await this.catRepository.findByServantId({
       servantId: userId,

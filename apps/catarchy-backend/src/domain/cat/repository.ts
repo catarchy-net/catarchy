@@ -1,6 +1,7 @@
 import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 
 import { getDatabase, table } from "../../infra/db";
+import { CatSex } from "../../infra/db/schema";
 
 export abstract class CatRepository {
   private static get db() {
@@ -70,7 +71,7 @@ export abstract class CatRepository {
     id: string;
     servantId: string;
     name: string;
-    sex: string;
+    sex: CatSex;
   }) {
     return this.db
       .insert(table.cat)
