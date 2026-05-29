@@ -26,7 +26,6 @@ let segmentTimer: ReturnType<typeof setTimeout> | null = null;
 function playSegmented(
   type: PlayableSoundEffect,
   audio: HTMLAudioElement,
-  volume: number,
   segments: number[],
 ): void {
   if (segmentTimer !== null) {
@@ -38,7 +37,6 @@ function playSegmented(
   const start = segments[index];
   const duration = segments[index + 1] - start;
 
-  audio.volume = volume;
   audio.currentTime = start / 1000;
   audio.play().catch(() => {});
 
@@ -51,7 +49,7 @@ function playSegmented(
 }
 
 export function playSound(overrideSoundEffect?: SoundEffect): void {
-  const { soundEffect: stored, volume } = useSoundEffectStore.getState();
+  const { soundEffect: stored } = useSoundEffectStore.getState();
   const soundEffect = overrideSoundEffect ?? stored;
   if (soundEffect === "none") return;
 
@@ -59,11 +57,10 @@ export function playSound(overrideSoundEffect?: SoundEffect): void {
   const segments = SEGMENTED_CONFIG[soundEffect];
 
   if (segments) {
-    playSegmented(soundEffect, audio, volume, segments);
+    playSegmented(soundEffect, audio, segments);
     return;
   }
 
-  audio.volume = volume;
   audio.currentTime = 0;
   audio.play().catch(() => {});
 }

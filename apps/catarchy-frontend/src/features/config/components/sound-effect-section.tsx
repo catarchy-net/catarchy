@@ -1,18 +1,10 @@
-import {
-  Box,
-  Field,
-  RangeInput,
-  SelectBox,
-  Text,
-  useSoundEffect,
-} from "@/features/common";
+import { Box, SelectBox, Text, useSoundEffect } from "@/features/common";
 
 import styles from "./sound-effect-section.module.css";
 import { SoundPad } from "./sound-pad";
 
 export function SoundEffectSection() {
-  const { soundEffect, setSoundEffect, volume, setVolume, isSegmented, play } =
-    useSoundEffect();
+  const { soundEffect, setSoundEffect, isSegmented, play } = useSoundEffect();
 
   return (
     <Box
@@ -33,49 +25,17 @@ export function SoundEffectSection() {
             play(opt.value);
           }}
           options={[
-            {
-              label: "None",
-              value: "none",
-            },
-            {
-              label: "Meow",
-              value: "meow",
-            },
-            {
-              label: "Meow 2",
-              value: "meow2",
-            },
-            {
-              label: "Meow 3",
-              value: "meow3",
-            },
-            {
-              label: "Meowrgh",
-              value: "meowrgh",
-            },
-            {
-              label: "Vine boom",
-              value: "vine-boom",
-            },
-            {
-              label: "Oiia",
-              value: "oiia",
-            },
+            { label: "None", value: "none" },
+            { label: "Meow", value: "meow" },
+            { label: "Meow 2", value: "meow2" },
+            { label: "Meow 3", value: "meow3" },
+            { label: "Meowrgh", value: "meowrgh" },
+            { label: "Vine boom", value: "vine-boom" },
+            { label: "Oiia", value: "oiia" },
           ]}
         />
         {isSegmented && <SoundPad />}
       </div>
-      <Field label="Volume">
-        <RangeInput
-          min={0}
-          max={1}
-          step={0.1}
-          value={volume}
-          disabled={soundEffect === "none"}
-          onValueChange={setVolume}
-          onCommit={play}
-        />
-      </Field>
     </Box>
   );
 }

@@ -6,7 +6,7 @@ function isAndroid(): boolean {
 
 function triggerHaptic(): void {
   if (isAndroid()) {
-    navigator.vibrate?.(10);
+    navigator.vibrate?.(40);
   }
   playSound();
 }
