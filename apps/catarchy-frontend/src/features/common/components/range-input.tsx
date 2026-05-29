@@ -14,6 +14,7 @@ type BaseRangeInputProps = Omit<
   value?: number;
   defaultValue?: number;
   onValueChange?: (value: number) => void;
+  onCommit?: (value: number) => void;
 };
 
 type RangeInputProps = BaseRangeInputProps &
@@ -40,6 +41,7 @@ export const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(
       value: controlledValue,
       defaultValue = 0,
       onValueChange,
+      onCommit,
       disabled = false,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
@@ -107,7 +109,8 @@ export const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(
       document.removeEventListener("pointerup", handlePointerUp);
       document.removeEventListener("touchmove", handlePointerMove);
       document.removeEventListener("touchend", handlePointerUp);
-    }, [handlePointerMove]);
+      onCommit?.(currentValue);
+    }, [handlePointerMove, onCommit, currentValue]);
 
     const handlePointerDown = () => {
       if (disabled) return;

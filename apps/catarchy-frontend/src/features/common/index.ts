@@ -48,6 +48,7 @@ export * from "./hooks/use-infinite-scroll";
 export * from "./hooks/use-keyboard";
 export * from "./hooks/use-modal";
 export * from "./hooks/use-platform";
+export * from "./hooks/use-sound-effect";
 export * from "./hooks/use-toast";
 
 // Providers
@@ -58,10 +59,13 @@ export * from "./providers/tanstack-query-provider";
 
 // Stores
 export * from "./stores/overlay";
+export * from "./stores/sound-effect";
 export * from "./stores/toast";
 
 // Lib
 export * from "./lib/api";
 export * from "./lib/cn";
 export * from "./lib/env";
+export * from "./lib/haptic";
+export * from "./lib/sound-effect";
 export * from "./lib/sleep";

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { cn } from "../lib/cn";
+import { useHaptic } from "../lib/haptic";
 import { Box } from "./box";
 import styles from "./button.module.css";
 
@@ -21,16 +22,24 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "default",
       disabled,
       native,
+      onClick,
       ...props
     },
     ref,
   ) => {
+    const { trigger } = useHaptic();
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      trigger();
+      onClick?.(e);
+    };
+
     if (native) {
       return (
         <button
           ref={ref}
           className={className}
           disabled={disabled}
+          onClick={handleClick}
           {...props}
         />
       );
@@ -58,6 +67,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         data-size={size}
         rounded={variant !== "ghost"}
         disabled={disabled}
+        onClick={handleClick}
         {...props}
       />
     );
