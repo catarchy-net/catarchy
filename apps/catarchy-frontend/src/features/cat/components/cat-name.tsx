@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { CatSex } from "@catarchy/shared/constants/cat";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { cn, Text } from "@/features/common";
