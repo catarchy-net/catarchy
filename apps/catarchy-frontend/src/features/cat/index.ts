@@ -11,3 +11,6 @@ export * from "./services/cat-info";
 export * from "./screens/care-history-screen";
 export * from "./screens/cat-status-screen";
 export * from "./screens/cat-summon-screen";
+
+// Lib
+export * from "./lib/format-age";

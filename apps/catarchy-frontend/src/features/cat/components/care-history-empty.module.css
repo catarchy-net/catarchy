@@ -1,0 +1,12 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.emptyText {
+  text-align: center;
+  text-wrap: balance;
+  line-height: 1.25;
+}
