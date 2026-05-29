@@ -1,4 +1,4 @@
-import Elysia, { StatusMap } from "elysia";
+import Elysia, { StatusMap, t } from "elysia";
 
 import { cursorResultType } from "../../lib/pagination";
 import { withCommonError } from "../../lib/response";
@@ -6,6 +6,7 @@ import { authGuard } from "../auth/guard";
 import {
   friendListItemSchema,
   historyItemSchema,
+  overviewResponseSchema,
   relationshipModel,
 } from "./model";
 import { RelationshipService } from "./service";
@@ -26,7 +27,7 @@ export const relationshipRouter = () => {
       {
         query: "relationship.cat-query",
         response: withCommonError({
-          [StatusMap.OK]: "relationship.overview.response",
+          [StatusMap.OK]: overviewResponseSchema,
         }),
       },
     )
@@ -42,7 +43,10 @@ export const relationshipRouter = () => {
       {
         query: "relationship.cat-cursor-query",
         response: withCommonError({
-          [StatusMap.OK]: cursorResultType(friendListItemSchema),
+          [StatusMap.OK]: t.Object({
+            ...cursorResultType(friendListItemSchema).properties,
+            count: t.Number(),
+          }),
         }),
       },
     )
@@ -74,7 +78,7 @@ export const relationshipRouter = () => {
       {
         query: "relationship.cat-query",
         response: withCommonError({
-          [StatusMap.OK]: "relationship.history-updates.response",
+          [StatusMap.OK]: t.Object({ current: t.Nullable(historyItemSchema) }),
         }),
       },
     );

@@ -213,9 +213,14 @@ export abstract class RelationshipService {
   }
 
   static async getOverview({ catId }: { catId: string }) {
-    const rows = await this.relationshipRepository.findOverview({ catId });
-    return rows.map((row) => ({
+    const [romanceRows, friendRows, friendCount] = await Promise.all([
+      this.relationshipRepository.findRomance({ catId }),
+      this.relationshipRepository.findRecentFriends({ catId }),
+      this.relationshipRepository.countFriends({ catId }),
+    ]);
+    const mapRow = (row: (typeof romanceRows)[number]) => ({
       type: row.type,
+      createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       catId: row.catId,
       catName: row.catName,
@@ -230,7 +235,15 @@ export abstract class RelationshipService {
         emoji: getEmotion(row.emotion).emoji,
         level: getEmotion(row.emotion).level,
       },
-    }));
+    });
+    const coupleRow = romanceRows.find((r) => r.type === CatRelationshipType.COUPLE);
+    const marriedRow = romanceRows.find((r) => r.type === CatRelationshipType.MARRIED);
+    return {
+      friendCount,
+      couple: coupleRow ? mapRow(coupleRow) : null,
+      married: marriedRow ? mapRow(marriedRow) : null,
+      friends: friendRows.map(mapRow),
+    };
   }
 
   static async getFriendList({
@@ -238,13 +251,14 @@ export abstract class RelationshipService {
     cursor,
     limit,
   }: { catId: string } & CursorQuery) {
-    const result = await this.relationshipRepository.findFriendsCursor({
-      catId,
-      cursor,
-      limit,
-    });
+    const [result, count] = await Promise.all([
+      this.relationshipRepository.findFriendsCursor({ catId, cursor, limit }),
+      this.relationshipRepository.countFriends({ catId }),
+    ]);
+
     return {
       ...result,
+      count,
       items: result.items.map((row) => ({
         id: row.id,
         type: row.type,

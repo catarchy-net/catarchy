@@ -1,5 +1,6 @@
 import {
   and,
+  count,
   desc,
   eq,
   gt,
@@ -48,11 +49,13 @@ export abstract class RelationshipRepository {
     return relationship;
   }
 
-  static async findOverview({ catId }: { catId: string }) {
+  private static overviewSelect(catId: string) {
     const otherCatExpr = sql<string>`CASE WHEN ${table.catRelationship.catId1} = ${catId} THEN ${table.catRelationship.catId2} ELSE ${table.catRelationship.catId1} END`;
+    const joinExpr = sql`${table.cat.id} = CASE WHEN ${table.catRelationship.catId1} = ${catId} THEN ${table.catRelationship.catId2} ELSE ${table.catRelationship.catId1} END`;
     return this.db
       .select({
         type: table.catRelationship.type,
+        createdAt: table.catRelationship.createdAt,
         updatedAt: table.catRelationship.updatedAt,
         catId: otherCatExpr,
         catName: table.cat.name,
@@ -61,11 +64,12 @@ export abstract class RelationshipRepository {
         emotion: table.catStat.emotion,
       })
       .from(table.catRelationship)
-      .innerJoin(
-        table.cat,
-        sql`${table.cat.id} = CASE WHEN ${table.catRelationship.catId1} = ${catId} THEN ${table.catRelationship.catId2} ELSE ${table.catRelationship.catId1} END`,
-      )
-      .innerJoin(table.catStat, eq(table.catStat.catId, table.cat.id))
+      .innerJoin(table.cat, joinExpr)
+      .innerJoin(table.catStat, eq(table.catStat.catId, table.cat.id));
+  }
+
+  static async findRomance({ catId }: { catId: string }) {
+    return this.overviewSelect(catId)
       .where(
         and(
           or(
@@ -73,14 +77,49 @@ export abstract class RelationshipRepository {
             eq(table.catRelationship.catId2, catId),
           ),
           inArray(table.catRelationship.type, [
-            CatRelationshipType.FRIEND,
             CatRelationshipType.COUPLE,
             CatRelationshipType.MARRIED,
           ]),
         ),
       )
+      .orderBy(desc(table.catRelationship.updatedAt));
+  }
+
+  static async findRecentFriends({
+    catId,
+    limit = 3,
+  }: {
+    catId: string;
+    limit?: number;
+  }) {
+    return this.overviewSelect(catId)
+      .where(
+        and(
+          or(
+            eq(table.catRelationship.catId1, catId),
+            eq(table.catRelationship.catId2, catId),
+          ),
+          eq(table.catRelationship.type, CatRelationshipType.FRIEND),
+        ),
+      )
       .orderBy(desc(table.catRelationship.updatedAt))
-      .limit(12);
+      .limit(limit);
+  }
+
+  static async countFriends({ catId }: { catId: string }) {
+    const [row] = await this.db
+      .select({ value: count() })
+      .from(table.catRelationship)
+      .where(
+        and(
+          or(
+            eq(table.catRelationship.catId1, catId),
+            eq(table.catRelationship.catId2, catId),
+          ),
+          eq(table.catRelationship.type, CatRelationshipType.FRIEND),
+        ),
+      );
+    return row?.value ?? 0;
   }
 
   static async findFriendsCursor({

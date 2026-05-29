@@ -21,6 +21,8 @@
     "db:reset": "bun run scripts/db-reset.ts",
     "db:update-config": "bun run scripts/db-update-config.ts",
     "db:delete-user": "bun run scripts/db-delete-user.ts",
+    "db:seed-test-users": "bun run scripts/db-seed-test-users.ts",
+    "db:delete-test-users": "bun run scripts/db-delete-test-users.ts",
     "localflare": "localflare"
   },
   "dependencies": {

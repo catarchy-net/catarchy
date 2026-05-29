@@ -1,5 +1,6 @@
 import Elysia, { t } from "elysia";
 
+import { CatRelationshipType } from "../../infra/db/schema";
 import { cursorQueryType } from "../../lib/pagination";
 import { AgeGroup } from "../cat/lib/growth";
 
@@ -21,12 +22,17 @@ const statType = {
 };
 
 export const relationshipItemSchema = t.Object({
-  type: t.String(),
+  type: t.Enum(CatRelationshipType),
+  updatedAt: t.Nullable(t.String()),
   catId: t.String(),
   catName: t.String(),
   catSex: t.Nullable(t.String()),
   ...statType,
-  updatedAt: t.Nullable(t.String()),
+});
+
+export const overviewItemSchema = t.Object({
+  ...relationshipItemSchema.properties,
+  createdAt: t.Nullable(t.String()),
 });
 
 export const friendListItemSchema = t.Object({
@@ -40,8 +46,15 @@ export const historyItemSchema = t.Object({
   catName: t.String(),
   catSex: t.Nullable(t.String()),
   ...statType,
-  type: t.String(),
+  type: t.Enum(CatRelationshipType),
   createdAt: t.Nullable(t.String()),
+});
+
+export const overviewResponseSchema = t.Object({
+  friendCount: t.Number(),
+  couple: t.Nullable(overviewItemSchema),
+  married: t.Nullable(overviewItemSchema),
+  friends: t.Array(overviewItemSchema),
 });
 
 export const relationshipModel = new Elysia({
@@ -54,7 +67,7 @@ export const relationshipModel = new Elysia({
     catId: t.String({ description: "ID of the cat" }),
     ...cursorQueryType(),
   }),
-  "relationship.overview.response": t.Array(relationshipItemSchema),
+  "relationship.overview.response": overviewResponseSchema,
   "relationship.history-updates.response": t.Object({
     current: t.Nullable(historyItemSchema),
   }),
