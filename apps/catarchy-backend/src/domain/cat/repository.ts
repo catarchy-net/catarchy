@@ -62,6 +62,24 @@ export abstract class CatRepository {
     return result;
   }
 
+  // For internal use only - does not check servantId
+  static async findWithStatByCatId({ catId }: { catId: string }) {
+    const [result] = await this.db
+      .select({
+        id: table.cat.id,
+        name: table.cat.name,
+        sex: table.cat.sex,
+        growth: table.catStat.growth,
+        emotion: table.catStat.emotion,
+      })
+      .from(table.cat)
+      .innerJoin(table.catStat, eq(table.cat.id, table.catStat.catId))
+      .where(eq(table.cat.id, catId))
+      .limit(1);
+
+    return result;
+  }
+
   static create({
     id,
     servantId,
