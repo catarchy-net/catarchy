@@ -5,7 +5,6 @@ import {
   getAgeGroup,
   getEmotion,
 } from "@/domain/cat";
-import { ChronicleRepository } from "@/domain/chronicle";
 import { ConsensusRepository } from "@/domain/consensus";
 import { NotificationRepository } from "@/domain/notification";
 import { PersonalityRepository } from "@/domain/personality";
@@ -42,7 +41,6 @@ export abstract class RelationshipService {
   private static relationshipRepository = RelationshipRepository;
   private static notificationRepository = NotificationRepository;
   private static consensusRepository = ConsensusRepository;
-  private static chronicleRepository = ChronicleRepository;
 
   // Matching exclusion rules:
   //   — My state (skip checks, applied before any candidate lookup) —
