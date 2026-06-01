@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./constants/cat": "./src/constants/cat/index.ts",
+    "./constants/chronicle": "./src/constants/chronicle/index.ts",
     "./constants/consensus": "./src/constants/consensus.ts"
-  }
+  },
 }
