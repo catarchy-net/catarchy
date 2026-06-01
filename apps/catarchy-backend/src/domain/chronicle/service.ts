@@ -1,7 +1,23 @@
+import {
+  ChronicleEventType,
+} from "@catarchy/shared/constants/chronicle";
+
 import { ChronicleRepository } from "./repository";
 
 export abstract class ChronicleService {
   private static chronicleRepository = ChronicleRepository;
+
+  static async getChronicles({
+    cursor,
+    limit,
+    type,
+  }: {
+    cursor?: string;
+    limit: number;
+    type?: ChronicleEventType;
+  }) {
+    return this.chronicleRepository.findManyCursor({ cursor, limit, type });
+  }
 
   static async recordAgeChangeEvent({
     catId,

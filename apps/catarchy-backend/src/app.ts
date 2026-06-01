@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 
 import { authRouter } from "@/domain/auth";
 import { catRouter } from "@/domain/cat";
+import { chronicleRouter } from "@/domain/chronicle";
 import { consensusRouter } from "@/domain/consensus";
 import { notificationRouter } from "@/domain/notification";
 import { personalityRouter } from "@/domain/personality";
@@ -32,7 +33,8 @@ export const createApp = ({ adapter }: CreateAppConfig = {}) => {
     .use(notificationRouter())
     .use(consensusRouter())
     .use(personalityRouter())
-    .use(relationshipRouter());
+    .use(relationshipRouter())
+    .use(chronicleRouter());
 };
 
 export type App = ReturnType<typeof createApp>;
