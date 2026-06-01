@@ -1,6 +1,7 @@
 import Elysia, { StatusMap, t } from "elysia";
 
 import { authGuard } from "@/domain/auth";
+import { ChronicleHandler } from "@/domain/chronicle";
 import { RelationshipHandler } from "@/domain/relationship";
 import { runInBackground } from "@/infra/background";
 import { cursorQueryType, cursorResultType } from "@/lib/pagination";
@@ -18,6 +19,7 @@ export const catRouter = () => {
   })
     .decorate("catService", CatService)
     .decorate("catCareService", CatCareService)
+    .decorate("chronicleHandler", ChronicleHandler)
     .decorate("careMessageHandler", CareReportHandler)
     .decorate("relationshipHandler", RelationshipHandler)
     .use(catModel)
@@ -72,6 +74,7 @@ export const catRouter = () => {
         catCareService,
         body,
         careMessageHandler,
+        chronicleHandler,
         relationshipHandler,
       }) => {
         const { catId, emotion, growth, careRecord } =
@@ -81,7 +84,27 @@ export const catRouter = () => {
           });
 
         if (careRecord) {
-          runInBackground(() => relationshipHandler.match({ catId }));
+          runInBackground(async () => {
+            const matchResult = await relationshipHandler.match({ catId });
+
+            if (matchResult.type === "friend") {
+              const { targetCatId } = matchResult;
+
+              await chronicleHandler.recordFriendshipEvent({
+                catId,
+                targetCatId,
+              });
+            }
+
+            if (matchResult.type === "love") {
+              const { targetCatId } = matchResult;
+
+              await chronicleHandler.recordLoveEvent({
+                catId,
+                targetCatId,
+              });
+            }
+          });
 
           runInBackground(() =>
             careMessageHandler.handleCareReport({
