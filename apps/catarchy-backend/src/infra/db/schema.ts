@@ -1,4 +1,8 @@
 import { CatSex } from "@catarchy/shared/constants/cat";
+import {
+  ChronicleEvent,
+  ChronicleEventType,
+} from "@catarchy/shared/constants/chronicle";
 import { ConsensusValueType } from "@catarchy/shared/constants/consensus";
 import { relations, sql } from "drizzle-orm";
 import {
@@ -322,18 +326,26 @@ export const consensusTable = sqliteTable("consensus", {
 
 // ── Chronicle ─────────────────────────────────────────────────────────────────
 
-/** Global event feed broadcasting notable happenings across the cat world (body: JSON stringified) */
+/** Global event feed broadcasting notable happenings across the cat world */
 export const chronicle = sqliteTable(
   "chronicle",
   {
     id: text("id")
       .$defaultFn(() => uuidv7())
       .primaryKey(),
-    body: text("body").notNull(),
+    type: text("type", {
+      enum: Object.values(ChronicleEventType) as [
+        ChronicleEventType,
+        ...ChronicleEventType[],
+      ],
+    }).notNull(),
+    body: text("body", { mode: "json" }).$type<ChronicleEvent>().notNull(),
     createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
   },
-  (t) => [index("chronicle_created_at_idx").on(t.createdAt)],
+  (t) => [
+    index("chronicle_created_at_idx").on(t.createdAt),
+    index("chronicle_type_idx").on(t.type),
+  ],
 );
 
 // ── Relations ─────────────────────────────────────────────────────────────────
