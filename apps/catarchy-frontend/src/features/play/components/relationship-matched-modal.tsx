@@ -88,7 +88,7 @@ export function RelationshipMatchedModal({
     const intro = `${catInfo?.name} has a new ${relation}! \n${possessive} name is ${friend.catName} and ${subject} is ${ageText}. \nRight now your ${relation} ${emotionText}.`;
 
     if (isCouple) {
-      return `${intro} \nCongratulations on the new romance! May the two of you be happy together! 💕`;
+      return `${intro} \nCongratulations on the new romance! May the two of you be happy together! ♡`;
     }
 
     return intro;
