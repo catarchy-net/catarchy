@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TocRouteImport } from './routes/toc'
 import { Route as PpRouteImport } from './routes/pp'
+import { Route as ChronicleRouteImport } from './routes/chronicle'
 import { Route as GuardedRouteImport } from './routes/_guarded'
 import { Route as gateIndexRouteImport } from './routes/(gate)/index'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
@@ -35,6 +36,11 @@ const TocRoute = TocRouteImport.update({
 const PpRoute = PpRouteImport.update({
   id: '/pp',
   path: '/pp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChronicleRoute = ChronicleRouteImport.update({
+  id: '/chronicle',
+  path: '/chronicle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuardedRoute = GuardedRouteImport.update({
@@ -118,6 +124,7 @@ const GuardedCatIdCatPersonalityIntroductionRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof gateIndexRoute
+  '/chronicle': typeof ChronicleRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/$catId': typeof GuardedCatIdRouteWithChildren
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof gateIndexRoute
+  '/chronicle': typeof ChronicleRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/$catId': typeof GuardedCatIdRouteWithChildren
@@ -155,6 +163,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_guarded': typeof GuardedRouteWithChildren
+  '/chronicle': typeof ChronicleRoute
   '/pp': typeof PpRoute
   '/toc': typeof TocRoute
   '/_guarded/$catId': typeof GuardedCatIdRouteWithChildren
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/chronicle'
     | '/pp'
     | '/toc'
     | '/$catId'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/chronicle'
     | '/pp'
     | '/toc'
     | '/$catId'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_guarded'
+    | '/chronicle'
     | '/pp'
     | '/toc'
     | '/_guarded/$catId'
@@ -232,6 +244,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   GuardedRoute: typeof GuardedRouteWithChildren
+  ChronicleRoute: typeof ChronicleRoute
   PpRoute: typeof PpRoute
   TocRoute: typeof TocRoute
   AuthPasswordResetRoute: typeof AuthPasswordResetRoute
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/pp'
       fullPath: '/pp'
       preLoaderRoute: typeof PpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chronicle': {
+      id: '/chronicle'
+      path: '/chronicle'
+      fullPath: '/chronicle'
+      preLoaderRoute: typeof ChronicleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_guarded': {
@@ -406,6 +426,7 @@ const GuardedRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   GuardedRoute: GuardedRouteWithChildren,
+  ChronicleRoute: ChronicleRoute,
   PpRoute: PpRoute,
   TocRoute: TocRoute,
   AuthPasswordResetRoute: AuthPasswordResetRoute,

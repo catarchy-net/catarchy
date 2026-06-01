@@ -1,0 +1,17 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
