@@ -1,4 +1,11 @@
-import { CareRecordRepository, CatRepository, getAge, getAgeGroup, getEmotion } from "@/domain/cat";
+import {
+  CareRecordRepository,
+  CatRepository,
+  getAge,
+  getAgeGroup,
+  getEmotion,
+} from "@/domain/cat";
+import { ChronicleRepository } from "@/domain/chronicle";
 import { ConsensusRepository } from "@/domain/consensus";
 import { NotificationRepository } from "@/domain/notification";
 import { PersonalityRepository } from "@/domain/personality";
@@ -18,6 +25,16 @@ type PersonalityRow = Awaited<
   ReturnType<typeof RelationshipRepository.findFriendCandidates>
 >[number];
 
+type MatchResult =
+  | {
+      type: "friend" | "love";
+      targetCatId: string;
+    }
+  | {
+      type: "none";
+      reason: string;
+    };
+
 export abstract class RelationshipService {
   private static catRepository = CatRepository;
   private static careRecordRepository = CareRecordRepository;
@@ -25,6 +42,7 @@ export abstract class RelationshipService {
   private static relationshipRepository = RelationshipRepository;
   private static notificationRepository = NotificationRepository;
   private static consensusRepository = ConsensusRepository;
+  private static chronicleRepository = ChronicleRepository;
 
   // Matching exclusion rules:
   //   — My state (skip checks, applied before any candidate lookup) —
@@ -45,7 +63,7 @@ export abstract class RelationshipService {
   //   Rule 11. Target has an active lover             → exclude from love candidates
   //   Rule 12. Target is married                      → exclude from love candidates
 
-  static async match({ catId }: { catId: string }) {
+  static async match({ catId }: { catId: string }): Promise<MatchResult> {
     const [cat, personality] = await Promise.all([
       this.catRepository.findById({ catId }),
       this.personalityRepository.findCatPersonalityRecord({ catId }),
@@ -63,15 +81,12 @@ export abstract class RelationshipService {
 
     const [
       friendTargets,
-      loveTargets,
       unfriendedIds,
       unfriendedScorePenalty,
       friendProbSameSex,
       friendProbDiffSex,
-      loveProb,
     ] = await Promise.all([
       this.relationshipRepository.findFriendCandidates({ catId }),
-      this.relationshipRepository.findLoveCandidates({ catId }),
       this.relationshipRepository.findUnfriendedIds({ catId }),
       this.consensusRepository.findValue(
         "RELATIONSHIP.UNFRIENDED_SCORE_PENALTY",
@@ -82,7 +97,6 @@ export abstract class RelationshipService {
       this.consensusRepository.findValue(
         "RELATIONSHIP.FRIEND_MATCH_PROBABILITY_DIFF_SEX",
       ),
-      this.consensusRepository.findValue("RELATIONSHIP.LOVE_MATCH_PROBABILITY"),
     ]);
 
     const sex = cat.sex;
@@ -107,13 +121,24 @@ export abstract class RelationshipService {
         : friendProbDiffSex;
 
       if (Math.random() < probability) {
+        const targetCat = await this.catRepository.findById({
+          catId: bestFriendCandidate.catId,
+        });
+
+        if (!targetCat) throw new NotFoundError(`Cannot find target cat`);
+
         await this.relationshipRepository.create({
           catId,
           targetCatId: bestFriendCandidate.catId,
           type: CatRelationshipType.FRIEND,
         });
+
         await this.sendMatchNotification(cat, "friend");
-        return;
+
+        return {
+          type: "friend",
+          targetCatId: bestFriendCandidate.catId,
+        };
       }
     }
 
@@ -122,7 +147,16 @@ export abstract class RelationshipService {
       { catId },
     );
 
-    if (hasActiveRomance) return;
+    if (hasActiveRomance)
+      return {
+        type: "none",
+        reason: "already has active romance",
+      };
+
+    const [loveTargets, loveProb] = await Promise.all([
+      this.relationshipRepository.findLoveCandidates({ catId }),
+      this.consensusRepository.findValue("RELATIONSHIP.LOVE_MATCH_PROBABILITY"),
+    ]);
 
     const bestLoveCandidate = this.rankLoveCandidates(
       loveTargets,
@@ -131,13 +165,30 @@ export abstract class RelationshipService {
     )[0];
 
     if (bestLoveCandidate && Math.random() < loveProb) {
+      const targetCat = await this.catRepository.findById({
+        catId: bestLoveCandidate.catId,
+      });
+
+      if (!targetCat) throw new NotFoundError(`Cannot find target cat`);
+
       await this.relationshipRepository.create({
         catId,
         targetCatId: bestLoveCandidate.catId,
         type: CatRelationshipType.COUPLE,
       });
+
       await this.sendMatchNotification(cat, "love");
+
+      return {
+        type: "love",
+        targetCatId: bestLoveCandidate.catId,
+      };
     }
+
+    return {
+      type: "none",
+      reason: "no match found",
+    };
   }
 
   private static rankFriendCandidates(
@@ -191,19 +242,15 @@ export abstract class RelationshipService {
         ? `Your cat ${cat.name} just made a new friend!`
         : `Your cat ${cat.name} just found a new love!`;
 
-    const failedTokens: string[] = [];
+    const results = await Promise.allSettled(
+      fcmTokens.map((fcm) =>
+        sendPushNotification({ token: fcm.token, title, body }),
+      ),
+    );
 
-    for (const fcm of fcmTokens) {
-      try {
-        await sendPushNotification({
-          token: fcm.token,
-          title,
-          body,
-        });
-      } catch {
-        failedTokens.push(fcm.token);
-      }
-    }
+    const failedTokens = fcmTokens
+      .filter((_, i) => results[i].status === "rejected")
+      .map((fcm) => fcm.token);
 
     await this.notificationRepository.deleteFcmTokens({
       tokens: failedTokens,
@@ -234,8 +281,12 @@ export abstract class RelationshipService {
         level: getEmotion(row.emotion).level,
       },
     });
-    const coupleRow = romanceRows.find((r) => r.type === CatRelationshipType.COUPLE);
-    const marriedRow = romanceRows.find((r) => r.type === CatRelationshipType.MARRIED);
+    const coupleRow = romanceRows.find(
+      (r) => r.type === CatRelationshipType.COUPLE,
+    );
+    const marriedRow = romanceRows.find(
+      (r) => r.type === CatRelationshipType.MARRIED,
+    );
     return {
       friendCount,
       couple: coupleRow ? mapRow(coupleRow) : null,
