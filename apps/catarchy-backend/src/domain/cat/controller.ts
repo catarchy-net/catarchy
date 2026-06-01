@@ -112,6 +112,10 @@ export const catRouter = () => {
               catId,
             }),
           );
+
+          runInBackground(() =>
+            chronicleHandler.recordAgeChangeEvent({ catId }),
+          );
         }
 
         return {
