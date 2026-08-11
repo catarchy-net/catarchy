@@ -32,12 +32,22 @@ bun run lint
 
 ```
 VITE_API_URL=http://localhost:3000
+VITE_REMILIA_CLIENT_ID=tpa-catarchy
 ```
 
 **Production** (Cloudflare Workers dashboard):
 
 ```
 VITE_API_URL=https://catarchy-backend.hjjam100.workers.dev
+VITE_REMILIA_CLIENT_ID=tpa-catarchy
+```
+
+Register these exact Login client redirect URIs in the RemiliaNET developer
+portal:
+
+```text
+http://localhost:5173/auth/sign-in
+https://catarchy.net/auth/sign-in
 ```
 
 ## Deployment

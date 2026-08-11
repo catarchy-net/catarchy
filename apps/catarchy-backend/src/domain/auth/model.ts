@@ -168,6 +168,30 @@ export const authModel = new Elysia({ name: "model.auth" }).model({
       examples: ["This email is registered with a different sign-in method."],
     }),
   }),
+  "auth.sign-in-remilianet.body": t.Object({
+    accessToken: t.String({
+      minLength: 1,
+      maxLength: 8192,
+      description: "A user-delegated RemiliaNET access token",
+    }),
+  }),
+  "auth.sign-in-remilianet.response": t.Object({
+    message: t.String({
+      examples: ["Signed in successfully"],
+    }),
+    userId: t.String(),
+    handle: t.String(),
+  }),
+  "auth.sign-in-remilianet.unauthorized": t.Object({
+    message: t.String({
+      examples: ["Invalid or expired RemiliaNET token"],
+    }),
+  }),
+  "auth.sign-in-remilianet.bad-gateway": t.Object({
+    message: t.String({
+      examples: ["RemiliaNET profile request failed"],
+    }),
+  }),
   "auth.refresh.response": t.Object({
     message: t.String({
       description: "A message confirming successful token refresh",

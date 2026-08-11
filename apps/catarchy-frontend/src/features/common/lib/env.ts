@@ -8,6 +8,7 @@ const envSchema = z.object({
   VITE_FIREBASE_APP_ID: z.string(),
   VITE_FIREBASE_VAPID_KEY: z.string(),
   VITE_GA_MEASUREMENT_ID: z.string().optional(),
+  VITE_REMILIA_CLIENT_ID: z.string().min(1),
 });
 
 export type EnvError = { key: string; message: string };

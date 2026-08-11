@@ -25,6 +25,12 @@ export const userModel = new Elysia({
       description: "The unique handle/username of the user",
       examples: ["user123"],
     }),
+    remiliaNickname: t.Nullable(
+      t.String({
+        description: "The user's RemiliaNET display name",
+        examples: ["Remilia"],
+      }),
+    ),
     createdAt: t.Nullable(
       t.String({
         description: "The timestamp at which the user account was created",

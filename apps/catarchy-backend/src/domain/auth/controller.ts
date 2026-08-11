@@ -12,6 +12,8 @@ import { withCommonError } from "@/lib/response";
 import { authModel } from "./model";
 import { AuthService } from "./service";
 
+const EMAIL_SIGN_IN_ENABLED = false;
+
 export const authRouter = () => {
   const env = getEnv();
   const isProd = env.ENVIRONMENT === ENVIRONMENT.PRODUCTION;
@@ -151,6 +153,12 @@ export const authRouter = () => {
     .post(
       "/sign-in-email",
       async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        if (!EMAIL_SIGN_IN_ENABLED) {
+          return status(403, {
+            message: "Email sign-in is temporarily unavailable.",
+          });
+        }
+
         const { email, password } = body;
 
         const user = await authService.signInWithEmailAndPassword({
@@ -257,6 +265,52 @@ export const authRouter = () => {
         response: withCommonError({
           [StatusMap.OK]: "auth.refresh.response",
           [StatusMap.Unauthorized]: "auth.refresh.unauthorized",
+        }),
+      },
+    )
+    .post(
+      "/sign-in-remilianet",
+      async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        const user = await authService.signInWithRemiliaAccessToken(
+          body.accessToken,
+        );
+
+        const [accessToken, refreshToken] = await Promise.all([
+          accessJwt.sign({ sub: user.id, handle: user.handle }),
+          refreshJwt.sign({ sub: user.id }),
+        ]);
+
+        await authService.createSession(user.id, refreshToken);
+
+        setAuthCookie(
+          cookie.accessToken,
+          accessToken,
+          ms(AuthService.accessTokenExp) / 1000,
+          isProd,
+        );
+        setAuthCookie(
+          cookie.refreshToken,
+          refreshToken,
+          ms(AuthService.refreshTokenExp) / 1000,
+          isProd,
+        );
+
+        return {
+          message: "Signed in successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-in-remilianet.body",
+        cookie: t.Cookie({
+          accessToken: t.Optional(t.String()),
+          refreshToken: t.Optional(t.String()),
+        }),
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-in-remilianet.response",
+          [StatusMap.Unauthorized]: "auth.sign-in-remilianet.unauthorized",
+          [StatusMap["Bad Gateway"]]: "auth.sign-in-remilianet.bad-gateway",
         }),
       },
     )

@@ -1,17 +1,16 @@
-import { AuthRepository } from "@/domain/auth";
 import { NotFoundError } from "@/lib/error";
 
 import { UserRepository } from "./repository";
 
 export abstract class UserService {
   // Repositories
-  private static authRepository = AuthRepository;
   private static userRepository = UserRepository;
 
   static async getCurrentUser({ id }: { id: string }) {
-    const [user, auth] = await Promise.all([
+    const [user, auth, remiliaAuth] = await Promise.all([
       this.userRepository.findById({ id }),
-      this.authRepository.findAuthByUserId({ userId: id }),
+      this.userRepository.findAuthByUserId({ userId: id }),
+      this.userRepository.findRemiliaAuthByUserId({ userId: id }),
     ]);
 
     if (!user || !auth) {
@@ -22,6 +21,8 @@ export abstract class UserService {
       id: user.id,
       handle: user.handle,
       email: auth.email,
+      remiliaNickname:
+        remiliaAuth?.remiliaDisplayName ?? remiliaAuth?.remiliaUsername ?? null,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

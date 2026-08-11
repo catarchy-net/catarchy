@@ -1,0 +1,1 @@
+ALTER TABLE `auth` ADD `remilia_display_name` text;
