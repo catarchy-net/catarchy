@@ -75,7 +75,7 @@ bun run format:check
 ### Development (`.env`)
 
 ```env
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=http://localhost:5173,...
 ```
 
 ### Production (Cloudflare Workers)

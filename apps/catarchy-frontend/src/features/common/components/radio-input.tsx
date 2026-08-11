@@ -40,10 +40,10 @@ export const RadioInput = React.forwardRef<HTMLInputElement, RadioInputProps>(
         ? `${name} option`
         : "Radio option";
     const onState = checkedIndicator ?? (
-      <RadioSymbol style={{ color: "var(--color-black)" }} />
+      <RadioSymbol style={{ color: "var(--color-int)" }} />
     );
     const offState = uncheckedIndicator ?? (
-      <RadioSymbol style={{ color: "var(--color-white)" }} />
+      <RadioSymbol style={{ color: "var(--color-paper)" }} />
     );
 
     const setInputRefs = (node: HTMLInputElement | null) => {

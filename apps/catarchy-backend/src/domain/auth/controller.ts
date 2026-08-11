@@ -12,6 +12,8 @@ import { withCommonError } from "@/lib/response";
 import { authModel } from "./model";
 import { AuthService } from "./service";
 
+const EMAIL_SIGN_IN_ENABLED = false;
+
 export const authRouter = () => {
   const env = getEnv();
   const isProd = env.ENVIRONMENT === ENVIRONMENT.PRODUCTION;
@@ -151,6 +153,12 @@ export const authRouter = () => {
     .post(
       "/sign-in-email",
       async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        if (!EMAIL_SIGN_IN_ENABLED) {
+          return status(403, {
+            message: "Email sign-in is temporarily unavailable.",
+          });
+        }
+
         const { email, password } = body;
 
         const user = await authService.signInWithEmailAndPassword({
@@ -257,6 +265,52 @@ export const authRouter = () => {
         response: withCommonError({
           [StatusMap.OK]: "auth.refresh.response",
           [StatusMap.Unauthorized]: "auth.refresh.unauthorized",
+        }),
+      },
+    )
+    .post(
+      "/sign-in-remilianet",
+      async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        const user = await authService.signInWithRemiliaAccessToken(
+          body.accessToken,
+        );
+
+        const [accessToken, refreshToken] = await Promise.all([
+          accessJwt.sign({ sub: user.id, handle: user.handle }),
+          refreshJwt.sign({ sub: user.id }),
+        ]);
+
+        await authService.createSession(user.id, refreshToken);
+
+        setAuthCookie(
+          cookie.accessToken,
+          accessToken,
+          ms(AuthService.accessTokenExp) / 1000,
+          isProd,
+        );
+        setAuthCookie(
+          cookie.refreshToken,
+          refreshToken,
+          ms(AuthService.refreshTokenExp) / 1000,
+          isProd,
+        );
+
+        return {
+          message: "Signed in successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-in-remilianet.body",
+        cookie: t.Cookie({
+          accessToken: t.Optional(t.String()),
+          refreshToken: t.Optional(t.String()),
+        }),
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-in-remilianet.response",
+          [StatusMap.Unauthorized]: "auth.sign-in-remilianet.unauthorized",
+          [StatusMap["Bad Gateway"]]: "auth.sign-in-remilianet.bad-gateway",
         }),
       },
     )
@@ -378,6 +432,100 @@ export const authRouter = () => {
           [StatusMap.OK]: "auth.reset-password.response",
           [StatusMap.Forbidden]: "auth.reset-password.forbidden",
           [StatusMap["Not Found"]]: "auth.reset-password.not-found",
+        }),
+      },
+    )
+    .post(
+      "/siwe/nonce",
+      async ({ body, authService }) => {
+        const { walletAddress } = body;
+
+        const siweNonce = await authService.issueSiweNonce({
+          walletAddress: walletAddress.toLowerCase() as `0x${string}`,
+        });
+
+        return {
+          nonce: siweNonce.nonce,
+          expiredAt: siweNonce.expiredAt,
+        };
+      },
+      {
+        body: "auth.siwe-nonce.body",
+        response: withCommonError({
+          [StatusMap.OK]: "auth.siwe-nonce.response",
+        }),
+      },
+    )
+    .post(
+      "/sign-in-wallet",
+      async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        const { message, signature } = body;
+
+        const user = await authService.signInWithWallet({
+          message,
+          signature: signature as `0x${string}`,
+        });
+
+        const [accessToken, refreshToken] = await Promise.all([
+          accessJwt.sign({ sub: user.id, handle: user.handle }),
+          refreshJwt.sign({ sub: user.id }),
+        ]);
+
+        await authService.createSession(user.id, refreshToken);
+
+        setAuthCookie(
+          cookie.accessToken,
+          accessToken,
+          ms(AuthService.accessTokenExp) / 1000,
+          isProd,
+        );
+        setAuthCookie(
+          cookie.refreshToken,
+          refreshToken,
+          ms(AuthService.refreshTokenExp) / 1000,
+          isProd,
+        );
+
+        return {
+          message: "Signed in successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-in-wallet.body",
+        cookie: t.Cookie({
+          accessToken: t.Optional(t.String()),
+          refreshToken: t.Optional(t.String()),
+        }),
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-in-wallet.response",
+          [StatusMap["Not Found"]]: "auth.sign-in-wallet.not-found",
+          [StatusMap.Forbidden]: "auth.sign-in-wallet.forbidden",
+        }),
+      },
+    )
+    .post(
+      "/sign-up-wallet",
+      async ({ body, authService }) => {
+        const { walletAddress, handle } = body;
+
+        const user = await authService.signUpWithWallet({
+          walletAddress: walletAddress.toLowerCase() as `0x${string}`,
+          handle,
+        });
+
+        return {
+          message: "Wallet signed up successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-up-wallet.body",
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-up-wallet.response",
+          [StatusMap.Conflict]: "auth.sign-up-wallet.conflict",
         }),
       },
     );

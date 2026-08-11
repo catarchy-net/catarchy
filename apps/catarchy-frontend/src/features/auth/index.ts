@@ -8,6 +8,7 @@ export * from "./hooks/use-auth";
 
 // SERVICES
 export * from "./services/password-reset";
+export * from "./services/remilianet";
 export * from "./services/session";
 export * from "./services/sign-in";
 export * from "./services/sign-out";

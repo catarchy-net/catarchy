@@ -1,13 +1,23 @@
-import { randomInt } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 
 import bcrypt from "bcryptjs";
+import { and, eq, gt } from "drizzle-orm";
 import ms from "ms";
 import { uuidv7 } from "uuidv7";
+import { type Hex, verifyMessage } from "viem";
+import { parseSiweMessage, validateSiweMessage } from "viem/siwe";
 
 import { UserRepository } from "@/domain/user";
-import { getDatabase } from "@/infra/db";
+import { getDatabase, table } from "@/infra/db";
 import { runAtomic } from "@/lib/atomic";
-import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/error";
+import { ENVIRONMENT, getEnv } from "@/lib/env";
+import {
+  ConflictError,
+  ExternalServiceError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/lib/error";
 
 import { EmailVerificationRepository } from "./email-verification.repository";
 import { AuthRepository } from "./repository";
@@ -298,6 +308,104 @@ export abstract class AuthService {
     };
   }
 
+  static async signInWithRemiliaAccessToken(accessToken: string) {
+    let response: Response;
+
+    try {
+      response = await fetch("https://www.remilia.net/api/v1/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(10_000),
+      });
+    } catch {
+      throw new ExternalServiceError("Failed to reach RemiliaNET");
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new UnauthorizedError("Invalid or expired RemiliaNET token");
+    }
+
+    if (!response.ok) {
+      throw new ExternalServiceError("RemiliaNET profile request failed");
+    }
+
+    const profile = (await response.json().catch(() => null)) as {
+      user?: { displayName?: unknown; username?: unknown };
+    } | null;
+    const username = profile?.user?.username;
+
+    if (typeof username !== "string" || username.length === 0) {
+      throw new ExternalServiceError(
+        "RemiliaNET returned an invalid profile response",
+      );
+    }
+
+    const remiliaUsername = username.trim().toLowerCase();
+    if (remiliaUsername.length === 0) {
+      throw new ExternalServiceError(
+        "RemiliaNET returned an invalid profile response",
+      );
+    }
+    const displayName =
+      typeof profile?.user?.displayName === "string" &&
+      profile.user.displayName.trim().length > 0
+        ? profile.user.displayName.trim()
+        : username.trim();
+    const existingAuth = await this.authRepository.findAuthByRemiliaUsername({
+      remiliaUsername,
+    });
+
+    if (existingAuth) {
+      const [, user] = await Promise.all([
+        this.authRepository.updateRemiliaDisplayName({
+          remiliaDisplayName: displayName,
+          remiliaUsername,
+        }),
+        this.userRepository.findById({ id: existingAuth.userId }),
+      ]);
+
+      if (!user) throw new NotFoundError("User not found");
+      return user;
+    }
+
+    const userId = uuidv7();
+    const handle = await this.createAvailableHandle(remiliaUsername);
+
+    await runAtomic(this.db, [
+      this.userRepository.create({ id: userId, handle }),
+      this.authRepository.createRemiliaAuth({
+        remiliaDisplayName: displayName,
+        remiliaUsername,
+        userId,
+      }),
+    ]);
+
+    return { id: userId, handle };
+  }
+
+  private static async createAvailableHandle(username: string) {
+    const sanitized = username
+      .replace(/[^a-z0-9_]/g, "_")
+      .replace(/^_+|_+$/g, "");
+    const base = (sanitized.length >= 4 ? sanitized : `${sanitized}_cat`)
+      .slice(0, 15)
+      .padEnd(4, "_");
+
+    if (!(await this.userRepository.findByHandle({ handle: base }))) {
+      return base;
+    }
+
+    const digest = createHash("sha256").update(username).digest("hex");
+
+    for (let offset = 0; offset <= digest.length - 6; offset += 6) {
+      const candidate = `${base.slice(0, 8)}_${digest.slice(offset, offset + 6)}`;
+      if (!(await this.userRepository.findByHandle({ handle: candidate }))) {
+        return candidate;
+      }
+    }
+
+    throw new ConflictError("Unable to create an available handle");
+  }
+
   static generateCode() {
     return randomInt(0, 999999).toString().padStart(6, "0");
   }
@@ -357,5 +465,145 @@ export abstract class AuthService {
 
   static async deleteSession(refreshToken: string) {
     await this.sessionRepository.deleteByRefreshToken(refreshToken);
+  }
+
+  static async issueSiweNonce({
+    walletAddress,
+  }: {
+    walletAddress: `0x${string}`;
+  }) {
+    const nonce = randomBytes(16).toString("hex");
+
+    const expiredAt = Date.now() + ms("10m");
+
+    const [row] = await this.db
+      .insert(table.siweNonceTable)
+      .values({
+        id: uuidv7(),
+        walletAddress: walletAddress.toLowerCase(),
+        nonce,
+        expiredAt,
+      })
+      .returning({
+        id: table.siweNonceTable.id,
+        walletAddress: table.siweNonceTable.walletAddress,
+        createdAt: table.siweNonceTable.createdAt,
+        expiredAt: table.siweNonceTable.expiredAt,
+        nonce: table.siweNonceTable.nonce,
+      });
+
+    return row;
+  }
+
+  static async signInWithWallet({
+    message,
+    signature,
+  }: {
+    message: string;
+    signature: Hex;
+  }) {
+    const env = getEnv();
+    const parsed = parseSiweMessage(message);
+
+    if (!parsed?.address || !parsed?.nonce) {
+      throw new ForbiddenError("Failed to parse SIWE message");
+    }
+
+    const walletAddress = parsed.address.toLowerCase() as `0x${string}`;
+
+    const [nonceRecord] = await this.db
+      .select()
+      .from(table.siweNonceTable)
+      .where(
+        and(
+          eq(table.siweNonceTable.walletAddress, walletAddress),
+          eq(table.siweNonceTable.nonce, parsed.nonce),
+          gt(table.siweNonceTable.expiredAt, Date.now()),
+        ),
+      )
+      .limit(1);
+
+    if (!nonceRecord) {
+      throw new ForbiddenError("Invalid or expired SIWE nonce");
+    }
+
+    const validMessage = validateSiweMessage({
+      message: parsed,
+      address: parsed.address,
+      domain:
+        env.ENVIRONMENT === ENVIRONMENT.LOCAL
+          ? "localhost:5173"
+          : "catarchy.net",
+      nonce: nonceRecord.nonce,
+      scheme: env.ENVIRONMENT === ENVIRONMENT.LOCAL ? "http" : "https",
+      time: new Date(),
+    });
+
+    if (!validMessage) {
+      throw new ForbiddenError("Failed to sign in, please check again");
+    }
+
+    const validSignature = await verifyMessage({
+      address: parsed.address,
+      message,
+      signature,
+    }).catch(() => false);
+
+    if (!validSignature) {
+      throw new ForbiddenError("Failed to sign in, please check again");
+    }
+
+    await this.db
+      .delete(table.siweNonceTable)
+      .where(eq(table.siweNonceTable.id, nonceRecord.id));
+
+    const auth = await this.authRepository.findAuthByWalletAddress({
+      walletAddress,
+    });
+
+    if (!auth) {
+      throw new NotFoundError("auth not found");
+    }
+
+    const user = await this.userRepository.findById({
+      id: auth.userId,
+    });
+
+    if (!user) {
+      throw new NotFoundError("user not found");
+    }
+
+    return {
+      id: user.id,
+      handle: user.handle,
+    };
+  }
+
+  static async signUpWithWallet({
+    walletAddress,
+    handle,
+  }: {
+    walletAddress: `0x${string}`;
+    handle: string;
+  }) {
+    const auth = await this.authRepository.findAuthByWalletAddress({
+      walletAddress,
+    });
+
+    if (auth) {
+      throw new ConflictError("Wallet already signed up");
+    }
+
+    const userId = uuidv7();
+
+    await runAtomic(this.db, [
+      this.userRepository.create({ id: userId, handle }),
+      this.authRepository.createWalletAuth({ walletAddress, userId }),
+    ]);
+
+    return {
+      id: userId,
+      handle,
+    };
   }
 }

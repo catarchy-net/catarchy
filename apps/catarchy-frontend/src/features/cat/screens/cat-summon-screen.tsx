@@ -1,10 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
 
 import { useAnalytics } from "@/features/analytics";
 import { Button, LogoText, Scaffold, useToast } from "@/features/common";
+import { meOptions } from "@/features/user";
 
 import { SummonForm } from "../components/summon-form";
 import { summonFormSchema, useSummonForm } from "../hooks/use-adopt-form";
@@ -18,6 +20,21 @@ export function CatSummonScreen() {
   const toast = useToast();
   const { form } = useSummonForm();
   const analytics = useAnalytics();
+  const { data: me } = useQuery(meOptions());
+
+  useEffect(() => {
+    if (
+      !me?.remiliaNickname ||
+      form.formState.dirtyFields.name ||
+      form.getValues("name")
+    ) {
+      return;
+    }
+
+    form.setValue("name", me.remiliaNickname.slice(0, 50), {
+      shouldValidate: true,
+    });
+  }, [form, me?.remiliaNickname]);
 
   const summon = useMutation({
     ...summonOptions(),

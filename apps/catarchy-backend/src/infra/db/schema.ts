@@ -31,6 +31,7 @@ export const userTable = sqliteTable("user", {
 export enum UserAuthProvider {
   EMAIL_PASSWORD = "email_password",
   WALLET = "wallet",
+  REMILIANET = "remilianet",
 }
 
 /** Authentication credentials per provider (user : auth = 1 : N) */
@@ -49,6 +50,8 @@ export const authTable = sqliteTable(
     email: text("email").unique(),
     password: text("password"),
     walletAddress: text("wallet_address").unique(),
+    remiliaUsername: text("remilia_username").unique(),
+    remiliaDisplayName: text("remilia_display_name"),
     userId: text("user_id")
       .notNull()
       .references(() => userTable.id),
@@ -63,6 +66,10 @@ export const authTable = sqliteTable(
     check(
       "wallet_required",
       sql`${t.provider} != 'wallet' OR ${t.walletAddress} IS NOT NULL`,
+    ),
+    check(
+      "remilianet_required",
+      sql`${t.provider} != 'remilianet' OR ${t.remiliaUsername} IS NOT NULL`,
     ),
   ],
 );
@@ -466,6 +473,7 @@ export const catRelationshipRelations = relations(
 export const table = {
   user: userTable,
   auth: authTable,
+  siweNonceTable: siweNonceTable,
   emailVerification: emailVerificationTable,
   session: sessionTable,
   cat: cat,

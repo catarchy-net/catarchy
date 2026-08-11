@@ -42,7 +42,8 @@ export abstract class CatCareService {
     const growthPerCare = consensusValues["CAT.GROWTH_PER_CARE"];
     const emotionPerCare = consensusValues["CAT.EMOTION_PER_CARE"];
     const emotionDecrease = consensusValues["CAT.EMOTION_DECREASE"];
-    const emotionDecreaseFrequencyHour = consensusValues["CAT.EMOTION_DECREASE_FREQUENCY_HOUR"];
+    const emotionDecreaseFrequencyHour =
+      consensusValues["CAT.EMOTION_DECREASE_FREQUENCY_HOUR"];
 
     if (!catFull) {
       throw new NotFoundError("You don't have a cat to care for.");

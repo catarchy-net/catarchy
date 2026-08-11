@@ -1,10 +1,11 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import {
   type Database,
   getDatabase,
   table,
   type Transaction,
+  UserAuthProvider,
 } from "@/infra/db";
 
 type Client = Database | Transaction;
@@ -32,6 +33,31 @@ export abstract class UserRepository {
       .limit(1);
 
     return user;
+  }
+
+  static async findAuthByUserId({ userId }: { userId: string }) {
+    const [auth] = await this.db
+      .select()
+      .from(table.auth)
+      .where(eq(table.auth.userId, userId))
+      .limit(1);
+
+    return auth;
+  }
+
+  static async findRemiliaAuthByUserId({ userId }: { userId: string }) {
+    const [auth] = await this.db
+      .select()
+      .from(table.auth)
+      .where(
+        and(
+          eq(table.auth.userId, userId),
+          eq(table.auth.provider, UserAuthProvider.REMILIANET),
+        ),
+      )
+      .limit(1);
+
+    return auth;
   }
 
   static async createUser({ handle }: { handle: string }, tx?: Client) {
