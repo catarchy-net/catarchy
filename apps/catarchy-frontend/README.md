@@ -54,5 +54,5 @@ https://catarchy.net/auth/sign-in
 
 ```bash
 bun run build
-npx wrangler pages deploy dist
+bunx wrangler pages deploy dist
 ```
