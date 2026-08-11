@@ -1,12 +1,16 @@
-import { randomInt } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 
 import bcrypt from "bcryptjs";
+import { and, eq, gt } from "drizzle-orm";
 import ms from "ms";
 import { uuidv7 } from "uuidv7";
+import { type Hex, verifyMessage } from "viem";
+import { parseSiweMessage, validateSiweMessage } from "viem/siwe";
 
 import { UserRepository } from "@/domain/user";
-import { getDatabase } from "@/infra/db";
+import { getDatabase, table } from "@/infra/db";
 import { runAtomic } from "@/lib/atomic";
+import { ENVIRONMENT, getEnv } from "@/lib/env";
 import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/error";
 
 import { EmailVerificationRepository } from "./email-verification.repository";
@@ -357,5 +361,145 @@ export abstract class AuthService {
 
   static async deleteSession(refreshToken: string) {
     await this.sessionRepository.deleteByRefreshToken(refreshToken);
+  }
+
+  static async issueSiweNonce({
+    walletAddress,
+  }: {
+    walletAddress: `0x${string}`;
+  }) {
+    const nonce = randomBytes(16).toString("hex");
+
+    const expiredAt = Date.now() + ms("10m");
+
+    const [row] = await this.db
+      .insert(table.siweNonceTable)
+      .values({
+        id: uuidv7(),
+        walletAddress: walletAddress.toLowerCase(),
+        nonce,
+        expiredAt,
+      })
+      .returning({
+        id: table.siweNonceTable.id,
+        walletAddress: table.siweNonceTable.walletAddress,
+        createdAt: table.siweNonceTable.createdAt,
+        expiredAt: table.siweNonceTable.expiredAt,
+        nonce: table.siweNonceTable.nonce,
+      });
+
+    return row;
+  }
+
+  static async signInWithWallet({
+    message,
+    signature,
+  }: {
+    message: string;
+    signature: Hex;
+  }) {
+    const env = getEnv();
+    const parsed = parseSiweMessage(message);
+
+    if (!parsed?.address || !parsed?.nonce) {
+      throw new ForbiddenError("Failed to parse SIWE message");
+    }
+
+    const walletAddress = parsed.address.toLowerCase() as `0x${string}`;
+
+    const [nonceRecord] = await this.db
+      .select()
+      .from(table.siweNonceTable)
+      .where(
+        and(
+          eq(table.siweNonceTable.walletAddress, walletAddress),
+          eq(table.siweNonceTable.nonce, parsed.nonce),
+          gt(table.siweNonceTable.expiredAt, Date.now()),
+        ),
+      )
+      .limit(1);
+
+    if (!nonceRecord) {
+      throw new ForbiddenError("Invalid or expired SIWE nonce");
+    }
+
+    const validMessage = validateSiweMessage({
+      message: parsed,
+      address: parsed.address,
+      domain:
+        env.ENVIRONMENT === ENVIRONMENT.LOCAL
+          ? "localhost:5173"
+          : "catarchy.net",
+      nonce: nonceRecord.nonce,
+      scheme: env.ENVIRONMENT === ENVIRONMENT.LOCAL ? "http" : "https",
+      time: new Date(),
+    });
+
+    if (!validMessage) {
+      throw new ForbiddenError("Failed to sign in, please check again");
+    }
+
+    const validSignature = await verifyMessage({
+      address: parsed.address,
+      message,
+      signature,
+    }).catch(() => false);
+
+    if (!validSignature) {
+      throw new ForbiddenError("Failed to sign in, please check again");
+    }
+
+    await this.db
+      .delete(table.siweNonceTable)
+      .where(eq(table.siweNonceTable.id, nonceRecord.id));
+
+    const auth = await this.authRepository.findAuthByWalletAddress({
+      walletAddress,
+    });
+
+    if (!auth) {
+      throw new NotFoundError("auth not found");
+    }
+
+    const user = await this.userRepository.findById({
+      id: auth.userId,
+    });
+
+    if (!user) {
+      throw new NotFoundError("user not found");
+    }
+
+    return {
+      id: user.id,
+      handle: user.handle,
+    };
+  }
+
+  static async signUpWithWallet({
+    walletAddress,
+    handle,
+  }: {
+    walletAddress: `0x${string}`;
+    handle: string;
+  }) {
+    const auth = await this.authRepository.findAuthByWalletAddress({
+      walletAddress,
+    });
+
+    if (auth) {
+      throw new ConflictError("Wallet already signed up");
+    }
+
+    const userId = uuidv7();
+
+    await runAtomic(this.db, [
+      this.userRepository.create({ id: userId, handle }),
+      this.authRepository.createWalletAuth({ walletAddress, userId }),
+    ]);
+
+    return {
+      id: userId,
+      handle,
+    };
   }
 }

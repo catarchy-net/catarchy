@@ -16,7 +16,7 @@ export abstract class AuthRepository {
     passwordHashed: string;
     userId: string;
   }) {
-    return AuthRepository.db.insert(table.auth).values({
+    return this.db.insert(table.auth).values({
       provider: UserAuthProvider.EMAIL_PASSWORD,
       email,
       password: passwordHashed,
@@ -25,7 +25,7 @@ export abstract class AuthRepository {
   }
 
   static async findAuthByEmail({ email }: { email: string }) {
-    const [auth] = await AuthRepository.db
+    const [auth] = await this.db
       .select()
       .from(table.auth)
       .where(and(eq(table.auth.email, email)))
@@ -41,19 +41,47 @@ export abstract class AuthRepository {
     email: string;
     passwordHashed: string;
   }) {
-    await AuthRepository.db
+    await this.db
       .update(table.auth)
       .set({ password: passwordHashed })
       .where(eq(table.auth.email, email));
   }
 
   static async findAuthByUserId({ userId }: { userId: string }) {
-    const [auth] = await AuthRepository.db
+    const [auth] = await this.db
       .select()
       .from(table.auth)
       .where(and(eq(table.auth.userId, userId)))
       .limit(1);
 
     return auth;
+  }
+
+  static async findAuthByWalletAddress({
+    walletAddress,
+  }: {
+    walletAddress: `0x${string}`;
+  }) {
+    const [auth] = await this.db
+      .select()
+      .from(table.auth)
+      .where(eq(table.auth.walletAddress, walletAddress))
+      .limit(1);
+
+    return auth;
+  }
+
+  static createWalletAuth({
+    walletAddress,
+    userId,
+  }: {
+    walletAddress: `0x${string}`;
+    userId: string;
+  }) {
+    return this.db.insert(table.auth).values({
+      provider: UserAuthProvider.WALLET,
+      walletAddress,
+      userId,
+    });
   }
 }

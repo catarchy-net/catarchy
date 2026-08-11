@@ -380,5 +380,99 @@ export const authRouter = () => {
           [StatusMap["Not Found"]]: "auth.reset-password.not-found",
         }),
       },
+    )
+    .post(
+      "/siwe/nonce",
+      async ({ body, authService }) => {
+        const { walletAddress } = body;
+
+        const siweNonce = await authService.issueSiweNonce({
+          walletAddress: walletAddress.toLowerCase() as `0x${string}`,
+        });
+
+        return {
+          nonce: siweNonce.nonce,
+          expiredAt: siweNonce.expiredAt,
+        };
+      },
+      {
+        body: "auth.siwe-nonce.body",
+        response: withCommonError({
+          [StatusMap.OK]: "auth.siwe-nonce.response",
+        }),
+      },
+    )
+    .post(
+      "/sign-in-wallet",
+      async ({ body, cookie, authService, accessJwt, refreshJwt }) => {
+        const { message, signature } = body;
+
+        const user = await authService.signInWithWallet({
+          message,
+          signature: signature as `0x${string}`,
+        });
+
+        const [accessToken, refreshToken] = await Promise.all([
+          accessJwt.sign({ sub: user.id, handle: user.handle }),
+          refreshJwt.sign({ sub: user.id }),
+        ]);
+
+        await authService.createSession(user.id, refreshToken);
+
+        setAuthCookie(
+          cookie.accessToken,
+          accessToken,
+          ms(AuthService.accessTokenExp) / 1000,
+          isProd,
+        );
+        setAuthCookie(
+          cookie.refreshToken,
+          refreshToken,
+          ms(AuthService.refreshTokenExp) / 1000,
+          isProd,
+        );
+
+        return {
+          message: "Signed in successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-in-wallet.body",
+        cookie: t.Cookie({
+          accessToken: t.Optional(t.String()),
+          refreshToken: t.Optional(t.String()),
+        }),
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-in-wallet.response",
+          [StatusMap["Not Found"]]: "auth.sign-in-wallet.not-found",
+          [StatusMap.Forbidden]: "auth.sign-in-wallet.forbidden",
+        }),
+      },
+    )
+    .post(
+      "/sign-up-wallet",
+      async ({ body, authService }) => {
+        const { walletAddress, handle } = body;
+
+        const user = await authService.signUpWithWallet({
+          walletAddress: walletAddress.toLowerCase() as `0x${string}`,
+          handle,
+        });
+
+        return {
+          message: "Wallet signed up successfully",
+          userId: user.id,
+          handle: user.handle,
+        };
+      },
+      {
+        body: "auth.sign-up-wallet.body",
+        response: withCommonError({
+          [StatusMap.OK]: "auth.sign-up-wallet.response",
+          [StatusMap.Conflict]: "auth.sign-up-wallet.conflict",
+        }),
+      },
     );
 };

@@ -466,6 +466,7 @@ export const catRelationshipRelations = relations(
 export const table = {
   user: userTable,
   auth: authTable,
+  siweNonceTable: siweNonceTable,
   emailVerification: emailVerificationTable,
   session: sessionTable,
   cat: cat,

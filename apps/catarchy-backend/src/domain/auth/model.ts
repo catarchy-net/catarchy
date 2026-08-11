@@ -280,4 +280,95 @@ export const authModel = new Elysia({ name: "model.auth" }).model({
       examples: ["No account found with this email address."],
     }),
   }),
+  "auth.siwe-nonce.body": t.Object({
+    walletAddress: t.RegExp(/^0x[a-fA-F0-9]{40}$/, {
+      error: "Invalid wallet address format",
+      examples: ["0x1234567890abcdef1234567890abcdef12345678"],
+      description: "The wallet address to issue a SIWE nonce for",
+    }),
+  }),
+  "auth.siwe-nonce.response": t.Object({
+    nonce: t.String({
+      description: "The nonce to be included in the SIWE message",
+      examples: ["3f7a1c9e2b8d4f6a0c1e5b3d7a9f2c4e"],
+    }),
+    expiredAt: t.Number({
+      description: "The timestamp at which the nonce expires",
+      examples: [1772639822606],
+    }),
+  }),
+  "auth.sign-in-wallet.body": t.Object({
+    message: t.String({
+      description: "The SIWE message that was signed by the wallet",
+    }),
+    signature: t.RegExp(/^0x[a-fA-F0-9]+$/, {
+      error: "Invalid signature format",
+      description: "The signature produced by signing the SIWE message",
+    }),
+  }),
+  "auth.sign-in-wallet.response": t.Object({
+    message: t.String({
+      description: "A message confirming successful sign in",
+      examples: ["Signed in successfully"],
+    }),
+    userId: t.String({
+      description: "The ID of the signed-in user",
+    }),
+    handle: t.String({
+      description: "The handle of the signed-in user",
+    }),
+  }),
+  "auth.sign-in-wallet.not-found": t.Object({
+    message: t.String({
+      description:
+        "A message indicating no account exists for this wallet address",
+      examples: ["auth not found"],
+    }),
+  }),
+  "auth.sign-in-wallet.forbidden": t.Object({
+    message: t.String({
+      description:
+        "A message indicating the SIWE message or signature is invalid",
+      examples: [
+        "Failed to parse SIWE message",
+        "Invalid or expired SIWE nonce",
+        "Failed to sign in, please check again",
+      ],
+    }),
+  }),
+  "auth.sign-up-wallet.body": t.Object({
+    walletAddress: t.RegExp(/^0x[a-fA-F0-9]{40}$/, {
+      error: "Invalid wallet address format",
+      examples: ["0x1234567890abcdef1234567890abcdef12345678"],
+      description: "The wallet address to register with",
+    }),
+    handle: t.String({
+      minLength: 4,
+      maxLength: 15,
+      pattern: "^[a-z0-9_]+$",
+      error:
+        "Handle must be 4-15 characters and contain only letters, numbers, or underscores",
+      examples: ["catlover42"],
+      description: "Unique username handle",
+    }),
+  }),
+  "auth.sign-up-wallet.response": t.Object({
+    message: t.String({
+      description:
+        "A message confirming that the wallet account was created successfully",
+      examples: ["Wallet signed up successfully"],
+    }),
+    userId: t.String({
+      description: "The ID of the newly created user",
+    }),
+    handle: t.String({
+      description: "The handle of the newly created user",
+    }),
+  }),
+  "auth.sign-up-wallet.conflict": t.Object({
+    message: t.String({
+      description: "A message indicating the wallet is already signed up",
+      examples: ["Wallet already signed up"],
+    }),
+  }),
 });
