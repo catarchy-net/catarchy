@@ -24,9 +24,9 @@ You must be at least 18 years of age to use the Protocol. By using Catarchy, you
 
 3. Account Registration
 
-To participate, you register with an email address and a password. The email is used solely for authentication and verification — it is never displayed publicly and is not part of your in-Protocol identity.
+To participate, sign in with your RemiliaNET account. Your Catarchy account is created automatically when you first sign in.
 
-Your handle (2–32 characters, letters/numbers/underscores only) is your sole public identity within Catarchy. Handles are unique and non-transferable.
+Your handle is generated from your RemiliaNET username and is your sole public identity within Catarchy. Handles are unique and non-transferable.
 
 You are responsible for:
 - Maintaining the confidentiality of your credentials

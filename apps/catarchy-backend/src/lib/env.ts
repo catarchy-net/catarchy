@@ -12,7 +12,6 @@ export const envSchema = z
       .string()
       .transform((v) => v.split(",").map((s) => s.trim()))
       .pipe(z.array(z.url())),
-    RESEND_API_KEY: z.string(),
     ANTHROPIC_API_KEY: z.string(),
     OPENAI_API_KEY: z.string().optional(),
     GOOGLE_AI_API_KEY: z.string().optional(),
@@ -47,7 +46,6 @@ export type Env = z.infer<typeof envSchema>;
 export type CloudflareBindings = {
   DB: D1Database;
   CACHE: KVNamespace;
-  RESEND_API_KEY: string;
   ANTHROPIC_API_KEY: string;
   OPENAI_API_KEY?: string;
   GOOGLE_AI_API_KEY?: string;

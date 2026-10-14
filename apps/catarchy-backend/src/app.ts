@@ -8,7 +8,6 @@ import { notificationRouter } from "@/domain/notification";
 import { personalityRouter } from "@/domain/personality";
 import { relationshipRouter } from "@/domain/relationship";
 import { userRouter } from "@/domain/user";
-import { emailRouter } from "@/infra/email";
 import { healthRouter } from "@/infra/health";
 import { openapiPlugin } from "@/infra/openapi";
 import { corsPlugin } from "@/plugin/cors";
@@ -28,7 +27,6 @@ export const createApp = ({ adapter }: CreateAppConfig = {}) => {
     .use(healthRouter())
     .use(authRouter())
     .use(catRouter())
-    .use(emailRouter())
     .use(userRouter())
     .use(notificationRouter())
     .use(consensusRouter())

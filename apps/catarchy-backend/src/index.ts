@@ -5,7 +5,6 @@ import { createApp } from "@/app";
 import { initAI } from "@/infra/ai";
 import { initKV } from "@/infra/cache";
 import { initDatabase } from "@/infra/db";
-import { initEmail } from "@/infra/email/service";
 import { type CloudflareBindings, initEnv } from "@/lib/env";
 import { scheduledHandler } from "@/scheduled";
 
@@ -27,7 +26,6 @@ initAI({
   alibabaApiKey: env.ALIBABA_API_KEY,
   deepseekApiKey: env.DEEPSEEK_API_KEY,
 });
-initEmail(env.RESEND_API_KEY);
 
 const app = createApp({ adapter: CloudflareAdapter }).compile();
 

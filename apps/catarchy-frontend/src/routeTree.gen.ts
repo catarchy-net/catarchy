@@ -16,8 +16,6 @@ import { Route as publicPpRouteImport } from './routes/(public)/pp'
 import { Route as publicTocRouteImport } from './routes/(public)/toc'
 import { Route as GuardedCatIdRouteImport } from './routes/_guarded/$catId'
 import { Route as GuardedPlayRouteImport } from './routes/_guarded/play'
-import { Route as publicAuthPasswordResetRouteImport } from './routes/(public)/auth/password-reset'
-import { Route as publicAuthRegisterRouteImport } from './routes/(public)/auth/register'
 import { Route as publicAuthSignInRouteImport } from './routes/(public)/auth/sign-in'
 import { Route as publicEditorIndexRouteImport } from './routes/(public)/editor/index'
 import { Route as GuardedCatSummonRouteImport } from './routes/_guarded/cat/summon'
@@ -63,16 +61,6 @@ const GuardedPlayRoute = GuardedPlayRouteImport.update({
   id: '/play',
   path: '/play',
   getParentRoute: () => GuardedRoute,
-} as any)
-const publicAuthPasswordResetRoute = publicAuthPasswordResetRouteImport.update({
-  id: '/(public)/auth/password-reset',
-  path: '/auth/password-reset',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const publicAuthRegisterRoute = publicAuthRegisterRouteImport.update({
-  id: '/(public)/auth/register',
-  path: '/auth/register',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const publicAuthSignInRoute = publicAuthSignInRouteImport.update({
   id: '/(public)/auth/sign-in',
@@ -141,8 +129,6 @@ export interface FileRoutesByFullPath {
   '/toc': typeof publicTocRoute
   '/$catId': typeof GuardedCatIdRouteWithChildren
   '/play': typeof GuardedPlayRoute
-  '/auth/password-reset': typeof publicAuthPasswordResetRoute
-  '/auth/register': typeof publicAuthRegisterRoute
   '/auth/sign-in': typeof publicAuthSignInRoute
   '/cat/summon': typeof GuardedCatSummonRoute
   '/editor/': typeof publicEditorIndexRoute
@@ -162,8 +148,6 @@ export interface FileRoutesByTo {
   '/toc': typeof publicTocRoute
   '/$catId': typeof GuardedCatIdRouteWithChildren
   '/play': typeof GuardedPlayRoute
-  '/auth/password-reset': typeof publicAuthPasswordResetRoute
-  '/auth/register': typeof publicAuthRegisterRoute
   '/auth/sign-in': typeof publicAuthSignInRoute
   '/cat/summon': typeof GuardedCatSummonRoute
   '/editor': typeof publicEditorIndexRoute
@@ -185,8 +169,6 @@ export interface FileRoutesById {
   '/_guarded/$catId': typeof GuardedCatIdRouteWithChildren
   '/_guarded/play': typeof GuardedPlayRoute
   '/(public)/': typeof publicIndexRoute
-  '/(public)/auth/password-reset': typeof publicAuthPasswordResetRoute
-  '/(public)/auth/register': typeof publicAuthRegisterRoute
   '/(public)/auth/sign-in': typeof publicAuthSignInRoute
   '/_guarded/cat/summon': typeof GuardedCatSummonRoute
   '/(public)/editor/': typeof publicEditorIndexRoute
@@ -208,8 +190,6 @@ export interface FileRouteTypes {
     | '/toc'
     | '/$catId'
     | '/play'
-    | '/auth/password-reset'
-    | '/auth/register'
     | '/auth/sign-in'
     | '/cat/summon'
     | '/editor/'
@@ -229,8 +209,6 @@ export interface FileRouteTypes {
     | '/toc'
     | '/$catId'
     | '/play'
-    | '/auth/password-reset'
-    | '/auth/register'
     | '/auth/sign-in'
     | '/cat/summon'
     | '/editor'
@@ -251,8 +229,6 @@ export interface FileRouteTypes {
     | '/_guarded/$catId'
     | '/_guarded/play'
     | '/(public)/'
-    | '/(public)/auth/password-reset'
-    | '/(public)/auth/register'
     | '/(public)/auth/sign-in'
     | '/_guarded/cat/summon'
     | '/(public)/editor/'
@@ -272,8 +248,6 @@ export interface RootRouteChildren {
   publicPpRoute: typeof publicPpRoute
   publicTocRoute: typeof publicTocRoute
   publicIndexRoute: typeof publicIndexRoute
-  publicAuthPasswordResetRoute: typeof publicAuthPasswordResetRoute
-  publicAuthRegisterRoute: typeof publicAuthRegisterRoute
   publicAuthSignInRoute: typeof publicAuthSignInRoute
   publicEditorIndexRoute: typeof publicEditorIndexRoute
 }
@@ -328,20 +302,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/play'
       preLoaderRoute: typeof GuardedPlayRouteImport
       parentRoute: typeof GuardedRoute
-    }
-    '/(public)/auth/password-reset': {
-      id: '/(public)/auth/password-reset'
-      path: '/auth/password-reset'
-      fullPath: '/auth/password-reset'
-      preLoaderRoute: typeof publicAuthPasswordResetRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(public)/auth/register': {
-      id: '/(public)/auth/register'
-      path: '/auth/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof publicAuthRegisterRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/(public)/auth/sign-in': {
       id: '/(public)/auth/sign-in'
@@ -471,8 +431,6 @@ const rootRouteChildren: RootRouteChildren = {
   publicPpRoute: publicPpRoute,
   publicTocRoute: publicTocRoute,
   publicIndexRoute: publicIndexRoute,
-  publicAuthPasswordResetRoute: publicAuthPasswordResetRoute,
-  publicAuthRegisterRoute: publicAuthRegisterRoute,
   publicAuthSignInRoute: publicAuthSignInRoute,
   publicEditorIndexRoute: publicEditorIndexRoute,
 }

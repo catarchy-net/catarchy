@@ -1,6 +1,5 @@
 import { createApp } from "@/app";
 import { initAI } from "@/infra/ai";
-import { initEmail } from "@/infra/email/service";
 import { initEnv } from "@/lib/env";
 
 /**
@@ -17,8 +16,6 @@ initAI({
   mistralApiKey: env.MISTRAL_API_KEY,
   deepseekApiKey: env.DEEPSEEK_API_KEY,
 });
-
-initEmail(env.RESEND_API_KEY);
 
 const app = createApp().listen(3000);
 
